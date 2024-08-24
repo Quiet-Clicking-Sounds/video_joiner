@@ -89,8 +89,7 @@ impl<D> ItemList<D> {
         
         match &screens {
             FrameShape::Dual | FrameShape::Triple | FrameShape::Quad => {}
-            FrameShape::VertEmph | FrameShape::VertEmph2 | 
-            FrameShape::HorizEmph | FrameShape::HorizEmph2 => {
+            _ => {
                 panic!("Automatic Grouping is not enabled for {:?}", screens)
             }
         }
@@ -160,8 +159,7 @@ impl<D> ItemList<D> {
             FrameShape::Quad => {
                 out
             }
-            FrameShape::VertEmph | FrameShape::VertEmph2 |
-            FrameShape::HorizEmph | FrameShape::HorizEmph2 =>{
+            _ =>{
                 panic!("Automatic sorting is not enabled for {:?}", self.screens)
             }
         }

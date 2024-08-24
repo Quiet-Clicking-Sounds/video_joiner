@@ -1,7 +1,7 @@
 use std::collections::VecDeque;
 use std::convert::Into;
 use std::fmt::{Debug, Formatter};
-use std::io::{ Write};
+use std::io::{Write};
 use std::ops::{Div, Not, Rem, Sub};
 use std::path::PathBuf;
 use std::slice::ChunksExact;
@@ -52,7 +52,6 @@ const DECODER: [&str; 2] = ["-hwaccel", "d3d11va"];
 #[cfg(not(feature = "hyperDebug"))]
 #[inline]
 fn parse_debug(text: &str, f: &str, l: u32) {}
-
 
 
 #[derive(Clone)]
@@ -139,17 +138,16 @@ impl VideoEditData {
             }
             FrameShape::HorizEmph => {
                 self.shapes = vec![
-                    (self.output_width / 3, self.output_height ),
+                    (self.output_width / 3, self.output_height),
                     (self.output_width / 3, self.output_height / 2),
                     (self.output_width / 3, self.output_height / 2),
                     (self.output_width / 3, self.output_height),
                 ];
             }
             FrameShape::VertEmph2 => {
-                
                 let owx = self.output_width.rem(8);
                 let ow = self.output_width.sub(owx).div(8);
-                
+
                 self.shapes = vec![
                     (ow * 2 + owx, self.output_height),
                     (ow * 3, self.output_height / 2),
@@ -162,10 +160,19 @@ impl VideoEditData {
                 let owx = self.output_width.rem(4);
                 let ow = self.output_width.sub(owx).div(4);
                 self.shapes = vec![
-                    (ow, self.output_height ),
-                    (ow*2 + owx, self.output_height / 2),
-                    (ow*2 + owx,  self.output_height - self.output_height / 2),
                     (ow, self.output_height),
+                    (ow * 2 + owx, self.output_height / 2),
+                    (ow * 2 + owx, self.output_height - self.output_height / 2),
+                    (ow, self.output_height),
+                ];
+            }
+            FrameShape::SideVert | FrameShape::SideVert2  =>{
+                let owx = self.output_width.rem(3);
+                let ow = self.output_width.sub(owx).div(3);
+                self.shapes = vec![
+                    (ow, self.output_height),
+                    (ow * 2 + owx, self.output_height / 2),
+                    (ow * 2 + owx, self.output_height - self.output_height / 2),
                 ];
             }
         }
@@ -512,7 +519,7 @@ pub struct VideoGroup {
     shape_style: FrameShape,
 }
 
-fn video_group_swap(src: impl Into<PathBuf>,screens: FrameShape,)->Vec<Vec<Video>>{
+fn video_group_swap(src: impl Into<PathBuf>, screens: FrameShape) -> Vec<Vec<Video>> {
     let src = src.into();
     assert!(src.is_dir(), "Given Input Directory Does Not Exist"); // not my fault
     let all_videos = scan_dir_for_videos_with_len(src);
@@ -544,7 +551,7 @@ impl VideoGroup {
             shape_style: screens,
         }
     }
-    
+
     pub fn new_from_folders(
         srcs: Vec<PathBuf>,
         src_out: impl Into<PathBuf>,
@@ -560,33 +567,49 @@ impl VideoGroup {
                 return VideoGroup {
                     videos: vec![
                         videos1,
-                        VideoList::from_videos(videos2.next().unwrap(),1),
-                        VideoList::from_videos(videos2.next().unwrap(),2),
-                        VideoList::from_videos(videos2.next().unwrap(),3),
+                        VideoList::from_videos(videos2.next().unwrap(), 1),
+                        VideoList::from_videos(videos2.next().unwrap(), 2),
+                        VideoList::from_videos(videos2.next().unwrap(), 3),
+                        VideoList::from_videos(videos2.next().unwrap(), 4),
                     ],
                     output_target: src_out.into(),
                     video_sizer: VideoEditData::init(),
                     shape_style: screens,
-                }
+                };
             }
             (FrameShape::HorizEmph, 2) | (FrameShape::HorizEmph2, 2) => {
                 let mut videos1 = video_group_swap(srcs[0].clone(), FrameShape::Dual).into_iter();
                 let mut videos2 = video_group_swap(srcs[1].clone(), FrameShape::Dual).into_iter();
                 return VideoGroup {
                     videos: vec![
-                        VideoList::from_videos(videos1.next().unwrap(),0),
-                        VideoList::from_videos(videos2.next().unwrap(),1),
-                        VideoList::from_videos(videos2.next().unwrap(),2),
-                        VideoList::from_videos(videos1.next().unwrap(),3),
+                        VideoList::from_videos(videos1.next().unwrap(), 0),
+                        VideoList::from_videos(videos2.next().unwrap(), 1),
+                        VideoList::from_videos(videos2.next().unwrap(), 2),
+                        VideoList::from_videos(videos1.next().unwrap(), 3),
                     ],
                     output_target: src_out.into(),
                     video_sizer: VideoEditData::init(),
                     shape_style: screens,
-                }
+                };
+            }
+            (FrameShape::SideVert, 2) | (FrameShape::SideVert2, 2) => {
+                // vertical parts
+                let videos1 = VideoList::from_videos(scan_dir_for_videos(srcs[0].clone()), 0);
+                // horizontal parts
+                let mut videos2 = video_group_swap(srcs[1].clone(), FrameShape::Dual).into_iter();
+                return VideoGroup {
+                    videos: vec![
+                        videos1,
+                        VideoList::from_videos(videos2.next().unwrap(), 1),
+                        VideoList::from_videos(videos2.next().unwrap(), 2),
+                    ],
+                    output_target: src_out.into(),
+                    video_sizer: VideoEditData::init(),
+                    shape_style: screens,
+                };
             }
             (_, _) => {}
         }
-
 
 
         VideoGroup {
@@ -820,11 +843,12 @@ pub(crate) enum FrameShape {
     HorizEmph,
     VertEmph2,
     HorizEmph2,
+    SideVert,
+    SideVert2,
 }
 
 
 impl FrameShape {
-
     //noinspection SpellCheckingInspection
     pub(crate) fn audio_args_with_vid(&self) -> String {
         match self {
@@ -852,7 +876,7 @@ impl FrameShape {
                 [a][b][c][d]amix=inputs=4[d];[d]loudnorm[d]\
                 ".to_string()
             }
-            FrameShape::VertEmph|FrameShape::VertEmph2 => {
+            FrameShape::VertEmph | FrameShape::VertEmph2 => {
                 "\
                 [1:a]surround=chl_out=stereo:chl_in=stereo:angle=0[a];\
                 [2:a]surround=chl_out=stereo:chl_in=stereo:angle=315[b];\
@@ -863,7 +887,7 @@ impl FrameShape {
                 [a][b][c][d][e]amix=inputs=5[d];[d]loudnorm[d]\
                 ".to_string()
             }
-            FrameShape::HorizEmph|FrameShape::HorizEmph2 => {
+            FrameShape::HorizEmph | FrameShape::HorizEmph2 => {
                 "\
                 [1:a]stereotools=balance_in=-0.4[a];[a]surround=chl_out=stereo:chl_in=stereo:angle=270[a];\
                 [2:a]surround=chl_out=stereo:chl_in=stereo:angle=0[b];\
@@ -873,6 +897,24 @@ impl FrameShape {
                 [a][b][c][d]amix=inputs=4[d];[d]loudnorm[d]\
                 ".to_string()
             }
+            FrameShape::SideVert  => {
+                "\
+                [1:a]stereotools=balance_in=-0.5[a];[a]surround=chl_out=stereo:chl_in=stereo:angle=270[a];\
+                [2:a]stereotools=balance_in=0.1[b];[b]surround=chl_out=stereo:chl_in=stereo:angle=20[b];\
+                [3:a]stereotools=balance_in=0.1[c];[c]surround=chl_out=stereo:chl_in=stereo:angle=20[c];\
+                [c]volume=-5dB[c];\
+                [a][b][c]amix=inputs=3[d];[d]loudnorm[d]\
+                ".to_string()
+            }
+            FrameShape::SideVert2 => {
+                "\
+                [1:a]stereotools=balance_in=0.5[a];[a]surround=chl_out=stereo:chl_in=stereo:angle=90[a];\
+                [2:a]stereotools=balance_in=-0.1[b];[b]surround=chl_out=stereo:chl_in=stereo:angle=340[b];\
+                [3:a]stereotools=balance_in=-0.1[c];[c]surround=chl_out=stereo:chl_in=stereo:angle=340[c];\
+                [c]volume=-5dB[c];\
+                [a][b][c]amix=inputs=3[d];[d]loudnorm[d]\
+                ".to_string()
+            }
         }
     }
     pub(crate) fn count(&self) -> u32 {
@@ -880,8 +922,9 @@ impl FrameShape {
             FrameShape::Dual => 2,
             FrameShape::Triple => 3,
             FrameShape::Quad => 4,
-            FrameShape::VertEmph |FrameShape::VertEmph2 => 5,
-            FrameShape::HorizEmph |FrameShape::HorizEmph2 => 4
+            FrameShape::VertEmph | FrameShape::VertEmph2 => 5,
+            FrameShape::HorizEmph | FrameShape::HorizEmph2 => 4,
+            FrameShape::SideVert | FrameShape::SideVert2 => 3,
         }
     }
 }
@@ -936,8 +979,7 @@ impl Joiner for FrameShape {
                 }
             }
             FrameShape::VertEmph | FrameShape::VertEmph2 => {
-                
-                'outter: loop{
+                'outter: loop {
                     match chunks[1].next() {
                         None => break 'outter,
                         Some(ch) => out.extend_from_slice(ch),
@@ -951,7 +993,7 @@ impl Joiner for FrameShape {
                         Some(ch) => out.extend_from_slice(ch),
                     }
                 }
-                'outter: loop{
+                'outter: loop {
                     match chunks[3].next() {
                         None => break 'outter,
                         Some(ch) => out.extend_from_slice(ch),
@@ -967,7 +1009,7 @@ impl Joiner for FrameShape {
                 }
             }
             FrameShape::HorizEmph | FrameShape::HorizEmph2 => {
-                let mut switch:bool = true;
+                let mut switch: bool = true;
                 'outter: loop {
                     match chunks[0].next() {
                         None => break 'outter,
@@ -975,7 +1017,7 @@ impl Joiner for FrameShape {
                     }
                     if switch {
                         match chunks[1].next() {
-                            None => {switch = false},
+                            None => { switch = false }
                             Some(ch) => out.extend_from_slice(ch),
                         }
                     }
@@ -986,6 +1028,48 @@ impl Joiner for FrameShape {
                         }
                     }
                     match chunks[3].next() {
+                        None => break 'outter,
+                        Some(ch) => out.extend_from_slice(ch),
+                    }
+                }
+            }
+            FrameShape::SideVert => {
+                let mut switch: bool = true;
+                'outter: loop {
+                    match chunks[0].next() {
+                        None => break 'outter,
+                        Some(ch) => out.extend_from_slice(ch),
+                    }
+                    if switch {
+                        match chunks[1].next() {
+                            None => { switch = false }
+                            Some(ch) => out.extend_from_slice(ch),
+                        }
+                    }
+                    if !switch {
+                        match chunks[2].next() {
+                            None => break 'outter,
+                            Some(ch) => out.extend_from_slice(ch),
+                        }
+                    }
+                }
+            }
+            FrameShape::SideVert2 => {
+                let mut switch: bool = true;
+                'outter: loop {
+                    if switch {
+                        match chunks[1].next() {
+                            None => { switch = false }
+                            Some(ch) => out.extend_from_slice(ch),
+                        }
+                    }
+                    if !switch {
+                        match chunks[2].next() {
+                            None => break 'outter,
+                            Some(ch) => out.extend_from_slice(ch),
+                        }
+                    }
+                    match chunks[0].next() {
                         None => break 'outter,
                         Some(ch) => out.extend_from_slice(ch),
                     }

@@ -22,15 +22,17 @@ Options:
   -V, --version                 Print version
 ```
 
-## 
+##       
 
-Join a folder of videos in the `Double` layout at 1080p 60fps 
+Join a folder of videos in the `Double` layout at 1080p 60fps
+
 ```shell
 video_joiner.exe -f "D:\videos_to_join" -o "D:\joined_video.mp4" -s 'Double' -x 1920 -y 1080 -r 60
 ```
 
 Join a folder of videos in the `Double` layout for testing without audio at a 400x300 with lower fps for faster
-encoding 
+encoding
+
 ```shell
 video_joiner.exe -f "D:\videos_to_join" -o "D:\joined_video.mp4" -s 2 --no-audio -x 400 -y 300 --fps 15
 ```
@@ -50,18 +52,19 @@ video_joiner.exe
 
 #### Special case
 
-Shapes with multiple sub-frame shapes may use a 2 folder input structure with automatic sorting. 
-When only two inputs are given, the first refrences the more vertical component, 
+Shapes with multiple sub-frame shapes may use a 2 folder input structure with automatic sorting.
+When only two inputs are given, the first refrences the more vertical component,
 and the second refrences the horizontal component.
 
-The method shown below will automatically choose items from the vertical section to fill positions 1 and 4, 
+The method shown below will automatically choose items from the vertical section to fill positions 1 and 4,
 then take items from the second file selection for positions 2 and 3. \
 _Currently implemented for commandline only._
 
 ```shell
 video_joiner.exe -f "D:\vertical_videos_to_join" -f "D:\horizontal_videos_to_join" -o "D:\joined_video.mp4" --shape "HorizEmph"
 ```
-Implemented for `VertEmph`, `VertEmph1`, `HorizEmph`, and `HorizEmph2` 
+
+Implemented for `VertEmph`, `VertEmph1`, `HorizEmph`, and `HorizEmph2`
 
 
 <hr> 
@@ -70,45 +73,46 @@ Implemented for `VertEmph`, `VertEmph1`, `HorizEmph`, and `HorizEmph2`
 
 audio export can be slow as it cannot be started untill the video export is complete, each video group will be
 concatenated to its own single `.wav` file, once a full length file is exported for each video group it will then be
-encoded into the previously created `__temp__filename.ext` video file using FFmpeg `-c:v copy` to ensure we don't re-encode
+encoded into the previously created `__temp__filename.ext` video file using FFmpeg `-c:v copy` to ensure we don't
+re-encode
 
 The audio joining method is currently implemented in `video::FrameShape::audio_args_with_vid()`\
 Basic descriptions of how each method works can be found below
 
 - `FFmpeg loudnorm` is used for postprocessing all inputs once joined
 
-### `Double`
+| `Double`                     |               Vertical Group 1                |               Vertical Group 2               |
+|:-----------------------------|:---------------------------------------------:|:--------------------------------------------:|
+| **Horizontal <br/> Group 1** | Stereo balance: -0.4<br/> Surround angle: -90 | Stereo balance: +0.4<br/>Surround angle: +90 |
 
-|               Vertical Group 1                |               Vertical Group 2               |
-|:---------------------------------------------:|:--------------------------------------------:|
-| Stereo balance: -0.4<br/> Surround angle: -90 | Stereo balance: +0.4<br/>Surround angle: +90 |
+| `Triple`                     |                Vertical Group 1                 | Vertical Group 2 |               Vertical Group 3               |
+|:-----------------------------|:-----------------------------------------------:|:----------------:|:--------------------------------------------:|
+| **Horizontal <br/> Group 1** | Stereo balance: -0.4 <br/>  Surround angle: -90 |   _no change_    | Stereo balance: +0.4<br/>Surround angle: +90 |
 
-### `Triple`
-
-|                Vertical Group 1                 | Vertical Group 2 |               Vertical Group 3               |
-|:-----------------------------------------------:|:----------------:|:--------------------------------------------:|
-| Stereo balance: -0.4 <br/>  Surround angle: -90 |   `no changes`   | Stereo balance: +0.4<br/>Surround angle: +90 |
-
-### `Quad`
-
-|                              |                Vertical Group 1                 |                Vertical Group 2                 |
+| `Quad`                       |                Vertical Group 1                 |                Vertical Group 2                 |
 |:-----------------------------|:-----------------------------------------------:|:-----------------------------------------------:|
 | **Horizontal <br/> Group 1** |               Surround angle: -45               |               Surround angle: +45               |
 | **Horizontal <br/> Group 2** | Stereo balance: -0.4 <br/>  Surround angle: -90 | Stereo balance: -0.4 <br/>  Surround angle: -90 |
 
-### `VertEmph` and `VertEmph2`
-
-|                              |                Vertical Group 1                 | Vertical Group 2 |               Vertical Group 3               |
+| `VertEmph` and `VertEmph2`   |                Vertical Group 1                 | Vertical Group 2 |               Vertical Group 3               |
 |:-----------------------------|:-----------------------------------------------:|:----------------:|:--------------------------------------------:|
-| **Horizontal <br/> Group 1** |               Surround angle: -45               |   `no changes`   |             Surround angle: +45              |
+| **Horizontal <br/> Group 1** |               Surround angle: -45               |   _no change_    |             Surround angle: +45              |
 | **Horizontal <br/> Group 2** | Stereo balance: -0.4 <br/>  Surround angle: -90 |       <hr>       | Stereo balance: +0.4<br/>Surround angle: +90 |
 
-### `HorizEmph` and `HorizEmph2`
-
-|                              |                         Vertical Group 1                          | Vertical Group 2 |                        Vertical Group 3                        |
+| `HorizEmph` and `HorizEmph2` |                         Vertical Group 1                          | Vertical Group 2 |                        Vertical Group 3                        |
 |:-----------------------------|:-----------------------------------------------------------------:|:----------------:|:--------------------------------------------------------------:|
-| **Horizontal <br/> Group 1** | Stereo balance: -0.4 <br/>  Surround angle: -90 <br/> Volume -5db |   `no changes`   | Stereo balance: +0.4<br/>Surround angle: +90 <br/> Volume -5db |
+| **Horizontal <br/> Group 1** | Stereo balance: -0.4 <br/>  Surround angle: -90 <br/> Volume -5db |   _no change_    | Stereo balance: +0.4<br/>Surround angle: +90 <br/> Volume -5db |
 | **Horizontal <br/> Group 2** |                               <hr>                                |   Volume -3db    |                              <hr>                              |
+
+| `SideVert `                  |               Vertical Group 1                |                         Vertical Group 2                          |
+|:-----------------------------|:---------------------------------------------:|:-----------------------------------------------------------------:|
+| **Horizontal <br/> Group 1** | Surround angle: -90 <br> Stereo balance: -0.5 |         Stereo balance: +0.1  <br/>  Surround angle: +20          |
+| **Horizontal <br/> Group 2** |                     <hr>                      | Stereo balance: +0.1  <br/>  Surround angle: +20 <br> Volume -5db |
+
+| `SideVert2`                  |                         Vertical Group 1                          |  Vertical Group 2   |
+|:-----------------------------|:-----------------------------------------------------------------:|:-------------------:|
+| **Horizontal <br/> Group 1** |         Stereo balance: -0.1  <br/>  Surround angle: -20          | Surround angle: +90 |
+| **Horizontal <br/> Group 2** | Stereo balance: -0.1  <br/>  Surround angle: -20 <br> Volume -5db |        <hr>         |
 
 ## Frame Shape names
 
@@ -122,15 +126,21 @@ Basic descriptions of how each method works can be found below
 
 | `VertEmph` or `V` or `5`                                  | `HorizEmph` or `H` or `6`                                 |
 |-----------------------------------------------------------|-----------------------------------------------------------|
-| ![frame_shapes_1.svg](readme_data/frame_shapes_4.svg)     | ![frame_shapes_1.svg](readme_data/frame_shapes_5.svg)     |
+| ![frame_shapes_4.svg](readme_data/frame_shapes_4.svg)     | ![frame_shapes_5.svg](readme_data/frame_shapes_5.svg)     |
 | Frame 1: `5.33/9` when exporting at `16/9`                | Frame 1/4: `5.33/9` when exporting at `16/9`              |
 | Equal frame widths means excessive cropping of 16/9 video | Equal frame widths means excessive cropping of 16/9 video | 
 
 | `VertEmph2` or `V2` or `7`                            | `HorizEmph2` or `H2` or `8`                           |
 |-------------------------------------------------------|-------------------------------------------------------|
-| ![frame_shapes_1.svg](readme_data/frame_shapes_4.svg) | ![frame_shapes_1.svg](readme_data/frame_shapes_5.svg) |
+| ![frame_shapes_4.svg](readme_data/frame_shapes_4.svg) | ![frame_shapes_5.svg](readme_data/frame_shapes_5.svg) |
 | Top row `3/8` `2/8` `3/8`                             | Top row: `1/4` `2/4` `1/4`                            | 
 | Enlarged side frames to reducing cropping             | Enlarged centre frame to reduce cropping              | 
+
+| `SideVert` or `VD` or `9`                             | `SideVert2` or `DV` or `10`                           |
+|-------------------------------------------------------|-------------------------------------------------------|
+| ![frame_shapes_6.svg](readme_data/frame_shapes_6.svg) | ![frame_shapes_7.svg](readme_data/frame_shapes_7.svg) |
+| Top row `1/3` `2/3`                                   | Top row `2/3` `1/3`                                   |
+| Enlarged side frames to reducing cropping             | Enlarged side frames to reducing cropping             |
 
 ## To be integrated at some point:
 

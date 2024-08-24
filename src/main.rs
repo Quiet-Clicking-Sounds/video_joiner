@@ -73,10 +73,7 @@ fn get_folders_multi(shape: FrameShape) -> Vec<PathBuf> {
             ).to_lowercase();
             req.contains('y') | req.contains('1')
         }
-        FrameShape::VertEmph => false,
-        FrameShape::HorizEmph => false,
-        FrameShape::VertEmph2 => false,
-        FrameShape::HorizEmph2 => false,
+        _ => false,
     };
     let count = if switch { 1 } else { shape.count() };
 
@@ -98,6 +95,8 @@ fn run_from_cli(args: Cli) -> (VideoGroup, bool) {
         "horizemph" | "horiz" | "h" | "6" => { FrameShape::HorizEmph }
         "vertemph2" | "vert2" | "v2" | "7" => { FrameShape::VertEmph2 }
         "horizemph2" | "horiz2" | "h2" | "8" => { FrameShape::HorizEmph2 }
+        "sidevert" | "vd" | "9" => {FrameShape::SideVert}
+        "sidevert2" | "dv" | "10" => {FrameShape::SideVert2}
         x => { panic!("No match found for split format: {}", x) }
     };
 
@@ -120,6 +119,9 @@ fn run_from_cli(args: Cli) -> (VideoGroup, bool) {
             VideoEditData::init_wxh(850 * 3, 1440, split_format.count())
         }
         (_, _, FrameShape::HorizEmph) | (_, _, FrameShape::HorizEmph2) => {
+            VideoEditData::init_wxh(850 * 3, 1440, split_format.count())
+        }
+        (_, _, FrameShape::SideVert) | (_, _, FrameShape::SideVert2) => {
             VideoEditData::init_wxh(850 * 3, 1440, split_format.count())
         }
     };
