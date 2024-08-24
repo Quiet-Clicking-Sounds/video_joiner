@@ -1,0 +1,9 @@
+/target
+/Cargo.lock
+/TempFolder/
+/test_video/
+/test_video/*
+/.git
+/.idea
+/SOFA/*.sofa
+/readme_data/frame_shapes.odg

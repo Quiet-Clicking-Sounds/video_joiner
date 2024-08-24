@@ -1,0 +1,30 @@
+[package]
+name = "video_joiner"
+version = "0.2.1"
+edition = "2021"
+authors = ["Quiet-Clicking-Sounds <55921097+Quiet-Clicking-Sounds@users.noreply.github.com>"]
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+ffmpeg-sidecar = "1.1.0"
+ffprobe = "0.4.0"
+clap = {version = "4.5.0", features=["derive"]}
+os_pipe = "1.2.0"
+rand = "0.8.5"
+[dev-dependencies]
+json = "0.12.4"
+
+[profile.dev]
+opt-level = 3
+
+[profile.release]
+opt-level = 3
+
+[features]
+# Debubbing with this will slow the program.
+hyperDebug = []
+keepTempFiles = []
+
+# https://sofacoustics.org/data/database/ari%20(artificial)/
+sofalizerMix = []
