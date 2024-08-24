@@ -48,6 +48,22 @@ video_joiner.exe
     --shape "HorizEmph"
 ```
 
+#### Special case
+
+Shapes with multiple sub-frame shapes may use a 2 folder input structure with automatic sorting. 
+When only two inputs are given, the first refrences the more vertical component, 
+and the second refrences the horizontal component.
+
+The method shown below will automatically choose items from the vertical section to fill positions 1 and 4, 
+then take items from the second file selection for positions 2 and 3. \
+_Currently implemented for commandline only._
+
+```shell
+video_joiner.exe -f "D:\vertical_videos_to_join" -f "D:\horizontal_videos_to_join" -o "D:\joined_video.mp4" --shape "HorizEmph"
+```
+Implemented for `VertEmph`, `VertEmph1`, `HorizEmph`, and `HorizEmph2` 
+
+
 <hr> 
 
 ## Audio & why exports can be slow

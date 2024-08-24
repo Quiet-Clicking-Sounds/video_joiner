@@ -126,6 +126,9 @@ fn run_from_cli(args: Cli) -> (VideoGroup, bool) {
 
     vid_edit_data.set_fps(args.fps);
 
+
+
+
     let mut vid = match folder_target.len() {
         0 => { panic!("No folders found") }
         1 => {
@@ -150,4 +153,3 @@ fn run_from_cli(args: Cli) -> (VideoGroup, bool) {
 
     (vid, args.audio)
 }
-

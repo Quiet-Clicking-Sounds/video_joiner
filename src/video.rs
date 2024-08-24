@@ -512,6 +512,15 @@ pub struct VideoGroup {
     shape_style: FrameShape,
 }
 
+fn video_group_swap(src: impl Into<PathBuf>,screens: FrameShape,)->Vec<Vec<Video>>{
+    let src = src.into();
+    assert!(src.is_dir(), "Given Input Directory Does Not Exist"); // not my fault
+    let all_videos = scan_dir_for_videos_with_len(src);
+    let list_grp = group_split::ItemList::new_with_data(all_videos, screens.clone());
+    list_grp.run_automatic_swaps();
+    list_grp.export_to_data_lists()
+}
+
 impl VideoGroup {
     pub fn new_from_folder(
         src: impl Into<PathBuf>,
@@ -519,17 +528,9 @@ impl VideoGroup {
         screens: FrameShape,
     ) -> VideoGroup {
         #[cfg(feature = "hyperDebug")]
-        helper_functions::parse_debug("VideoGroupTriple", file!(), line!());
-        let src = src.into();
-        assert!(src.is_dir(), "Given Input Directory Does Not Exist"); // not my fault
+        helper_functions::parse_debug("new_from_folder", file!(), line!());
 
-        let all_videos = scan_dir_for_videos_with_len(src);
-
-        // turn the list into 3 lists of equal length
-
-        let list_grp = group_split::ItemList::new_with_data(all_videos, screens.clone());
-        list_grp.run_automatic_swaps();
-        let videos = list_grp.export_to_data_lists();
+        let videos = video_group_swap(src, screens.clone());
 
         // setup group for exporting
         VideoGroup {
@@ -549,6 +550,45 @@ impl VideoGroup {
         src_out: impl Into<PathBuf>,
         screens: FrameShape,
     ) -> VideoGroup {
+        // Special cases for vertical and horuizontal input groups
+        match (screens.clone(), srcs.len()) {
+            (FrameShape::VertEmph, 2) | (FrameShape::VertEmph2, 2) => {
+                // vertical parts
+                let videos1 = VideoList::from_videos(scan_dir_for_videos(srcs[0].clone()), 0);
+                // horizontal parts
+                let mut videos2 = video_group_swap(srcs[1].clone(), FrameShape::Quad).into_iter();
+                return VideoGroup {
+                    videos: vec![
+                        videos1,
+                        VideoList::from_videos(videos2.next().unwrap(),1),
+                        VideoList::from_videos(videos2.next().unwrap(),2),
+                        VideoList::from_videos(videos2.next().unwrap(),3),
+                    ],
+                    output_target: src_out.into(),
+                    video_sizer: VideoEditData::init(),
+                    shape_style: screens,
+                }
+            }
+            (FrameShape::HorizEmph, 2) | (FrameShape::HorizEmph2, 2) => {
+                let mut videos1 = video_group_swap(srcs[0].clone(), FrameShape::Dual).into_iter();
+                let mut videos2 = video_group_swap(srcs[1].clone(), FrameShape::Dual).into_iter();
+                return VideoGroup {
+                    videos: vec![
+                        VideoList::from_videos(videos1.next().unwrap(),0),
+                        VideoList::from_videos(videos2.next().unwrap(),1),
+                        VideoList::from_videos(videos2.next().unwrap(),2),
+                        VideoList::from_videos(videos1.next().unwrap(),3),
+                    ],
+                    output_target: src_out.into(),
+                    video_sizer: VideoEditData::init(),
+                    shape_style: screens,
+                }
+            }
+            (_, _) => {}
+        }
+
+
+
         VideoGroup {
             videos: srcs
                 .into_iter()
