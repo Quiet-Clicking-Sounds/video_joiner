@@ -25,6 +25,3 @@ opt-level = 3
 # Debubbing with this will slow the program.
 hyperDebug = []
 keepTempFiles = []
-
-# https://sofacoustics.org/data/database/ari%20(artificial)/
-sofalizerMix = []
