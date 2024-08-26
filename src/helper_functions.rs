@@ -4,7 +4,9 @@ use std::fmt::{Debug, Formatter};
 use std::time;
 use ffmpeg_sidecar::child::FfmpegChild;
 use ffmpeg_sidecar::event::{FfmpegEvent, LogLevel};
-
+use std::path::PathBuf;
+use crate::group_split;
+use crate::video::{FrameShape, Video};
 
 pub fn iter_ffmpeg_events(child:&mut FfmpegChild){
     for i in child.iter().unwrap() {
@@ -110,4 +112,51 @@ mod tests {
     }
 
 
+}
+
+#[allow(unused)]
+#[cfg(not(feature = "hyperDebug"))]
+#[inline]
+fn parse_debug(text: &str, f: &str, l: u32) {}
+
+fn scan_dir_for_videos_with_len(dir: impl Into<PathBuf>) -> Vec<(i64, Video)> {
+    let mut all_videos = Vec::new();
+    for i in dir.into().read_dir().expect("failed to read directory") {
+        let i = i.unwrap();
+        if i.path().is_file() {
+            // setup vid items
+            let mut vd = Video::from_path(i.path());
+            let le = match vd.get_length() {
+                Ok(le) => le,
+                Err(_) => {
+                    println!("Failed to get video Info for: {:?}", vd.src);
+                    continue;
+                }
+            };
+            all_videos.push((le, vd))
+        }
+    }
+    all_videos
+}
+
+pub fn scan_dir_for_videos(dir: impl Into<PathBuf>) -> Vec<Video> {
+    let mut all_videos = Vec::new();
+    for i in dir.into().read_dir().expect("failed to read directory") {
+        let i = i.unwrap();
+        if i.path().is_file() {
+            // setup vid items
+            let vd = Video::from_path(i.path());
+            all_videos.push(vd);
+        };
+    }
+    all_videos
+}
+
+pub fn video_group_swap(src: impl Into<PathBuf>, screens: FrameShape) -> Vec<Vec<Video>> {
+    let src = src.into();
+    assert!(src.is_dir(), "Given Input Directory Does Not Exist"); // not my fault
+    let all_videos = scan_dir_for_videos_with_len(src);
+    let list_grp = group_split::ItemList::new_with_data(all_videos, screens.clone());
+    list_grp.run_automatic_swaps();
+    list_grp.export_to_data_lists()
 }

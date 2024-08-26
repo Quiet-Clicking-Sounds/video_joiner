@@ -1,7 +1,7 @@
 use std::collections::VecDeque;
 use std::convert::Into;
 use std::fmt::{Debug, Formatter};
-use std::io::{Write};
+use std::io::Write;
 use std::ops::{Div, Not, Rem, Sub};
 use std::path::PathBuf;
 use std::slice::ChunksExact;
@@ -15,8 +15,8 @@ use ffprobe;
 use rand::seq::SliceRandom;
 use rand::thread_rng;
 
-use crate::audio::{join_audio_video_streams};
-use crate::group_split;
+use crate::audio::join_audio_video_streams;
+use crate::helper_functions;
 use crate::helper_functions;
 use crate::helper_functions::{iter_ffmpeg_events, seconds_to_hhmmss};
 
@@ -47,11 +47,6 @@ const DECODER: [&str; 2] = ["-hwaccel", "d3d11va"];
 // d3d11va  60.29
 // opencl   47
 // vulkan   57.92
-
-#[allow(unused)]
-#[cfg(not(feature = "hyperDebug"))]
-#[inline]
-fn parse_debug(text: &str, f: &str, l: u32) {}
 
 
 #[derive(Clone)]
@@ -197,8 +192,8 @@ impl PartialEq for VideoEditData {
     }
 }
 
-struct Video {
-    src: PathBuf,
+pub(crate) struct Video {
+    pub(crate) src: PathBuf,
     frame_iterable: Option<FfmpegIterator>,
     length_millis: Option<i64>,
     frame_count: u64,
@@ -256,7 +251,7 @@ impl Video {
     }
 
     //noinspection SpellCheckingInspection
-    fn get_length(&mut self) -> Result<i64, &str> {
+    pub(crate) fn get_length(&mut self) -> Result<i64, &str> {
         #[cfg(feature = "hyperDebug")]
         helper_functions::parse_debug(" get length ", file!(), line!());
         match self.length_millis {
@@ -479,53 +474,11 @@ impl VideoList {
     }
 }
 
-fn scan_dir_for_videos_with_len(dir: impl Into<PathBuf>) -> Vec<(i64, Video)> {
-    let mut all_videos = Vec::new();
-    for i in dir.into().read_dir().expect("failed to read directory") {
-        let i = i.unwrap();
-        if i.path().is_file() {
-            // setup vid items
-            let mut vd = Video::from_path(i.path());
-            let le = match vd.get_length() {
-                Ok(le) => le,
-                Err(_) => {
-                    println!("Failed to get video Info for: {:?}", vd.src);
-                    continue;
-                }
-            };
-            all_videos.push((le, vd))
-        }
-    }
-    all_videos
-}
-
-fn scan_dir_for_videos(dir: impl Into<PathBuf>) -> Vec<Video> {
-    let mut all_videos = Vec::new();
-    for i in dir.into().read_dir().expect("failed to read directory") {
-        let i = i.unwrap();
-        if i.path().is_file() {
-            // setup vid items
-            let vd = Video::from_path(i.path());
-            all_videos.push(vd);
-        };
-    }
-    all_videos
-}
-
 pub struct VideoGroup {
     videos: Vec<VideoList>,
     output_target: PathBuf,
     video_sizer: VideoEditData,
     shape_style: FrameShape,
-}
-
-fn video_group_swap(src: impl Into<PathBuf>, screens: FrameShape) -> Vec<Vec<Video>> {
-    let src = src.into();
-    assert!(src.is_dir(), "Given Input Directory Does Not Exist"); // not my fault
-    let all_videos = scan_dir_for_videos_with_len(src);
-    let list_grp = group_split::ItemList::new_with_data(all_videos, screens.clone());
-    list_grp.run_automatic_swaps();
-    list_grp.export_to_data_lists()
 }
 
 impl VideoGroup {
@@ -537,7 +490,7 @@ impl VideoGroup {
         #[cfg(feature = "hyperDebug")]
         helper_functions::parse_debug("new_from_folder", file!(), line!());
 
-        let videos = video_group_swap(src, screens.clone());
+        let videos = helper_functions::video_group_swap(src, screens.clone());
 
         // setup group for exporting
         VideoGroup {
@@ -561,9 +514,9 @@ impl VideoGroup {
         match (screens.clone(), srcs.len()) {
             (FrameShape::VertEmph, 2) | (FrameShape::VertEmph2, 2) => {
                 // vertical parts
-                let videos1 = VideoList::from_videos(scan_dir_for_videos(srcs[0].clone()), 0);
+                let videos1 = VideoList::from_videos(helper_functions::scan_dir_for_videos(srcs[0].clone()), 0);
                 // horizontal parts
-                let mut videos2 = video_group_swap(srcs[1].clone(), FrameShape::Quad).into_iter();
+                let mut videos2 = helper_functions::video_group_swap(srcs[1].clone(), FrameShape::Quad).into_iter();
                 return VideoGroup {
                     videos: vec![
                         videos1,
@@ -578,8 +531,8 @@ impl VideoGroup {
                 };
             }
             (FrameShape::HorizEmph, 2) | (FrameShape::HorizEmph2, 2) => {
-                let mut videos1 = video_group_swap(srcs[0].clone(), FrameShape::Dual).into_iter();
-                let mut videos2 = video_group_swap(srcs[1].clone(), FrameShape::Dual).into_iter();
+                let mut videos1 = helper_functions::video_group_swap(srcs[0].clone(), FrameShape::Dual).into_iter();
+                let mut videos2 = helper_functions::video_group_swap(srcs[1].clone(), FrameShape::Dual).into_iter();
                 return VideoGroup {
                     videos: vec![
                         VideoList::from_videos(videos1.next().unwrap(), 0),
@@ -594,9 +547,9 @@ impl VideoGroup {
             }
             (FrameShape::SideVert, 2) | (FrameShape::SideVert2, 2) => {
                 // vertical parts
-                let videos1 = VideoList::from_videos(scan_dir_for_videos(srcs[0].clone()), 0);
+                let videos1 = VideoList::from_videos(helper_functions::scan_dir_for_videos(srcs[0].clone()), 0);
                 // horizontal parts
-                let mut videos2 = video_group_swap(srcs[1].clone(), FrameShape::Dual).into_iter();
+                let mut videos2 = helper_functions::video_group_swap(srcs[1].clone(), FrameShape::Dual).into_iter();
                 return VideoGroup {
                     videos: vec![
                         videos1,
@@ -616,7 +569,7 @@ impl VideoGroup {
             videos: srcs
                 .into_iter()
                 .enumerate()
-                .map(|(i, x)| VideoList::from_videos(scan_dir_for_videos(x), i as u32))
+                .map(|(i, x)| VideoList::from_videos(helper_functions::scan_dir_for_videos(x), i as u32))
                 .collect(),
             output_target: src_out.into(),
             video_sizer: VideoEditData::init(),
