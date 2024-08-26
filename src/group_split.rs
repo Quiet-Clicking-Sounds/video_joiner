@@ -1,10 +1,10 @@
+use crate::group_split::AutoSwap::Continue;
+use crate::helper_functions::seconds_to_hhmmss;
+use crate::switches::FrameShape;
 use std::cell::RefCell;
 use std::collections::VecDeque;
 use std::fmt::Debug;
 use std::fmt::Formatter;
-use crate::group_split::AutoSwap::Continue;
-use crate::helper_functions::seconds_to_hhmmss;
-use crate::switches::FrameShape;
 
 pub enum AutoSwap {
     Continue,
@@ -86,7 +86,7 @@ impl<D> ItemList<D> {
         helper_functions::parse_debug("ItemList::new_with_data ", file!(), line!());
         #[cfg(feature = "hyperDebug")]
         println!("Frame Shape = {}", screens.clone().count());
-        
+
         match &screens {
             FrameShape::Dual | FrameShape::Triple | FrameShape::Quad => {}
             _ => {
@@ -100,24 +100,24 @@ impl<D> ItemList<D> {
             / screens.clone().count() as i64;
         println!("Target length: {:?}", seconds_to_hhmmss(target.clone() as u64 / 30));
         let mut v: Vec<Item<D>> = vec![];
-        
+
         let sclen = screens.count() as usize;
-        
+
         for (idx, (dta, ext)) in data.into_iter().enumerate() {
             v.push(
                 Item::from_data_group(
                     dta,
-                    match idx % sclen { 
+                    match idx % sclen {
                         0 => ItemGroup::A,
                         1 => ItemGroup::B,
                         2 => ItemGroup::C,
                         _ => ItemGroup::D,
                     },
-                    ext
+                    ext,
                 )
             )
         }
-        
+
         ItemList {
             items: v,
             screens,
@@ -159,7 +159,7 @@ impl<D> ItemList<D> {
             FrameShape::Quad => {
                 out
             }
-            _ =>{
+            _ => {
                 panic!("Automatic sorting is not enabled for {:?}", self.screens)
             }
         }
@@ -212,7 +212,7 @@ impl<D> ItemList<D> {
         #[cfg(feature = "hyperDebug")]
         println!("idx0:{:?} grp0:{:?} idx1:{:?} grp1:{:?} ",
                  idx0, grp0, idx1, grp1);
-        
+
         let typ0 = self.items[idx0].group.replace(grp0);
         let typ1 = self.items[idx1].group.replace(grp1);
         //println!("update_item_with_history_double i[{:?}] {:?}>{:?} | i[{:?}] {:?}>{:?}", idx0, grp0,typ0, idx1, grp1, typ1);
@@ -250,7 +250,7 @@ impl<D> ItemList<D> {
                 (*ign.iter().max_by_key(|(n, _)| n).unwrap(),
                  *ign.iter().max_by_key(|(n, _)| n).unwrap())
             }
-            _ => {panic!("Shape {:?} is unsupported", self.screens)}
+            _ => { panic!("Shape {:?} is unsupported", self.screens) }
         }
     }
 
@@ -278,7 +278,7 @@ impl<D> ItemList<D> {
         //     max_t_min_i.group.replace(min_g);
         //     return Continue
         // }
-        
+
         let min_to_max_diff = (max_t - min_t).abs() * 3 / 4;
         let mut best_swap = None;
         for (idx0, item0) in self.items.iter().enumerate() {

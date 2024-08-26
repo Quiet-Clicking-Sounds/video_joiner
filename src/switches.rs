@@ -1,7 +1,7 @@
-use ffmpeg_sidecar::event::OutputVideoFrame;
-use std::slice::ChunksExact;
-use std::ops::Rem;
 use crate::video::{Joiner, VideoEditData};
+use ffmpeg_sidecar::event::OutputVideoFrame;
+use std::ops::Rem;
+use std::slice::ChunksExact;
 
 #[derive(Clone, Debug)]
 pub(crate) enum FrameShape {
@@ -65,7 +65,7 @@ impl FrameShape {
                 [a][b][c][d]amix=inputs=4[d];[d]loudnorm[d]\
                 ".to_string()
             }
-            FrameShape::SideVert  => {
+            FrameShape::SideVert => {
                 "\
                 [1:a]stereotools=balance_in=-0.5[a];[a]surround=chl_out=stereo:chl_in=stereo:angle=270[a];\
                 [2:a]stereotools=balance_in=0.1[b];[b]surround=chl_out=stereo:chl_in=stereo:angle=20[b];\

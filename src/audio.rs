@@ -1,12 +1,12 @@
 use std::path::PathBuf;
 
+use crate::helper_functions::iter_ffmpeg_events;
+#[cfg(feature = "hyperDebug")]
+use crate::helper_functions::parse_debug;
+use crate::switches::FrameShape;
 use ffmpeg_sidecar;
 use ffmpeg_sidecar::child::FfmpegChild;
 use ffmpeg_sidecar::command::FfmpegCommand;
-use crate::helper_functions::iter_ffmpeg_events;
-use crate::switches::FrameShape;
-#[cfg(feature = "hyperDebug")]
-use crate::helper_functions::parse_debug;
 
 
 //noinspection SpellCheckingInspection
@@ -46,7 +46,7 @@ fn concat_audio_streams(p_list: Vec<PathBuf>, temp: &PathBuf, stream_id: usize) 
         ])
         .arg("-y")
         .output(&out_tar.to_str().unwrap());
-    (out_tar,  worker.spawn().unwrap())
+    (out_tar, worker.spawn().unwrap())
 }
 pub fn join_audio_video_streams(audio_segments: Vec<Vec<PathBuf>>,
                                 temp: &PathBuf, video_temp: &PathBuf, video_out: PathBuf,
@@ -56,16 +56,15 @@ pub fn join_audio_video_streams(audio_segments: Vec<Vec<PathBuf>>,
     #[cfg(feature = "hyperDebug")]
     parse_debug("Audio stream concat", file!(), line!());
     // list of paths of audio items to be joined
-    let audio_items: Vec<(PathBuf,FfmpegChild)> = audio_segments.into_iter().enumerate()
+    let audio_items: Vec<(PathBuf, FfmpegChild)> = audio_segments.into_iter().enumerate()
         .map(|(i, v)| {
-        concat_audio_streams(v, &temp, i)
-    }).collect();
+            concat_audio_streams(v, &temp, i)
+        }).collect();
 
-    let audio_items: Vec<PathBuf>  = audio_items.into_iter().map(|(pb,mut ffm)| {
+    let audio_items: Vec<PathBuf> = audio_items.into_iter().map(|(pb, mut ffm)| {
         let _ = ffm.wait();
         pb
     }).collect();
-
 
 
     #[cfg(feature = "hyperDebug")]

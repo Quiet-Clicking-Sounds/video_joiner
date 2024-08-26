@@ -1,8 +1,8 @@
 use std::path::PathBuf;
 
+use crate::video::{VideoEditData, VideoGroup};
 use clap::{arg, Parser};
 use switches::FrameShape;
-use crate::video::{VideoEditData, VideoGroup};
 
 pub(crate) mod group_split;
 pub(crate) mod helper_functions;
@@ -96,8 +96,8 @@ fn run_from_cli(args: Cli) -> (VideoGroup, bool) {
         "horizemph" | "horiz" | "h" | "6" => { FrameShape::HorizEmph }
         "vertemph2" | "vert2" | "v2" | "7" => { FrameShape::VertEmph2 }
         "horizemph2" | "horiz2" | "h2" | "8" => { FrameShape::HorizEmph2 }
-        "sidevert" | "vd" | "9" => {FrameShape::SideVert}
-        "sidevert2" | "dv" | "10" => {FrameShape::SideVert2}
+        "sidevert" | "vd" | "9" => { FrameShape::SideVert }
+        "sidevert2" | "dv" | "10" => { FrameShape::SideVert2 }
         x => { panic!("No match found for split format: {}", x) }
     };
 
@@ -128,8 +128,6 @@ fn run_from_cli(args: Cli) -> (VideoGroup, bool) {
     };
 
     vid_edit_data.set_fps(args.fps);
-
-
 
 
     let mut vid = match folder_target.len() {

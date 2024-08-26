@@ -160,7 +160,7 @@ impl VideoEditData {
                     (ow, self.output_height),
                 ];
             }
-            FrameShape::SideVert | FrameShape::SideVert2  =>{
+            FrameShape::SideVert | FrameShape::SideVert2 => {
                 let owx = self.output_width.rem(3);
                 let ow = self.output_width.sub(owx).div(3);
                 self.shapes = vec![

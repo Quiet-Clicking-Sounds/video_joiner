@@ -1,15 +1,15 @@
 use std::fmt::{Debug, Formatter};
 
 
-use std::time;
-use ffmpeg_sidecar::child::FfmpegChild;
-use ffmpeg_sidecar::event::{FfmpegEvent, LogLevel};
-use std::path::PathBuf;
 use crate::group_split;
 use crate::switches::FrameShape;
 use crate::video::Video;
+use ffmpeg_sidecar::child::FfmpegChild;
+use ffmpeg_sidecar::event::{FfmpegEvent, LogLevel};
+use std::path::PathBuf;
+use std::time;
 
-pub fn iter_ffmpeg_events(child:&mut FfmpegChild){
+pub fn iter_ffmpeg_events(child: &mut FfmpegChild) {
     for i in child.iter().unwrap() {
         match i {
             FfmpegEvent::Log(level, data) => {
@@ -21,7 +21,7 @@ pub fn iter_ffmpeg_events(child:&mut FfmpegChild){
                         eprintln!("LOG {:?} : {} ", level, data);
                         // return None;
                     }
-                    LogLevel::Warning=> {
+                    LogLevel::Warning => {
                         eprintln!("LOG {:?} : {} ", level, data);
                         // return None;
                     }
@@ -65,17 +65,16 @@ impl Debug for FrameTimer {
         f.debug_struct("FrameTimer")
             .field("Frame count", &self._frame_count_)
             .field("Elapsed Time", &self._init_.elapsed())
-            .field("Compute FPS",&format!("{:.2}",self.fps()))
+            .field("Compute FPS", &format!("{:.2}", self.fps()))
             .finish()
     }
 }
 
-pub fn seconds_to_hhmmss(sec: u64)->String{
+pub fn seconds_to_hhmmss(sec: u64) -> String {
     let (min, sec) = (&sec / 60, &sec % 60);
     let (hour, min) = (&min / 60, &min % 60);
-    format!("{:02}-{:02}-{:02}", hour,min,sec)
+    format!("{:02}-{:02}-{:02}", hour, min, sec)
 }
-
 
 
 #[cfg(feature = "hyperDebug")]
@@ -83,8 +82,6 @@ pub fn seconds_to_hhmmss(sec: u64)->String{
 pub fn parse_debug(_text: &str, _f: &str, _l: u32) {
     eprintln!("{}:{} - {}", _f, _l, _text);
 }
-
-
 
 
 #[cfg(test)]
@@ -97,7 +94,7 @@ mod tests {
     fn frame_timer_counter_check() {
         let mut ft = FrameTimer::new();
         let iters = 20;
-        for _ in 0..iters { ft.frame();}
+        for _ in 0..iters { ft.frame(); }
         assert_eq!(ft._frame_count_, iters);
     }
 
@@ -109,10 +106,8 @@ mod tests {
         let frame_timer = FrameTimer::new();
         thread::sleep(duration);
         let frame_timer_duration = frame_timer._init_.elapsed().as_secs_f64();
-        assert!((&float_duration - frame_timer_duration).abs() < 0.1 );
+        assert!((&float_duration - frame_timer_duration).abs() < 0.1);
     }
-
-
 }
 
 #[allow(unused)]
