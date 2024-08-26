@@ -377,7 +377,6 @@ impl VideoList {
         #[cfg(feature = "hyperDebug")]
         helper_functions::parse_debug(" from_videos ", file!(), line!());
         let vid_count = videos.len();
-        videos.shuffle(&mut thread_rng());
         let mut vl = VideoList {
             videos: VecDeque::from(videos),
             complete_videos: VecDeque::with_capacity(vid_count),
