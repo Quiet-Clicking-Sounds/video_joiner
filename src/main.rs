@@ -1,14 +1,15 @@
 use std::path::PathBuf;
 
 use clap::{arg, Parser};
-use crate::video::{FrameShape, VideoEditData, VideoGroup};
+use switches::FrameShape;
+use crate::video::{VideoEditData, VideoGroup};
 
 pub(crate) mod group_split;
 pub(crate) mod helper_functions;
 pub(crate) mod video;
 // mod cmd_video;
 pub(crate) mod audio;
-
+mod switches;
 
 pub fn main() {
     let args = Cli::parse();

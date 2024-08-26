@@ -4,7 +4,7 @@ use std::fmt::Debug;
 use std::fmt::Formatter;
 use crate::group_split::AutoSwap::Continue;
 use crate::helper_functions::seconds_to_hhmmss;
-use crate::video::FrameShape;
+use crate::switches::FrameShape;
 
 pub enum AutoSwap {
     Continue,

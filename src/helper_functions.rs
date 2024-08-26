@@ -6,7 +6,8 @@ use ffmpeg_sidecar::child::FfmpegChild;
 use ffmpeg_sidecar::event::{FfmpegEvent, LogLevel};
 use std::path::PathBuf;
 use crate::group_split;
-use crate::video::{FrameShape, Video};
+use crate::switches::FrameShape;
+use crate::video::Video;
 
 pub fn iter_ffmpeg_events(child:&mut FfmpegChild){
     for i in child.iter().unwrap() {

@@ -4,7 +4,7 @@ use ffmpeg_sidecar;
 use ffmpeg_sidecar::child::FfmpegChild;
 use ffmpeg_sidecar::command::FfmpegCommand;
 use crate::helper_functions::iter_ffmpeg_events;
-use crate::video::FrameShape;
+use crate::switches::FrameShape;
 #[cfg(feature = "hyperDebug")]
 use crate::helper_functions::parse_debug;
 
