@@ -17,7 +17,14 @@ Options:
   -y, --height <OUTPUT_HEIGHT>  Output height in pixels [default:1440]
   -x, --width <OUTPUT_WIDTH>    Output width in pixels [default:2550]
   -r, --fps <FPS>               Frame Per Second [default: 30]
-      --no-audio                
+      --ord <ORD>               Apply sorting method Options include: 
+                                    "1", "Random", "rand" (default)
+                                    "2", "RandomSeeded", "seed"
+                                    "3", "ShortestFirst", "shortest"
+                                    "4", "LongestFirst", "longest"
+                                    "5", "RandomWithLargestLast", "rwll"
+      --ord-opt <ORD_OPT>       select seed for ord when RandomSeeded is chosen [default: 1337]
+      --no-audio                removes audio completely
   -h, --help                    Print help
   -V, --version                 Print version
 ```
@@ -66,6 +73,17 @@ video_joiner.exe -f "D:\vertical_videos_to_join" -f "D:\horizontal_videos_to_joi
 
 Implemented for `VertEmph`, `VertEmph1`, `HorizEmph`, and `HorizEmph2`
 
+## Sorting Options
+- "1", "Random", "rand" (default)
+  - using thread rng, each video group is randomized
+- "2", "RandomSeeded", "seed"
+  - using seeded random, requires use `--ord-opt` to change
+- "3", "ShortestFirst", "shortest"
+  - sorts the inputs by shortest first
+- "4", "LongestFirst", "longest"
+  - sort inputs by longest first
+- "5", "RandomWithLargestLast", "rwll"
+  - sorts items with random, then pops the largest video and appends it to the end
 
 <hr> 
 
@@ -146,7 +164,7 @@ Basic descriptions of how each method works can be found below
 
 ✅ Allow for multiple input folders, one per split position  
 ✅ Multithread early audio exporting - complete for 0.2.1
-❌ Allow for ordered video inputs, possibly by simple sorting methods  
+✅ Allow for ordered video inputs, possibly by simple sorting methods  
 ❌ nxn video joins - not happening unless I can figure a really elegant way to do these joins.  
 ❌ allow for a centre overlay  
 ❌ audio modification switches for generic pre-implemented methods.  

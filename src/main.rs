@@ -1,5 +1,6 @@
 use std::path::PathBuf;
 
+use crate::switches::SortOrder;
 use crate::video::{VideoEditData, VideoGroup};
 use clap::{arg, Parser};
 use switches::FrameShape;
@@ -53,6 +54,20 @@ struct Cli {
     #[arg(short = 'r', long = "fps", default_value_t = 30.0)]
     fps: f32,
 
+    /// Apply sorting method Options include: 
+    ///     "1", "Random", "rand" (default)
+    ///     "2", "RandomSeeded", "seed"
+    ///     "3", "ShortestFirst", "shortest"
+    ///     "4", "LongestFirst", "longest"
+    ///     "5", "RandomWithLargestLast", "rwll"
+    #[arg(long = "ord", verbatim_doc_comment)]
+    ord: Option<String>,
+
+    /// select seed for ord when RandomSeeded is chosen
+    #[arg(long = "ord-opt", default_value_t = 1337)]
+    ord_opt: u64,
+
+    /// removes audio completely
     #[arg(long = "no-audio", action)]
     audio: bool,
 
@@ -101,6 +116,16 @@ fn run_from_cli(args: Cli) -> (VideoGroup, bool) {
         x => { panic!("No match found for split format: {}", x) }
     };
 
+    let sort_ord = match args.ord.unwrap_or("Random".to_string()).to_lowercase().as_str().trim() {
+        "1" | "random" | "rand" => SortOrder::Random,
+        "2" | "randomseeded" | "seed" => SortOrder::RandomSeeded(args.ord_opt),
+        "3" | "shortestfirst" | "shortest" => SortOrder::ShortestFirst,
+        "4" | "longestdirst" | "longest" => SortOrder::LongestFirst,
+        "5" | "randomwithlargestlast" | "rwll" => SortOrder::RandomWithLargestLast,
+        _ => { panic!("That is not a valid SortOrder") }
+    };
+
+
     let mut folder_target = args.input_folder;
     if folder_target.len() == 0 {
         folder_target = get_folders_multi(split_format.clone())
@@ -137,6 +162,7 @@ fn run_from_cli(args: Cli) -> (VideoGroup, bool) {
                 folder_target.first().unwrap(),
                 output_file,
                 split_format.clone(),
+                sort_ord,
             )
         }
         2..=5 => {
@@ -144,6 +170,7 @@ fn run_from_cli(args: Cli) -> (VideoGroup, bool) {
                 folder_target,
                 output_file,
                 split_format.clone(),
+                sort_ord,
             )
         }
         _ => { panic!("More than 5 folders is currently unsupported") }

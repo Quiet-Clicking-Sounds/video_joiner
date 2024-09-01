@@ -11,13 +11,11 @@ use ffmpeg_sidecar::event::{LogLevel, OutputVideoFrame};
 use ffmpeg_sidecar::iter::FfmpegIterator;
 use ffmpeg_sidecar::{command::FfmpegCommand, event::FfmpegEvent};
 use ffprobe;
-use rand::seq::SliceRandom;
-use rand::thread_rng;
 
 use crate::audio::join_audio_video_streams;
-use crate::helper_functions;
 use crate::helper_functions::{iter_ffmpeg_events, seconds_to_hhmmss};
-use crate::switches::FrameShape;
+use crate::switches::{FrameShape, SortOrder};
+use crate::helper_functions;
 
 //noinspection SpellCheckingInspection
 const SPEED_PRESET_OPT: [&str; 9] = [
@@ -194,7 +192,7 @@ impl PartialEq for VideoEditData {
 pub(crate) struct Video {
     pub(crate) src: PathBuf,
     frame_iterable: Option<FfmpegIterator>,
-    length_millis: Option<i64>,
+    pub(crate) length_millis: Option<i64>,
     frame_count: u64,
     frame_start: u64,
     width_height: (u32, u32),
@@ -373,10 +371,11 @@ struct VideoList {
 
 
 impl VideoList {
-    pub fn from_videos(mut videos: Vec<Video>, pos: u32) -> VideoList {
+    pub fn from_videos(videos: Vec<Video>, pos: u32, sorter: SortOrder) -> VideoList {
         #[cfg(feature = "hyperDebug")]
         helper_functions::parse_debug(" from_videos ", file!(), line!());
         let vid_count = videos.len();
+        let videos: Vec<Video> = sorter.apply_sort(videos);
         let mut vl = VideoList {
             videos: VecDeque::from(videos),
             complete_videos: VecDeque::with_capacity(vid_count),
@@ -484,6 +483,7 @@ impl VideoGroup {
         src: impl Into<PathBuf>,
         src_out: impl Into<PathBuf>,
         screens: FrameShape,
+        sorter: SortOrder,
     ) -> VideoGroup {
         #[cfg(feature = "hyperDebug")]
         helper_functions::parse_debug("new_from_folder", file!(), line!());
@@ -495,7 +495,7 @@ impl VideoGroup {
             videos: videos
                 .into_iter()
                 .enumerate()
-                .map(|(i, x)| VideoList::from_videos(x, i as u32))
+                .map(|(i, x)| VideoList::from_videos(x, i as u32, sorter.clone()))
                 .collect(),
             output_target: src_out.into(),
             video_sizer: VideoEditData::init(),
@@ -507,21 +507,22 @@ impl VideoGroup {
         srcs: Vec<PathBuf>,
         src_out: impl Into<PathBuf>,
         screens: FrameShape,
+        sorter: SortOrder,
     ) -> VideoGroup {
         // Special cases for vertical and horuizontal input groups
         match (screens.clone(), srcs.len()) {
             (FrameShape::VertEmph, 2) | (FrameShape::VertEmph2, 2) => {
                 // vertical parts
-                let videos1 = VideoList::from_videos(helper_functions::scan_dir_for_videos(srcs[0].clone()), 0);
+                let videos1 = VideoList::from_videos(helper_functions::scan_dir_for_videos(srcs[0].clone()), 0, sorter.clone());
                 // horizontal parts
                 let mut videos2 = helper_functions::video_group_swap(srcs[1].clone(), FrameShape::Quad).into_iter();
                 return VideoGroup {
                     videos: vec![
                         videos1,
-                        VideoList::from_videos(videos2.next().unwrap(), 1),
-                        VideoList::from_videos(videos2.next().unwrap(), 2),
-                        VideoList::from_videos(videos2.next().unwrap(), 3),
-                        VideoList::from_videos(videos2.next().unwrap(), 4),
+                        VideoList::from_videos(videos2.next().unwrap(), 1, sorter.clone()),
+                        VideoList::from_videos(videos2.next().unwrap(), 2, sorter.clone()),
+                        VideoList::from_videos(videos2.next().unwrap(), 3, sorter.clone()),
+                        VideoList::from_videos(videos2.next().unwrap(), 4, sorter.clone()),
                     ],
                     output_target: src_out.into(),
                     video_sizer: VideoEditData::init(),
@@ -533,10 +534,10 @@ impl VideoGroup {
                 let mut videos2 = helper_functions::video_group_swap(srcs[1].clone(), FrameShape::Dual).into_iter();
                 return VideoGroup {
                     videos: vec![
-                        VideoList::from_videos(videos1.next().unwrap(), 0),
-                        VideoList::from_videos(videos2.next().unwrap(), 1),
-                        VideoList::from_videos(videos2.next().unwrap(), 2),
-                        VideoList::from_videos(videos1.next().unwrap(), 3),
+                        VideoList::from_videos(videos1.next().unwrap(), 0, sorter.clone()),
+                        VideoList::from_videos(videos2.next().unwrap(), 1, sorter.clone()),
+                        VideoList::from_videos(videos2.next().unwrap(), 2, sorter.clone()),
+                        VideoList::from_videos(videos1.next().unwrap(), 3, sorter.clone()),
                     ],
                     output_target: src_out.into(),
                     video_sizer: VideoEditData::init(),
@@ -545,14 +546,14 @@ impl VideoGroup {
             }
             (FrameShape::SideVert, 2) | (FrameShape::SideVert2, 2) => {
                 // vertical parts
-                let videos1 = VideoList::from_videos(helper_functions::scan_dir_for_videos(srcs[0].clone()), 0);
+                let videos1 = VideoList::from_videos(helper_functions::scan_dir_for_videos(srcs[0].clone()), 0, sorter.clone());
                 // horizontal parts
                 let mut videos2 = helper_functions::video_group_swap(srcs[1].clone(), FrameShape::Dual).into_iter();
                 return VideoGroup {
                     videos: vec![
                         videos1,
-                        VideoList::from_videos(videos2.next().unwrap(), 1),
-                        VideoList::from_videos(videos2.next().unwrap(), 2),
+                        VideoList::from_videos(videos2.next().unwrap(), 1, sorter.clone()),
+                        VideoList::from_videos(videos2.next().unwrap(), 2, sorter.clone()),
                     ],
                     output_target: src_out.into(),
                     video_sizer: VideoEditData::init(),
@@ -567,7 +568,7 @@ impl VideoGroup {
             videos: srcs
                 .into_iter()
                 .enumerate()
-                .map(|(i, x)| VideoList::from_videos(helper_functions::scan_dir_for_videos(x), i as u32))
+                .map(|(i, x)| VideoList::from_videos(helper_functions::scan_dir_for_videos(x), i as u32, sorter.clone()))
                 .collect(),
             output_target: src_out.into(),
             video_sizer: VideoEditData::init(),
