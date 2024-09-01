@@ -120,7 +120,7 @@ fn run_from_cli(args: Cli) -> (VideoGroup, bool) {
         "1" | "random" | "rand" => SortOrder::Random,
         "2" | "randomseeded" | "seed" => SortOrder::RandomSeeded(args.ord_opt),
         "3" | "shortestfirst" | "shortest" => SortOrder::ShortestFirst,
-        "4" | "longestdirst" | "longest" => SortOrder::LongestFirst,
+        "4" | "longestfirst" | "longest" => SortOrder::LongestFirst,
         "5" | "randomwithlargestlast" | "rwll" => SortOrder::RandomWithLargestLast,
         _ => { panic!("That is not a valid SortOrder") }
     };
