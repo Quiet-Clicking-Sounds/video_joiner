@@ -20,7 +20,7 @@ impl SortOrder {
     pub(crate) fn apply_sort(&self, mut videos: Vec<Video>) -> Vec<Video> {
         // if SortOrder needs the length we make sure it exists here first
         match self {
-            SortOrder::ShortestFirst | SortOrder::LongestFirst | 
+            SortOrder::ShortestFirst | SortOrder::LongestFirst |
             SortOrder::RandomWithLargestLast => {
                 videos.iter_mut().for_each(|f| { let _ = f.get_length(); });
             }

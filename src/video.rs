@@ -13,9 +13,9 @@ use ffmpeg_sidecar::{command::FfmpegCommand, event::FfmpegEvent};
 use ffprobe;
 
 use crate::audio::join_audio_video_streams;
+use crate::helper_functions;
 use crate::helper_functions::{iter_ffmpeg_events, seconds_to_hhmmss};
 use crate::switches::{FrameShape, SortOrder};
-use crate::helper_functions;
 
 //noinspection SpellCheckingInspection
 const SPEED_PRESET_OPT: [&str; 9] = [
