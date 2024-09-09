@@ -98,7 +98,7 @@ impl<D> ItemList<D> {
 
         let target = data.iter().fold(0i64, |acc, (e, _)| acc + e)
             / screens.clone().count() as i64;
-        println!("Target length: {:?}", seconds_to_hhmmss(target.clone() as u64 / 30));
+        println!("Target length: {:?}", seconds_to_hhmmss(target.clone() as u64 / 1000));
         let mut v: Vec<Item<D>> = vec![];
 
         let sclen = screens.count() as usize;
@@ -125,6 +125,22 @@ impl<D> ItemList<D> {
         }
     }
 
+    fn print_group_len(&self){
+        let minlen = match (&self.screens, self.sum_each()) {
+            (FrameShape::Dual, (a,b, ..)) => {
+                a.min(b)
+            }
+            (FrameShape::Triple, (a,b,c, ..)) => {
+                a.min(b).min(c)
+            }
+            (FrameShape::Quad, (a,b,c,d)) => {
+                a.min(b).min(c).min(d)
+            }
+            _=>{0}
+        };
+        println!("True length of ouput video: {:?}",seconds_to_hhmmss(minlen as u64 / 1000));
+    }
+    
     /// Lifetime Ends - return groups
     pub fn export_to_data_lists(self) -> Vec<Vec<D>> {
         let mut out = vec![vec![], vec![], vec![], vec![]];
@@ -132,7 +148,7 @@ impl<D> ItemList<D> {
         helper_functions::parse_debug(" Export Data to Lsit ", file!(), line!());
         #[cfg(feature = "hyperDebug")]
         println!("Len sum of video splits: {:?}", self.sum_each());
-
+        self.print_group_len();
         for i in self.items.into_iter() {
             match &*i.group.borrow() {
                 ItemGroup::A => out[0].push(i._external_data_),
@@ -141,11 +157,13 @@ impl<D> ItemList<D> {
                 ItemGroup::D => out[3].push(i._external_data_),
             }
         }
-
+        
         #[cfg(feature = "hyperDebug")]
         println!("Group sizes: {}, {}, {}, {}",
                  out[0].len(), out[1].len(), out[2].len(), out[3].len());
-
+        
+        
+        
         match self.screens {
             FrameShape::Dual => {
                 out.remove(3);
