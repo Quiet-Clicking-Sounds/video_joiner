@@ -10,6 +10,7 @@ use ffmpeg_sidecar;
 use ffmpeg_sidecar::event::{LogLevel, OutputVideoFrame};
 use ffmpeg_sidecar::iter::FfmpegIterator;
 use ffmpeg_sidecar::{command::FfmpegCommand, event::FfmpegEvent};
+use ffmpeg_sidecar::child::FfmpegChild;
 use ffprobe;
 
 use crate::audio::join_audio_video_streams;
@@ -248,6 +249,33 @@ impl Video {
     }
 
     //noinspection SpellCheckingInspection
+    fn audio_export_proc_out(&self, out: &PathBuf) -> (bool, Option<FfmpegChild>) {
+        if self.frame_count < 1 {
+            return (false,None);
+        };
+
+        let tar = self.src.clone();
+        let length = format!("{:.6}s", (self.frame_count.clone() as f32) / &self.fps);
+
+        let mut ffm = FfmpegCommand::new();
+        let ffm = ffm.input(tar.to_str().unwrap()).no_video();
+        let ffm = ffm.filter(format!(
+            "[0:a]apad=whole_dur={:.6}s[a]",
+            length
+        ));
+        let ffm = ffm
+            .args([
+                "-t", &length,
+                "-ar", "44100"
+            ])
+            .arg("-y")
+            .output(out.to_str().unwrap());
+
+        let mut complete = ffm.spawn().unwrap();
+        (true, Some(complete))
+    }
+
+    //noinspection SpellCheckingInspection
     pub(crate) fn get_length(&mut self) -> Result<i64, &str> {
         #[cfg(feature = "hyperDebug")]
         helper_functions::parse_debug(" get length ", file!(), line!());
@@ -405,6 +433,28 @@ impl VideoList {
             if vid.audio_export(&out) {
                 outputs.push(out)
             }
+        }
+        outputs
+    }
+
+    fn cheap_audio_exporter_out_proc(&mut self, grp: usize, temp_folder: &PathBuf) -> Vec<PathBuf> {
+        let mut outputs = vec![];
+        let mut out_proc = vec![];
+        for (i, vid) in self.complete_videos.iter().enumerate() {
+            println!("Audio Export: {}", vid.src.clone().to_str().unwrap());
+            let out = temp_folder.clone().join(format!("g{}f{}.wav", grp, i));
+            match vid.audio_export_proc_out(&out) {
+                (false, _) => {},
+                (true, Some(proc)) => {
+                    outputs.push(out);
+                    out_proc.push(proc);
+                },
+                (_,_) => {}
+            }
+        }
+        for i in out_proc.iter_mut(){
+            iter_ffmpeg_events(i);
+            i.wait().unwrap();
         }
         outputs
     }
@@ -768,7 +818,7 @@ impl VideoGroup {
 
         let audio_segments: Vec<Vec<PathBuf>> = self.videos.iter_mut()
             .enumerate()
-            .map(|(i, v)| v.cheap_audio_exporter(i, &temp_folder))
+            .map(|(i, v)| v.cheap_audio_exporter_out_proc(i, &temp_folder))
             .collect();
 
         println!("Audio segments exported");
