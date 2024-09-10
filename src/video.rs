@@ -31,11 +31,26 @@ const SPEED_PRESET_OPT: [&str; 9] = [
     "veryslow",  // 8
 ];
 
-const SPEED_PRESET: &str = SPEED_PRESET_OPT[7];
+
+const SPEED_PRESET: &str = SPEED_PRESET_OPT[5];
 
 const ENCODER: &str = "hevc_amf";
 // h264_amf 60.98
 // hevc_amf 60.29
+
+// todo this should do something, I don't think it currently does, might be hvec_amf stuff
+// https://slhck.info/video/2017/02/24/crf-guide.html
+// encoder settings: "-rc cqp -qp_i 24 -qp_p 24" ? 
+// see https://superuser.com/questions/1742078/what-is-the-equivalent-flag-for-crf-for-hevc-amf-in-ffmpeg
+const CRF_PRESET: &str =  "25";
+
+const ENCODER_ARG_LIST: [&str; 8] = [
+    "-c:v", ENCODER,
+    "-rc", "cqp", 
+    "-qp_i", "28", 
+    "-qp_p", "28", 
+    // "-preset", SPEED_PRESET
+];
 
 //noinspection SpellCheckingInspection
 const DECODER: [&str; 2] = ["-hwaccel", "d3d11va"];
@@ -698,9 +713,8 @@ impl VideoGroup {
             &format!("{}", self.video_sizer.fps),
         ])
             .input("pipe:0")
-            .args(["-c:v", "libx264", "-preset", SPEED_PRESET])
             .args(["-y"])
-            .args(["-codec:v", ENCODER])
+            .args(ENCODER_ARG_LIST)
             .output(temp_out_file.to_str().unwrap());
 
         #[cfg(feature = "hyperDebug")]
