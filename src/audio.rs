@@ -65,7 +65,8 @@ pub fn join_audio_video_streams(audio_segments: Vec<Vec<PathBuf>>,
         let _ = ffm.wait();
         pb
     }).collect();
-
+    
+    println!("Aidio Export finished for all streams, now joining streams to file");
 
     #[cfg(feature = "hyperDebug")]
     parse_debug("Single A/V Filter Setup", file!(), line!());
