@@ -738,14 +738,20 @@ impl VideoGroup {
             println!("Video Stats: {}", i.videos.len());
         }
 
+        let mut t_last = Instant::now();
+        let mut t_now = Instant::now();
+        let fps_u64 = self.video_sizer.fps.clone() as u64;
+        let frames_between_update = fps_u64 * 30;
+        let f64_frames_between_update = frames_between_update as f64;
         'mainloop: loop {
             frame_counter += 1;
-            if frame_counter.rem(self.video_sizer.fps as u64 * 60) == 0 {
-                let fps = frame_counter.clone() as f64 / (Instant::now() - init_time).as_secs_f64();
+            if frame_counter.rem(frames_between_update) == 0 {
+                (t_last, t_now) = (t_now, Instant::now());
+                let fps = f64_frames_between_update / (t_now - t_last).as_secs_f64();
                 eprintln!(
                     "Frame: {} - Video Length {} - FPS {:.2}",
                     frame_counter,
-                    seconds_to_hhmmss(frame_counter / self.video_sizer.fps as u64),
+                    seconds_to_hhmmss(frame_counter / fps_u64),
                     fps
                 )
             }
