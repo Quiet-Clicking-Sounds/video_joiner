@@ -46,7 +46,7 @@ struct Cli {
     #[arg(short = 'y', long = "height")]
     output_height: Option<u32>,
 
-    /// Output width in pixels [default:2550]
+    /// Output width in pixels [default:2560]
     #[arg(short = 'x', long = "width")]
     output_width: Option<u32>,
 
@@ -138,17 +138,17 @@ fn run_from_cli(args: Cli) -> (VideoGroup, bool) {
     let matcher = (args.output_width, args.output_height, split_format.clone());
     let mut vid_edit_data: VideoEditData = match matcher {
         (Some(w), Some(h), sf) => { VideoEditData::init_wxh(w, h, sf.count()) }
-        (_, _, FrameShape::Dual) => { VideoEditData::init_wxh(1280 * 2, 1440, split_format.count()) }
-        (_, _, FrameShape::Triple) => { VideoEditData::init_wxh(850 * 3, 1440, split_format.count()) }
-        (_, _, FrameShape::Quad) => { VideoEditData::init_wxh(1280 * 2, 1440, split_format.count()) }
+        (_, _, FrameShape::Dual) => { VideoEditData::init_wxh(2560, 1440, split_format.count()) }
+        (_, _, FrameShape::Triple) => { VideoEditData::init_wxh(2560, 1440, split_format.count()) }
+        (_, _, FrameShape::Quad) => { VideoEditData::init_wxh(2560, 1440, split_format.count()) }
         (_, _, FrameShape::VertEmph) | (_, _, FrameShape::VertEmph2) => {
-            VideoEditData::init_wxh(850 * 3, 1440, split_format.count())
+            VideoEditData::init_wxh(2560, 1440, split_format.count())
         }
         (_, _, FrameShape::HorizEmph) | (_, _, FrameShape::HorizEmph2) => {
-            VideoEditData::init_wxh(850 * 3, 1440, split_format.count())
+            VideoEditData::init_wxh(2560, 1440, split_format.count())
         }
         (_, _, FrameShape::SideVert) | (_, _, FrameShape::SideVert2) => {
-            VideoEditData::init_wxh(850 * 3, 1440, split_format.count())
+            VideoEditData::init_wxh(2560, 1440, split_format.count())
         }
     };
 
