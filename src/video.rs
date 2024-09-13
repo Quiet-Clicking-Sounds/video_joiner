@@ -131,8 +131,8 @@ impl VideoEditData {
                 ];
             }
             FrameShape::Quad => {
-                let (w1,h1) = (self.output_width / 2, self.output_height / 2);
-                let (w2,h2) = (self.output_width -w1, self.output_height -h1);
+                let (w1, h1) = (self.output_width / 2, self.output_height / 2);
+                let (w2, h2) = (self.output_width - w1, self.output_height - h1);
                 self.shapes = vec![
                     (w1, h1),
                     (w2, h1),
@@ -141,11 +141,11 @@ impl VideoEditData {
                 ];
             }
             FrameShape::VertEmph => {
-                let w23 = self.output_width/3;
+                let w23 = self.output_width / 3;
                 let h1 = self.output_height / 2;
-                let h2 = self.output_height -h1;
+                let h2 = self.output_height - h1;
                 self.shapes = vec![
-                    (self.output_width -w23-w23, self.output_height),
+                    (self.output_width - w23 - w23, self.output_height),
                     (w23, h1),
                     (w23, h1),
                     (w23, h2),
@@ -153,12 +153,12 @@ impl VideoEditData {
                 ];
             }
             FrameShape::HorizEmph => {
-                let w23 = self.output_width/3;
+                let w23 = self.output_width / 3;
                 let h1 = self.output_height / 2;
                 self.shapes = vec![
                     (w23, self.output_height),
-                    (self.output_width -w23-w23, h1),
-                    (self.output_width -w23-w23, self.output_height -h1),
+                    (self.output_width - w23 - w23, h1),
+                    (self.output_width - w23 - w23, self.output_height - h1),
                     (w23, self.output_height),
                 ];
             }
@@ -193,8 +193,37 @@ impl VideoEditData {
                     (ow * 2 + owx, self.output_height - self.output_height / 2),
                 ];
             }
+            FrameShape::CentreEmphVert => {
+                let wmid = self.output_width / 5 * 3;
+                let w_l = (self.output_width - wmid) / 2;
+                let w_r = self.output_width - wmid - w_l;
+
+                let wml = wmid / 2;
+                let wmr = wmid - wml;
+
+                let htop = self.output_height / 5 * 3;
+                let hbot = self.output_height - htop;
+                
+                assert_eq!(wmid+w_l+w_r , self.output_width);
+                assert_eq!(wml+wmr+w_l+w_r, self.output_width);
+                assert_eq!(htop + hbot, self.output_height);
+
+                self.shapes = vec![
+                    (wmid, htop),
+                    (w_l, self.output_height),
+                    (w_r, self.output_height),
+                    (wml, hbot),
+                    (wmr, hbot),
+                ]
+            }
         }
     }
+}
+
+fn div_rem(i: u32, r: u32) -> (u32, u32) {
+    let rem = i.rem(r);
+    let di = (i - rem) / r;
+    (di, rem)
 }
 
 #[cfg(test)]
@@ -620,6 +649,23 @@ impl VideoGroup {
                 };
             }
             (FrameShape::SideVert, 2) | (FrameShape::SideVert2, 2) => {
+                // vertical parts
+                let videos1 = VideoList::from_videos(helper_functions::scan_dir_for_videos(srcs[0].clone()), 0, sorter.clone());
+                // horizontal parts
+                let mut videos2 = helper_functions::video_group_swap(srcs[1].clone(), FrameShape::Dual).into_iter();
+                return VideoGroup {
+                    videos: vec![
+                        videos1,
+                        VideoList::from_videos(videos2.next().unwrap(), 1, sorter.clone()),
+                        VideoList::from_videos(videos2.next().unwrap(), 2, sorter.clone()),
+                    ],
+                    output_target: src_out.into(),
+                    video_sizer: VideoEditData::init(),
+                    shape_style: screens,
+                };
+            }
+            (FrameShape::CentreEmphVert, 3) => {
+                panic!("unimplemented");
                 // vertical parts
                 let videos1 = VideoList::from_videos(helper_functions::scan_dir_for_videos(srcs[0].clone()), 0, sorter.clone());
                 // horizontal parts

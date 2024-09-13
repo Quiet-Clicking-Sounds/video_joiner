@@ -29,7 +29,7 @@ Options:
   -V, --version                 Print version
 ```
 
-##       
+##           
 
 Join a folder of videos in the `Double` layout at 1080p 60fps
 
@@ -74,16 +74,17 @@ video_joiner.exe -f "D:\vertical_videos_to_join" -f "D:\horizontal_videos_to_joi
 Implemented for `VertEmph`, `VertEmph1`, `HorizEmph`, and `HorizEmph2`
 
 ## Sorting Options
+
 - "1", "Random", "rand" (default)
-  - using thread rng, each video group is randomized
+    - using thread rng, each video group is randomized
 - "2", "RandomSeeded", "seed"
-  - using seeded random, requires use `--ord-opt` to change
+    - using seeded random, requires use `--ord-opt` to change
 - "3", "ShortestFirst", "shortest"
-  - sorts the inputs by shortest first
+    - sorts the inputs by shortest first
 - "4", "LongestFirst", "longest"
-  - sort inputs by longest first
+    - sort inputs by longest first
 - "5", "RandomWithLargestLast", "rwll"
-  - sorts items with random, then pops the largest video and appends it to the end
+    - sorts items with random, then pops the largest video and appends it to the end
 
 <hr> 
 
@@ -159,6 +160,13 @@ Basic descriptions of how each method works can be found below
 | ![frame_shapes_6.svg](readme_data/frame_shapes_6.svg) | ![frame_shapes_7.svg](readme_data/frame_shapes_7.svg) |
 | Top row `1/3` `2/3`                                   | Top row `2/3` `1/3`                                   |
 | Enlarged side frames to reducing cropping             | Enlarged side frames to reducing cropping             |
+
+| `CentreEmphVert` or `CE` or `11`                      |
+|-------------------------------------------------------|
+| ![frame_shapes_7.svg](readme_data/frame_shapes_7.svg) |
+| Top row    `1/4`    `2/4`    `1/4`                    |
+| Bottom row ` " ` `1/4` `1/4` ` " `                    |
+| bottom row height: `1/3`                              |
 
 ## To be integrated at some point:
 

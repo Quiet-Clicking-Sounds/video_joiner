@@ -71,6 +71,7 @@ pub(crate) enum FrameShape {
     HorizEmph2,
     SideVert,
     SideVert2,
+    CentreEmphVert
 }
 
 impl FrameShape {
@@ -140,6 +141,17 @@ impl FrameShape {
                 [a][b][c]amix=inputs=3[d];[d]loudnorm[d]\
                 ".to_string()
             }
+            FrameShape::CentreEmphVert => {
+                "\
+                [2:a]stereotools=balance_in=-0.4[a];[a]surround=chl_out=stereo:chl_in=stereo:angle=270[a];\
+                [1:a]surround=chl_out=stereo:chl_in=stereo:angle=0[b];\
+                [3:a]stereotools=balance_in=0.4[c];[c]surround=chl_out=stereo:chl_in=stereo:angle=90[c];\
+                [4:a]stereotools=balance_in=0.4[d];[d]surround=chl_out=stereo:chl_in=stereo:angle=270[d];\
+                [5:a]stereotools=balance_in=0.4[e];[e]surround=chl_out=stereo:chl_in=stereo:angle=90[e];\
+                [a]volume=-2dB[a];[c]volume=-2dB[c];[d]volume=-5dB[d];[e]volume=-5dB[e];\
+                [a][b][c][d][e]amix=inputs=5[d];[d]loudnorm[d]\
+                ".to_string()
+            }
         }
     }
     pub(crate) fn count(&self) -> u32 {
@@ -147,7 +159,7 @@ impl FrameShape {
             FrameShape::Dual => 2,
             FrameShape::Triple => 3,
             FrameShape::Quad => 4,
-            FrameShape::VertEmph | FrameShape::VertEmph2 => 5,
+            FrameShape::VertEmph | FrameShape::VertEmph2 | FrameShape::CentreEmphVert => 5,
             FrameShape::HorizEmph | FrameShape::HorizEmph2 => 4,
             FrameShape::SideVert | FrameShape::SideVert2 => 3,
         }
@@ -241,8 +253,8 @@ impl Joiner for FrameShape {
                             None => { switch = false }
                             Some(ch) => out.extend_from_slice(ch),
                         }
-                    }
-                    if !switch {
+                    } 
+                    if !switch  {
                         match chunks[2].next() {
                             None => break 'outter,
                             Some(ch) => out.extend_from_slice(ch),
@@ -266,8 +278,8 @@ impl Joiner for FrameShape {
                             None => { switch = false }
                             Some(ch) => out.extend_from_slice(ch),
                         }
-                    }
-                    if !switch {
+                    } 
+                    if !switch  {
                         match chunks[2].next() {
                             None => break 'outter,
                             Some(ch) => out.extend_from_slice(ch),
@@ -283,7 +295,7 @@ impl Joiner for FrameShape {
                             None => { switch = false }
                             Some(ch) => out.extend_from_slice(ch),
                         }
-                    }
+                    } 
                     if !switch {
                         match chunks[2].next() {
                             None => break 'outter,
@@ -293,6 +305,35 @@ impl Joiner for FrameShape {
                     match chunks[0].next() {
                         None => break 'outter,
                         Some(ch) => out.extend_from_slice(ch),
+                    }
+                }
+            }
+            FrameShape::CentreEmphVert => {
+                let mut switch: bool = true;
+                'outter: loop {
+                    match chunks[1].next() {
+                            None => break 'outter, 
+                            Some(ch) => out.extend_from_slice(ch),
+                    }
+                    if switch {
+                        match chunks[0].next() {
+                            None => { switch = false }
+                            Some(ch) => out.extend_from_slice(ch),
+                        }
+                    } 
+                    if !switch  { 
+                        match chunks[3].next() {
+                            None => break 'outter,
+                            Some(ch) => out.extend_from_slice(ch),
+                        }
+                        match chunks[4].next() {
+                            None => break 'outter,
+                            Some(ch) => out.extend_from_slice(ch),
+                        }
+                    }
+                    match chunks[2].next() {
+                            None => break 'outter, 
+                            Some(ch) => out.extend_from_slice(ch),
                     }
                 }
             }
