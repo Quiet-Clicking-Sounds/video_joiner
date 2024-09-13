@@ -7,10 +7,10 @@ use std::path::PathBuf;
 use std::time::Instant;
 
 use ffmpeg_sidecar;
+use ffmpeg_sidecar::child::FfmpegChild;
 use ffmpeg_sidecar::event::{LogLevel, OutputVideoFrame};
 use ffmpeg_sidecar::iter::FfmpegIterator;
 use ffmpeg_sidecar::{command::FfmpegCommand, event::FfmpegEvent};
-use ffmpeg_sidecar::child::FfmpegChild;
 use ffprobe;
 
 use crate::audio::join_audio_video_streams;
@@ -42,15 +42,17 @@ const ENCODER: &str = "hevc_amf";
 // https://slhck.info/video/2017/02/24/crf-guide.html
 // encoder settings: "-rc cqp -qp_i 24 -qp_p 24" ? 
 // see https://superuser.com/questions/1742078/what-is-the-equivalent-flag-for-crf-for-hevc-amf-in-ffmpeg
-const CRF_PRESET: &str =  "25";
+const CRF_PRESET: &str = "25";
+const QP_PRESET: &str = "34";
 
 const ENCODER_ARG_LIST: [&str; 8] = [
     "-c:v", ENCODER,
-    "-rc", "cqp", 
-    "-qp_i", "28", 
-    "-qp_p", "28", 
+    "-rc", "cqp",
+    "-qp_i", QP_PRESET,
+    "-qp_p", QP_PRESET,
     // "-preset", SPEED_PRESET
 ];
+
 
 //noinspection SpellCheckingInspection
 const DECODER: [&str; 2] = ["-hwaccel", "d3d11va"];
@@ -266,7 +268,7 @@ impl Video {
     //noinspection SpellCheckingInspection
     fn audio_export_proc_out(&self, out: &PathBuf) -> (bool, Option<FfmpegChild>) {
         if self.frame_count < 1 {
-            return (false,None);
+            return (false, None);
         };
 
         let tar = self.src.clone();
@@ -459,15 +461,15 @@ impl VideoList {
             println!("Audio Export: {}", vid.src.clone().to_str().unwrap());
             let out = temp_folder.clone().join(format!("g{}f{}.wav", grp, i));
             match vid.audio_export_proc_out(&out) {
-                (false, _) => {},
+                (false, _) => {}
                 (true, Some(proc)) => {
                     outputs.push(out);
                     out_proc.push(proc);
-                },
-                (_,_) => {}
+                }
+                (_, _) => {}
             }
         }
-        for i in out_proc.iter_mut(){
+        for i in out_proc.iter_mut() {
             iter_ffmpeg_events(i);
             i.wait().unwrap();
         }
