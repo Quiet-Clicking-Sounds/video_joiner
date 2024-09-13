@@ -119,39 +119,47 @@ impl VideoEditData {
             FrameShape::Dual => {
                 self.shapes = vec![
                     (self.output_width / 2, self.output_height),
-                    (self.output_width / 2, self.output_height),
+                    (self.output_width - self.output_width / 2, self.output_height),
                 ];
             }
             FrameShape::Triple => {
+                let ow = self.output_width / 3;
                 self.shapes = vec![
-                    (self.output_width / 3, self.output_height),
-                    (self.output_width / 3, self.output_height),
-                    (self.output_width / 3, self.output_height),
+                    (ow, self.output_height),
+                    (self.output_width - ow - ow, self.output_height),
+                    (ow, self.output_height),
                 ];
             }
             FrameShape::Quad => {
+                let (w1,h1) = (self.output_width / 2, self.output_height / 2);
+                let (w2,h2) = (self.output_width -w1, self.output_height -h1);
                 self.shapes = vec![
-                    (self.output_width / 2, self.output_height / 2),
-                    (self.output_width / 2, self.output_height / 2),
-                    (self.output_width / 2, self.output_height / 2),
-                    (self.output_width / 2, self.output_height / 2),
+                    (w1, h1),
+                    (w2, h1),
+                    (w1, h2),
+                    (w2, h2),
                 ];
             }
             FrameShape::VertEmph => {
+                let w23 = self.output_width/3;
+                let h1 = self.output_height / 2;
+                let h2 = self.output_height -h1;
                 self.shapes = vec![
-                    (self.output_width / 3, self.output_height),
-                    (self.output_width / 3, self.output_height / 2),
-                    (self.output_width / 3, self.output_height / 2),
-                    (self.output_width / 3, self.output_height / 2),
-                    (self.output_width / 3, self.output_height / 2),
+                    (self.output_width -w23-w23, self.output_height),
+                    (w23, h1),
+                    (w23, h1),
+                    (w23, h2),
+                    (w23, h2),
                 ];
             }
             FrameShape::HorizEmph => {
+                let w23 = self.output_width/3;
+                let h1 = self.output_height / 2;
                 self.shapes = vec![
-                    (self.output_width / 3, self.output_height),
-                    (self.output_width / 3, self.output_height / 2),
-                    (self.output_width / 3, self.output_height / 2),
-                    (self.output_width / 3, self.output_height),
+                    (w23, self.output_height),
+                    (self.output_width -w23-w23, h1),
+                    (self.output_width -w23-w23, self.output_height -h1),
+                    (w23, self.output_height),
                 ];
             }
             FrameShape::VertEmph2 => {
