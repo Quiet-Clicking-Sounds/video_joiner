@@ -8,7 +8,6 @@ use switches::FrameShape;
 pub(crate) mod group_split;
 pub(crate) mod helper_functions;
 pub(crate) mod video;
-// mod cmd_video;
 pub(crate) mod audio;
 mod switches;
 

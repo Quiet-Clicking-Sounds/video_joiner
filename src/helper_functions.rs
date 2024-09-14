@@ -1,6 +1,5 @@
 use std::fmt::{Debug, Formatter};
 
-
 use crate::group_split;
 use crate::switches::FrameShape;
 use crate::video::Video;
