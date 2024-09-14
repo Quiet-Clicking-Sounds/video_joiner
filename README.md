@@ -73,6 +73,18 @@ video_joiner.exe -f "D:\vertical_videos_to_join" -f "D:\horizontal_videos_to_joi
 
 Implemented for `VertEmph`, `VertEmph1`, `HorizEmph`, and `HorizEmph2`
 
+#### Special case 2
+
+Implemented for `CentreEmphVert`
+ - File #1: large horizontal video list
+ - File #2: vertical videos to either side
+ - File #3: small horizontal video list
+
+```shell
+video_joiner.exe -f "D:\main_horizontal_videos" -f "D:\vertical_videos"  -f "D:\small_horizontal_videos" -o "D:\joined_video.mp4" --shape "CentreEmphVert"
+```
+
+
 ## Sorting Options
 
 - "1", "Random", "rand" (default)
@@ -87,6 +99,42 @@ Implemented for `VertEmph`, `VertEmph1`, `HorizEmph`, and `HorizEmph2`
     - sorts items with random, then pops the largest video and appends it to the end
 
 <hr> 
+
+
+## Frame Shapes: names and layout images
+
+### Standard layouts:
+
+| `Double` or `D` or `2`                                | `Triple` or `T` or `3`                                | `Quad` or `Q` or `4`                                  |
+|-------------------------------------------------------|-------------------------------------------------------|-------------------------------------------------------|
+| ![frame_shapes_1.svg](readme_data/frame_shapes_1.svg) | ![frame_shapes_1.svg](readme_data/frame_shapes_2.svg) | ![frame_shapes_1.svg](readme_data/frame_shapes_3.svg) |
+
+### Non-Standard layouts:
+
+| `VertEmph` or `V` or `5`                                  | `HorizEmph` or `H` or `6`                                 |
+|-----------------------------------------------------------|-----------------------------------------------------------|
+| ![frame_shapes_4.svg](readme_data/frame_shapes_4.svg)     | ![frame_shapes_5.svg](readme_data/frame_shapes_5.svg)     |
+| Frame 1: `5.33/9` when exporting at `16/9`                | Frame 1/4: `5.33/9` when exporting at `16/9`              |
+| Equal frame widths means excessive cropping of 16/9 video | Equal frame widths means excessive cropping of 16/9 video | 
+
+| `VertEmph2` or `V2` or `7`                            | `HorizEmph2` or `H2` or `8`                           |
+|-------------------------------------------------------|-------------------------------------------------------|
+| ![frame_shapes_4.svg](readme_data/frame_shapes_4.svg) | ![frame_shapes_5.svg](readme_data/frame_shapes_5.svg) |
+| Top row `3/8` `2/8` `3/8`                             | Top row: `1/4` `2/4` `1/4`                            | 
+| Enlarged side frames to reducing cropping             | Enlarged centre frame to reduce cropping              | 
+
+| `SideVert` or `VD` or `9`                             | `SideVert2` or `DV` or `10`                           |
+|-------------------------------------------------------|-------------------------------------------------------|
+| ![frame_shapes_6.svg](readme_data/frame_shapes_6.svg) | ![frame_shapes_7.svg](readme_data/frame_shapes_7.svg) |
+| Top row `1/3` `2/3`                                   | Top row `2/3` `1/3`                                   |
+| Enlarged side frames to reducing cropping             | Enlarged side frames to reducing cropping             |
+
+| `CentreEmphVert` or `CE` or `11`                      |
+|-------------------------------------------------------|
+| ![frame_shapes_7.svg](readme_data/frame_shapes_7.svg) |
+| Top row -- `1/5` ---- `3/5` ---- `1/5`                |
+| Bottom row ` " ` `1.5/5` `1.5/5` ` " `                |
+| bottom row height: `2/5`                              |
 
 ## Audio & why exports can be slow
 
@@ -133,40 +181,6 @@ Basic descriptions of how each method works can be found below
 | **Horizontal <br/> Group 1** |         Stereo balance: -0.1  <br/>  Surround angle: -20          | Surround angle: +90 |
 | **Horizontal <br/> Group 2** | Stereo balance: -0.1  <br/>  Surround angle: -20 <br> Volume -5db |        <hr>         |
 
-## Frame Shape names
-
-### Standard layouts:
-
-| `Double` or `D` or `2`                                | `Triple` or `T` or `3`                                | `Quad` or `Q` or `4`                                  |
-|-------------------------------------------------------|-------------------------------------------------------|-------------------------------------------------------|
-| ![frame_shapes_1.svg](readme_data/frame_shapes_1.svg) | ![frame_shapes_1.svg](readme_data/frame_shapes_2.svg) | ![frame_shapes_1.svg](readme_data/frame_shapes_3.svg) |
-
-### Non-Standard layouts:
-
-| `VertEmph` or `V` or `5`                                  | `HorizEmph` or `H` or `6`                                 |
-|-----------------------------------------------------------|-----------------------------------------------------------|
-| ![frame_shapes_4.svg](readme_data/frame_shapes_4.svg)     | ![frame_shapes_5.svg](readme_data/frame_shapes_5.svg)     |
-| Frame 1: `5.33/9` when exporting at `16/9`                | Frame 1/4: `5.33/9` when exporting at `16/9`              |
-| Equal frame widths means excessive cropping of 16/9 video | Equal frame widths means excessive cropping of 16/9 video | 
-
-| `VertEmph2` or `V2` or `7`                            | `HorizEmph2` or `H2` or `8`                           |
-|-------------------------------------------------------|-------------------------------------------------------|
-| ![frame_shapes_4.svg](readme_data/frame_shapes_4.svg) | ![frame_shapes_5.svg](readme_data/frame_shapes_5.svg) |
-| Top row `3/8` `2/8` `3/8`                             | Top row: `1/4` `2/4` `1/4`                            | 
-| Enlarged side frames to reducing cropping             | Enlarged centre frame to reduce cropping              | 
-
-| `SideVert` or `VD` or `9`                             | `SideVert2` or `DV` or `10`                           |
-|-------------------------------------------------------|-------------------------------------------------------|
-| ![frame_shapes_6.svg](readme_data/frame_shapes_6.svg) | ![frame_shapes_7.svg](readme_data/frame_shapes_7.svg) |
-| Top row `1/3` `2/3`                                   | Top row `2/3` `1/3`                                   |
-| Enlarged side frames to reducing cropping             | Enlarged side frames to reducing cropping             |
-
-| `CentreEmphVert` or `CE` or `11`                      |
-|-------------------------------------------------------|
-| ![frame_shapes_7.svg](readme_data/frame_shapes_7.svg) |
-| Top row    `1/4`    `2/4`    `1/4`                    |
-| Bottom row ` " ` `1/4` `1/4` ` " `                    |
-| bottom row height: `1/3`                              |
 
 ## To be integrated at some point:
 
