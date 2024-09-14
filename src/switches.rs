@@ -62,15 +62,25 @@ impl SortOrder {
 
 #[derive(Clone, Debug)]
 pub(crate) enum FrameShape {
+    /// see [readme_data/frame_shapes_1.svg](../readme_data/frame_shapes_1.svg) for shape ref
     Dual,
+    /// see [readme_data/frame_shapes_2.svg](../readme_data/frame_shapes_2.svg) for shape ref
     Triple,
+    /// see [readme_data/frame_shapes_3.svg](../readme_data/frame_shapes_3.svg) for shape ref
     Quad,
+    /// see [readme_data/frame_shapes_4.svg](../readme_data/frame_shapes_4.svg) for shape ref
     VertEmph,
+    /// see [readme_data/frame_shapes_5.svg](../readme_data/frame_shapes_5.svg) for shape ref
     HorizEmph,
+    /// see [readme_data/frame_shapes_6.svg](../readme_data/frame_shapes_6.svg) for shape ref
     VertEmph2,
+    /// see [readme_data/frame_shapes_6.svg](../readme_data/frame_shapes_6.svg) for shape ref
     HorizEmph2,
+    /// see [readme_data/frame_shapes_7.svg](../readme_data/frame_shapes_7.svg) for shape ref
     SideVert,
+    /// see [readme_data/frame_shapes_7.svg](../readme_data/frame_shapes_7.svg) for shape ref
     SideVert2,
+    /// see [readme_data/frame_shapes_8.svg](../readme_data/frame_shapes_8.svg) for shape ref
     CentreEmphVert
 }
 
@@ -167,7 +177,18 @@ impl FrameShape {
 }
 
 impl Joiner for FrameShape {
-    //noinspection SpellCheckingInspection
+    
+    /// join methods for a single frame.
+    /// 
+    /// new frame shapes must be implemented here
+    /// 
+    /// # Arguments 
+    /// 
+    /// * `frames`: list of frames from each video input
+    /// * `out_sh`: shape data
+    /// 
+    /// returns: Vec<u8, Global> 
+    /// 
     fn frame_joiner(&self, mut frames: Vec<OutputVideoFrame>, out_sh: &VideoEditData) -> Vec<u8> {
         let mut out =
             Vec::with_capacity((&out_sh.output_height * &out_sh.output_width * 3) as usize);
@@ -317,10 +338,13 @@ impl Joiner for FrameShape {
             FrameShape::CentreEmphVert => {
                 let mut switch: bool = true;
                 'outter: loop {
+                    // this is a full height item, always iter over it
                     match chunks[1].next() {
                             None => break 'outter, 
                             Some(ch) => out.extend_from_slice(ch),
                     }
+                    // the top part and bottom part are diferent, once the top has been consumed
+                    // we need to use the bottom part
                     if switch {
                         match chunks[0].next() {
                             None => { switch = false }
@@ -339,6 +363,7 @@ impl Joiner for FrameShape {
                             Some(ch) => out.extend_from_slice(ch),
                         }
                     }
+                    // this is a full height item, always iter over it
                     match chunks[2].next() {
                             None => break 'outter, 
                             Some(ch) => out.extend_from_slice(ch),
