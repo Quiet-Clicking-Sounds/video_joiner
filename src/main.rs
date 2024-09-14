@@ -138,7 +138,7 @@ fn run_from_cli(args: Cli) -> (VideoGroup, bool) {
     let matcher = (args.output_width, args.output_height, split_format.clone());
     let mut vid_edit_data: VideoEditData = match matcher {
         (Some(w), Some(h), sf) => { VideoEditData::init_wxh(w, h, sf.count()) }
-        (_, _, _) => { VideoEditData::init_wxh(2560, 1440, split_format.count()) }
+        (_, _, sf) => { VideoEditData::init_wxh(2560, 1440, sf.count()) }
     };
 
     vid_edit_data.set_fps(args.fps);
