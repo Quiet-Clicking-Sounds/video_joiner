@@ -25,7 +25,7 @@ fn get_encoder_arg_list() -> &'static [&'static str] {
     } else if cfg!(feature = "encoder_nv_av1") {
         ["-c:v", "av1"].as_slice()
     } else {
-        ["-speed", "slow", "-crf", "19"].as_slice()
+        ["-c:v", "libx264 ", "-speed", "slow", "-crf", "19"].as_slice()
     }
 }
 
@@ -690,7 +690,7 @@ impl VideoGroup {
         }
     }
 
-    pub fn main_loop(&mut self, drop_audio: bool) {
+    pub fn main_loop(&mut self, drop_audio: bool,encoder_args:&[&str]) {
         let temp_folder = std::env::current_dir().unwrap().join("TempFolder");
 
         println!("TempFolder: {:?}", temp_folder);
@@ -700,7 +700,7 @@ impl VideoGroup {
         }
 
         // Main loop **Video**
-        let temp_file = self.main_loop_video();
+        let temp_file = self.main_loop_video(encoder_args);
 
         if drop_audio {
             for _ in 0..3 {
@@ -726,7 +726,7 @@ impl VideoGroup {
     }
 
     //noinspection SpellCheckingInspection
-    fn main_loop_video(&mut self) -> PathBuf {
+    fn main_loop_video(&mut self, encoder_args:&[&str]) -> PathBuf {
         #[cfg(feature = "hyperDebug")]
         helper_functions::parse_debug("main_loop", file!(), line!());
         // frame timer for simple speed testing:
@@ -756,7 +756,7 @@ impl VideoGroup {
             ])
             .input("pipe:0")
             .args(["-y"])
-            .args(get_encoder_arg_list())
+            .args(encoder_args)
             // .arg(ENCODER_ARGS.get().unwrap())
             .output(temp_out_file.to_str().unwrap());
 

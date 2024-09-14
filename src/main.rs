@@ -10,13 +10,12 @@ pub(crate) mod helper_functions;
 pub(crate) mod video;
 pub(crate) mod audio;
 mod switches;
-
 pub fn main() {
     let args = Cli::parse();
 
-    let (mut vid, audio) = run_from_cli(args);
+    let (mut vid, audio,encoder_args) = run_from_cli(args);
 
-    vid.main_loop(audio);
+    vid.main_loop(audio,encoder_args);
 }
 
 #[deny(missing_docs)]
@@ -70,6 +69,54 @@ struct Cli {
     #[arg(long = "no-audio", action)]
     audio: bool,
 
+    /// set hardware encoder to AMD d3d11va
+    #[arg(long="encode-amd", action, conflicts_with = "hardware_nvidea")]
+    hardware_amd: bool,
+    /// set hardware encoder to Nvidea
+    #[arg(long="encode-nvidea", action)]
+    hardware_nvidea: bool,
+    /// set output file encoding to  H264
+    #[arg(long="h264", action,  conflicts_with_all= ["encode_hvec", "encode_av1"])]
+    encode_h264: bool,
+    /// set output file encoding to  H265
+    #[arg(long="hvec", action, conflicts_with= "encode_av1")]
+    encode_hvec: bool,
+    /// set output file encoding to  AV1
+    #[arg(long="av1", action)]
+    encode_av1: bool,
+
+}
+
+fn set_encoder_args(hardware_amd: bool, hardware_nvidea: bool,encode_av1: bool,
+                    encode_hvec: bool, encode_h264: bool) -> &'static [&'static str] {
+    let hardware = if hardware_amd {
+        "amd"
+    } else if hardware_nvidea {
+        "nvidea"
+    } else {
+        "none"
+    };
+    let encoder = if encode_av1 {
+        "av1"
+    } else if encode_hvec {
+        "h265"
+    } else if encode_h264 {
+        "h264"
+    } else {
+        "h264"
+    };
+    match (hardware, encoder) {
+        ("amd", "av1") => { ["-c:v", "av1_amf", "-rc", "cqp", "-qp_i", "34", "-qp_p", "34", ].as_slice() }
+        ("amd", "h265") => { ["-c:v", "hevc_amf", "-rc", "cqp", "-qp_i", "34", "-qp_p", "34", ].as_slice() }
+        ("amd", "h264") => { ["-c:v", "h264_amf", "-rc", "cqp", "-qp_i", "34", "-qp_p", "34", ].as_slice() }
+        ("nvidea", "av1") => { ["-c:v", "av1_nvenc", "-preset", "slow"].as_slice() }
+        ("nvidea", "h265") => { ["-c:v", "hevc_nvenc", "-preset", "slow"].as_slice() }
+        ("nvidea", "h264") => { ["-c:v", "h264_nvenc", "-preset", "slow"].as_slice() }
+        ("none", "av1") => { ["-c:v", "libaom-av1"].as_slice() }
+        ("none", "h265") => { ["-c:v", "libx265", "-speed", "slow", "-crf", "19"].as_slice() }
+        ("none", "h264") => { ["-c:v", "libx264", "-speed", "slow", "-crf", "19"].as_slice() }
+        _ => { panic!("shouldn't be here") }
+    }
 }
 
 fn request_input(message: &str) -> String {
@@ -98,7 +145,7 @@ fn get_folders_multi(shape: FrameShape) -> Vec<PathBuf> {
     items
 }
 
-fn run_from_cli(args: Cli) -> (VideoGroup, bool) {
+fn run_from_cli(args: Cli) -> (VideoGroup, bool, &'static[&'static str] ) {
     let split_format = match args.split_format
         .unwrap_or_else(|| {
             request_input("Split Format 'Double' / 'Triple' / 'Quad' (see README.md for more options): ")
@@ -164,9 +211,15 @@ fn run_from_cli(args: Cli) -> (VideoGroup, bool) {
         }
         _ => { panic!("More than 5 folders is currently unsupported") }
     };
-
+    let encoder_args = set_encoder_args(
+        args.hardware_amd,
+        args.hardware_nvidea,
+        args.encode_av1,
+        args.encode_hvec,
+        args.encode_h264,
+    );
     vid_edit_data.set_shape(split_format.clone());
     vid.set_video_sizer(vid_edit_data);
 
-    (vid, args.audio)
+    (vid, args.audio, encoder_args)
 }
