@@ -18,31 +18,8 @@ use crate::helper_functions;
 use crate::helper_functions::{iter_ffmpeg_events, seconds_to_hhmmss};
 use crate::switches::{FrameShape, SortOrder};
 
-//noinspection SpellCheckingInspection
-const SPEED_PRESET_OPT: [&str; 9] = [
-    "ultrafast", // 0
-    "superfast", // 1
-    "veryfast",  // 2
-    "faster",    // 3
-    "fast",      // 4
-    "medium",    // 5
-    "slow",      // 6
-    "slower",    // 7
-    "veryslow",  // 8
-];
-
-
-const SPEED_PRESET: &str = SPEED_PRESET_OPT[5];
-
 const ENCODER: &str = "hevc_amf";
-// h264_amf 60.98
-// hevc_amf 60.29
 
-// todo this should do something, I don't think it currently does, might be hvec_amf stuff
-// https://slhck.info/video/2017/02/24/crf-guide.html
-// encoder settings: "-rc cqp -qp_i 24 -qp_p 24" ? 
-// see https://superuser.com/questions/1742078/what-is-the-equivalent-flag-for-crf-for-hevc-amf-in-ffmpeg
-const CRF_PRESET: &str = "25";
 const QP_PRESET: &str = "34";
 
 const ENCODER_ARG_LIST: [&str; 8] = [
@@ -54,14 +31,17 @@ const ENCODER_ARG_LIST: [&str; 8] = [
 ];
 
 
+
 //noinspection SpellCheckingInspection
-const DECODER: [&str; 2] = ["-hwaccel", "d3d11va"];
+const DECODER: [&str; 2] = ["-hwaccel", "auto"];
+// None     77, 85, 75, 80
+// dxva2    83, 75, 83, 77
+// d3d11va  ??, 77, 80, 86
+// auto     71, 75, 80, 75
 // cuda     Error
-// dxva2    59.35
 // qsv      depreciated
-// d3d11va  60.29
-// opencl   47
-// vulkan   57.92
+// opencl   Error
+// vulkan   Error
 
 
 #[derive(Clone)]
@@ -375,7 +355,9 @@ impl Video {
         };
 
         let mut ffm = FfmpegCommand::new();
-        let ffm = ffm.args(DECODER);
+        let ffm = if DECODER[1].len() > 2 {
+            ffm.args(DECODER)
+        } else { &mut ffm };
         let ffm = ffm.input(self.src.to_str().unwrap());
         let ffm = ffm.filter(filtergraph);
         let ffm = ffm.rawvideo();
@@ -677,7 +659,7 @@ impl VideoGroup {
                 let mut videos2 = helper_functions::video_group_swap(srcs[1].clone(), FrameShape::Dual).into_iter();
                 // bottom horizontal group
                 let mut videos3 = helper_functions::video_group_swap(srcs[2].clone(), FrameShape::Dual).into_iter();
-                
+
                 return VideoGroup {
                     videos: vec![
                         videos1,
