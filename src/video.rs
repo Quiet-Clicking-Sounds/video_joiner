@@ -199,12 +199,6 @@ impl VideoEditData {
     }
 }
 
-fn div_rem(i: u32, r: u32) -> (u32, u32) {
-    let rem = i.rem(r);
-    let di = (i - rem) / r;
-    (di, rem)
-}
-
 #[cfg(test)]
 impl PartialEq for VideoEditData {
     fn eq(&self, other: &Self) -> bool {
@@ -304,7 +298,7 @@ impl Video {
             .arg("-y")
             .output(out.to_str().unwrap());
 
-        let mut complete = ffm.spawn().unwrap();
+        let complete = ffm.spawn().unwrap();
         (true, Some(complete))
     }
 
@@ -784,6 +778,7 @@ impl VideoGroup {
             println!("Video Stats: {}", i.videos.len());
         }
 
+        #[allow(unused_assignments)]
         let mut t_last = Instant::now();
         let mut t_now = Instant::now();
         let fps_u64 = self.video_sizer.fps.clone() as u64;
