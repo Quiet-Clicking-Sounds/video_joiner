@@ -26,3 +26,6 @@ opt-level = 3
 hyperDebug = []
 # extra debugging for temp files.
 keepTempFiles = []
+
+encoder_d3d11va = []
+encoder_nv_av1 = []

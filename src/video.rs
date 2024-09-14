@@ -18,17 +18,18 @@ use crate::helper_functions;
 use crate::helper_functions::{iter_ffmpeg_events, seconds_to_hhmmss};
 use crate::switches::{FrameShape, SortOrder};
 
-const ENCODER: &str = "hevc_amf";
 
-const QP_PRESET: &str = "34";
+fn get_encoder_arg_list() -> &'static [&'static str] {
+    if cfg!(feature = "encoder_d3d11va") {
+        ["-c:v", "hevc_amf", "-rc", "cqp", "-qp_i", "34", "-qp_p", "34", ].as_slice()
+    } else if cfg!(feature = "encoder_nv_av1") {
+        ["-c:v", "av1"].as_slice()
+    } else {
+        ["-speed", "slow", "-crf", "19"].as_slice()
+    }
+}
 
-const ENCODER_ARG_LIST: [&str; 8] = [
-    "-c:v", ENCODER,
-    "-rc", "cqp",
-    "-qp_i", QP_PRESET,
-    "-qp_p", QP_PRESET,
-    // "-preset", SPEED_PRESET
-];
+
 
 //noinspection SpellCheckingInspection
 const DECODER: [&str; 2] = ["-hwaccel", "auto"];
@@ -761,7 +762,7 @@ impl VideoGroup {
             ])
             .input("pipe:0")
             .args(["-y"])
-            .args(ENCODER_ARG_LIST)
+            .args(get_encoder_arg_list())
             // .arg(ENCODER_ARGS.get().unwrap())
             .output(temp_out_file.to_str().unwrap());
 
