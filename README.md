@@ -15,7 +15,7 @@ Options:
                                 see README.md for more layouts and layout diagrams
                                 if unused a request will be given via text input
   -y, --height <OUTPUT_HEIGHT>  Output height in pixels [default:1440]
-  -x, --width <OUTPUT_WIDTH>    Output width in pixels [default:2550]
+  -x, --width <OUTPUT_WIDTH>    Output width in pixels [default:2560]
   -r, --fps <FPS>               Frame Per Second [default: 30]
       --ord <ORD>               Apply sorting method Options include: 
                                     "1", "Random", "rand" (default)
@@ -25,9 +25,25 @@ Options:
                                     "5", "RandomWithLargestLast", "rwll"
       --ord-opt <ORD_OPT>       select seed for ord when RandomSeeded is chosen [default: 1337]
       --no-audio                removes audio completely
+      --encode-amd              set hardware encoder to AMD d3d11va [aliases: amd]
+      --encode-nvidea           set hardware encoder to Nvidea nvenc [aliases: nvidea]
+      --h264                    set output file encoding to  H264
+      --hvec                    set output file encoding to  H265 [aliases: h265]
+      --av1                     set output file encoding to  AV1
   -h, --help                    Print help
   -V, --version                 Print version
 ```
+
+## Not setting the hardware encoder will be slow
+- AMD gpu users, or CPU with integrated GPU, use `--encode-amd`
+- Nvidea gpu users, use `--encode-nvidea`
+
+'How slow?' sub 10 fps usually, where a reasonable hvec encode on a 5000 series AMD gpu is around 60-80fps.
+1440p AV1 encoding on a Ryzen 3600x was running at around 1 fps.  
+
+
+### Setting the codec
+The codec will default to h265/hvec, but if you have access to AV1, use that
 
 ##           
 

@@ -70,16 +70,16 @@ struct Cli {
     audio: bool,
 
     /// set hardware encoder to AMD d3d11va
-    #[arg(long="encode-amd", action, conflicts_with = "hardware_nvidea")]
+    #[arg(long="encode-amd",visible_alias="amd", action, conflicts_with = "hardware_nvidea")]
     hardware_amd: bool,
-    /// set hardware encoder to Nvidea
-    #[arg(long="encode-nvidea", action)]
+    /// set hardware encoder to Nvidea nvenc
+    #[arg(long="encode-nvidea",visible_alias="nvidea", action)]
     hardware_nvidea: bool,
     /// set output file encoding to  H264
     #[arg(long="h264", action,  conflicts_with_all= ["encode_hvec", "encode_av1"])]
     encode_h264: bool,
     /// set output file encoding to  H265
-    #[arg(long="hvec", action, conflicts_with= "encode_av1")]
+    #[arg(long="hvec", visible_alias = "h265", action, conflicts_with= "encode_av1")]
     encode_hvec: bool,
     /// set output file encoding to  AV1
     #[arg(long="av1", action)]
