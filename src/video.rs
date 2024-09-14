@@ -671,16 +671,20 @@ impl VideoGroup {
                 };
             }
             (FrameShape::CentreEmphVert, 3) => {
-                panic!("unimplemented");
-                // vertical parts
+                // top horizontal group
                 let videos1 = VideoList::from_videos(helper_functions::scan_dir_for_videos(srcs[0].clone()), 0, sorter.clone());
-                // horizontal parts
+                // vertical group
                 let mut videos2 = helper_functions::video_group_swap(srcs[1].clone(), FrameShape::Dual).into_iter();
+                // bottom horizontal group
+                let mut videos3 = helper_functions::video_group_swap(srcs[2].clone(), FrameShape::Dual).into_iter();
+                
                 return VideoGroup {
                     videos: vec![
                         videos1,
                         VideoList::from_videos(videos2.next().unwrap(), 1, sorter.clone()),
                         VideoList::from_videos(videos2.next().unwrap(), 2, sorter.clone()),
+                        VideoList::from_videos(videos3.next().unwrap(), 1, sorter.clone()),
+                        VideoList::from_videos(videos3.next().unwrap(), 2, sorter.clone()),
                     ],
                     output_target: src_out.into(),
                     video_sizer: VideoEditData::init(),
