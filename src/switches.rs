@@ -254,6 +254,8 @@ impl Joiner for FrameShape {
                             Some(ch) => out.extend_from_slice(ch),
                         }
                     } 
+                    // Important note: Do not change this to an else statement
+                    // if switch is None !switch must happen
                     if !switch  {
                         match chunks[2].next() {
                             None => break 'outter,
@@ -279,6 +281,8 @@ impl Joiner for FrameShape {
                             Some(ch) => out.extend_from_slice(ch),
                         }
                     } 
+                    // Important note: Do not change this to an else statement
+                    // if switch is None !switch must happen
                     if !switch  {
                         match chunks[2].next() {
                             None => break 'outter,
@@ -296,6 +300,8 @@ impl Joiner for FrameShape {
                             Some(ch) => out.extend_from_slice(ch),
                         }
                     } 
+                    // Important note: Do not change this to an else statement
+                    // if switch is None !switch must happen
                     if !switch {
                         match chunks[2].next() {
                             None => break 'outter,
@@ -321,6 +327,8 @@ impl Joiner for FrameShape {
                             Some(ch) => out.extend_from_slice(ch),
                         }
                     } 
+                    // Important note: Do not change this to an else statement
+                    // if switch is None !switch must happen
                     if !switch  { 
                         match chunks[3].next() {
                             None => break 'outter,
