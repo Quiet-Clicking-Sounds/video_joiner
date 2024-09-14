@@ -203,9 +203,9 @@ impl VideoEditData {
 
                 let htop = self.output_height / 5 * 3;
                 let hbot = self.output_height - htop;
-                
-                assert_eq!(wmid+w_l+w_r , self.output_width);
-                assert_eq!(wml+wmr+w_l+w_r, self.output_width);
+
+                assert_eq!(wmid + w_l + w_r, self.output_width);
+                assert_eq!(wml + wmr + w_l + w_r, self.output_width);
                 assert_eq!(htop + hbot, self.output_height);
 
                 self.shapes = vec![
@@ -361,12 +361,18 @@ impl Video {
         #[cfg(feature = "hyperDebug")]
         helper_functions::parse_debug(" setup_video ", file!(), line!());
 
-        let filtergraph = format!(
-            "[0:v]scale={:?}:{:?}:force_original_aspect_ratio=increase[a];\
-            [a]crop=w={:?}:h={:?}[b];\
-            [b]fps=fps={}[output]",
-            self.width_height.0, self.width_height.1, self.width_height.0, self.width_height.1, self.fps
-        );
+        let filtergraph = {
+            let scaler = format!("scale={:?}:{:?}:force_original_aspect_ratio=increase",
+                                 self.width_height.0, self.width_height.1);
+            let crop = format!("crop=w={:?}:h={:?}",
+                               self.width_height.0, self.width_height.1);
+            let fps = format!("fps=fps={}", self.fps);
+            format!("[0:v]{}[a];[a]{}[b];[b]{}[output]",
+                scaler,
+                crop,
+                fps,
+            )
+        };
 
         let mut ffm = FfmpegCommand::new();
         let ffm = ffm.args(DECODER);
