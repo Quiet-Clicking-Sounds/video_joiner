@@ -30,8 +30,6 @@ const ENCODER_ARG_LIST: [&str; 8] = [
     // "-preset", SPEED_PRESET
 ];
 
-
-
 //noinspection SpellCheckingInspection
 const DECODER: [&str; 2] = ["-hwaccel", "auto"];
 // None     77, 85, 75, 80
@@ -348,9 +346,9 @@ impl Video {
                                self.width_height.0, self.width_height.1);
             let fps = format!("fps=fps={}", self.fps);
             format!("[0:v]{}[a];[a]{}[b];[b]{}[output]",
-                scaler,
-                crop,
-                fps,
+                    scaler,
+                    crop,
+                    fps,
             )
         };
 
@@ -745,29 +743,30 @@ impl VideoGroup {
 
         // create output file
         let mut out_target = FfmpegCommand::new();
-        out_target.args([
-            "-loglevel",
-            "error",
-            "-f",
-            "rawvideo",
-            "-pix_fmt",
-            "rgb24",
-            "-s",
-            &format!(
-                "{}x{}",
-                self.video_sizer.output_width, self.video_sizer.output_height
-            ),
-            "-r",
-            &format!("{}", self.video_sizer.fps),
-        ])
+        out_target
+            .args([
+                "-loglevel",
+                "error",
+                "-f",
+                "rawvideo",
+                "-pix_fmt",
+                "rgb24",
+                "-s",
+                &format!(
+                    "{}x{}",
+                    self.video_sizer.output_width, self.video_sizer.output_height
+                ),
+                "-r",
+                &format!("{}", self.video_sizer.fps),
+            ])
             .input("pipe:0")
             .args(["-y"])
             .args(ENCODER_ARG_LIST)
+            // .arg(ENCODER_ARGS.get().unwrap())
             .output(temp_out_file.to_str().unwrap());
 
-        #[cfg(feature = "hyperDebug")]
-        println!("FFMPEG Command:");
-        #[cfg(feature = "hyperDebug")]
+
+        println!("FFMPEG ouput Command:");
         out_target.print_command();
 
         let mut out_target = out_target.spawn().unwrap();

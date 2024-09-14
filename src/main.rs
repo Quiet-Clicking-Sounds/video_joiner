@@ -143,8 +143,8 @@ fn run_from_cli(args: Cli) -> (VideoGroup, bool) {
         (_, _, FrameShape::Quad) => { VideoEditData::init_wxh(2560, 1440, split_format.count()) }
         (_, _, FrameShape::VertEmph) | (_, _, FrameShape::VertEmph2) |
         (_, _, FrameShape::HorizEmph) | (_, _, FrameShape::HorizEmph2) | (_, _, FrameShape::SideVert) | (_, _, FrameShape::SideVert2) |
-        (_,_,FrameShape::CentreEmphVert) => {
-            VideoEditData::init_wxh(2560,1440, split_format.count())
+        (_, _, FrameShape::CentreEmphVert) => {
+            VideoEditData::init_wxh(2560, 1440, split_format.count())
         }
     };
 
