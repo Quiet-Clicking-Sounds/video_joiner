@@ -9,9 +9,9 @@ on:
 
 permissions:
   contents: write
-  
+
 jobs:
-  
+
   build-and-upload:
     name: Build and upload
     runs-on: ${{ matrix.os }}
@@ -28,7 +28,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-        
+
       - name: Get the release version from the tag
         shell: bash
         run: echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
@@ -40,7 +40,7 @@ jobs:
         with:
           # Make Rust compile to our target (defined in the matrix)
           targets: ${{ matrix.target }}
-          
+
       - name: Build
         uses: actions-rs/cargo@v1
         with:
@@ -53,7 +53,7 @@ jobs:
         shell: bash
         run: |
           # Replace with the name of your binary
-          binary_name="videojoiner"
+          binary_name="video_joiner"
 
           dirname="$binary_name-${{ env.VERSION }}-${{ matrix.target }}"
           mkdir "$dirname"
@@ -77,11 +77,3 @@ jobs:
         with:
           files: |
             ${{ env.ASSET }}
-
-
-
-
-
-
-
-
