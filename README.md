@@ -1,7 +1,7 @@
 ## Commandline utility to join 2-5 groups of videos into a single video:
 
 ```
-video_joiner.exe -h 
+./video_joiner.exe -h 
 Usage: video_joiner.exe [OPTIONS]
 
 Options:
@@ -34,21 +34,21 @@ Options:
 Join a folder of videos in the `Double` layout at 1080p 60fps
 
 ```shell
-video_joiner.exe -f "D:\videos_to_join" -o "D:\joined_video.mp4" -s 'Double' -x 1920 -y 1080 -r 60
+./video_joiner.exe -f "D:\videos_to_join" -o "D:\joined_video.mp4" -s 'Double' -x 1920 -y 1080 -r 60
 ```
 
 Join a folder of videos in the `Double` layout for testing without audio at a 400x300 with lower fps for faster
 encoding
 
 ```shell
-video_joiner.exe -f "D:\videos_to_join" -o "D:\joined_video.mp4" -s 2 --no-audio -x 400 -y 300 --fps 15
+./video_joiner.exe -f "D:\videos_to_join" -o "D:\joined_video.mp4" -s 2 --no-audio -x 400 -y 300 --fps 15
 ```
 
 Join 4 folders into the horizontal emphasis layout, using folder 1 and 2 as the vertical video components.
 The order if `-f` inputs is important, see standard layouts for the order in which the frames will be placed.
 
 ```shell
-video_joiner.exe 
+./video_joiner.exe 
     -f "D:\video_grp_1" 
     -f "D:\video_grp_3" 
     -f "D:\video_grp_4" 
@@ -68,7 +68,7 @@ then take items from the second file selection for positions 2 and 3. \
 _Currently implemented for commandline only._
 
 ```shell
-video_joiner.exe -f "D:\vertical_videos_to_join" -f "D:\horizontal_videos_to_join" -o "D:\joined_video.mp4" --shape "HorizEmph"
+./video_joiner.exe -f "D:\vertical_videos_to_join" -f "D:\horizontal_videos_to_join" -o "D:\joined_video.mp4" --shape "HorizEmph"
 ```
 
 Implemented for `VertEmph`, `VertEmph1`, `HorizEmph`, and `HorizEmph2`
@@ -81,7 +81,7 @@ Implemented for `CentreEmphVert`
  - File #3: small horizontal video list
 
 ```shell
-video_joiner.exe -f "D:\main_horizontal_videos" -f "D:\vertical_videos"  -f "D:\small_horizontal_videos" -o "D:\joined_video.mp4" --shape "CentreEmphVert"
+./video_joiner.exe -f "D:\main_horizontal_videos" -f "D:\vertical_videos"  -f "D:\small_horizontal_videos" -o "D:\joined_video.mp4" --shape "CentreEmphVert"
 ```
 
 
