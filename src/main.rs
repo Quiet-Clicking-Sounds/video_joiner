@@ -3,8 +3,8 @@ use std::path::PathBuf;
 use crate::switches::SortOrder;
 use crate::video::{VideoEditData, VideoGroup};
 use clap::{arg, Parser};
+use ini::Ini;
 use switches::FrameShape;
-
 pub(crate) mod group_split;
 pub(crate) mod helper_functions;
 pub(crate) mod video;
@@ -13,9 +13,9 @@ mod switches;
 pub fn main() {
     let args = Cli::parse();
 
-    let (mut vid, audio,encoder_args) = run_from_cli(args);
+    let (mut vid, audio, encoder_args) = run_from_cli(args);
 
-    vid.main_loop(audio,encoder_args);
+    vid.main_loop(audio, encoder_args);
 }
 
 #[deny(missing_docs)]
@@ -70,25 +70,69 @@ struct Cli {
     audio: bool,
 
     /// set hardware encoder to AMD d3d11va
-    #[arg(long="encode-amd",visible_alias="amd", action, conflicts_with = "hardware_nvidea")]
+    #[arg(long = "encode-amd", visible_alias = "amd", action, conflicts_with = "hardware_nvidea")]
     hardware_amd: bool,
     /// set hardware encoder to Nvidea nvenc
-    #[arg(long="encode-nvidea",visible_alias="nvidea", action)]
+    #[arg(long = "encode-nvidea", visible_alias = "nvidea", action)]
     hardware_nvidea: bool,
     /// set output file encoding to  H264
     #[arg(long="h264", action,  conflicts_with_all= ["encode_hvec", "encode_av1"])]
     encode_h264: bool,
     /// set output file encoding to  H265
-    #[arg(long="hvec", visible_alias = "h265", action, conflicts_with= "encode_av1")]
+    #[arg(long = "hvec", visible_alias = "h265", action, conflicts_with = "encode_av1")]
     encode_hvec: bool,
     /// set output file encoding to  AV1
-    #[arg(long="av1", action)]
+    #[arg(long = "av1", action)]
     encode_av1: bool,
 
 }
 
-fn set_encoder_args(hardware_amd: bool, hardware_nvidea: bool,encode_av1: bool,
-                    encode_hvec: bool, encode_h264: bool) -> &'static [&'static str] {
+fn try_check_local_settings() -> Option<Vec<String>> {
+    let current_env = match std::env::current_dir() {
+        Ok(e) => { e }
+        Err(_) => {
+            println!("Local Env Not Found");
+            return None 
+        }
+    };
+    let current_ini = current_env.join("settings.ini");
+    
+    println!("INI FILE {:?}", current_ini);
+    
+    let ini_file = Ini::load_from_file(current_ini);
+    let ini_file = match ini_file {
+        Ok(e) => {e}
+        Err(_) => {return None}
+    };
+
+    let mut keys = vec![];
+    
+    for kv in ini_file.section("Encoder".into())?.iter() {
+        match kv {
+            ("video_encoder", v) => { 
+                keys.push("-c:v");
+                keys.push(v)
+            }
+            (k,v) => {
+                keys.push(k);
+                keys.push(v);
+            }
+        }
+    }
+    let keys = keys.iter().map(|f|f.to_string()).collect();
+    Some(keys)
+}
+
+
+fn set_encoder_args(hardware_amd: bool, hardware_nvidea: bool, encode_av1: bool,
+                    encode_hvec: bool, encode_h264: bool) -> Vec<String> {
+    
+    
+    match try_check_local_settings(){
+        Some(v) => { return v },
+        None =>{}
+    }
+    
     let hardware = if hardware_amd {
         "amd"
     } else if hardware_nvidea {
@@ -103,7 +147,7 @@ fn set_encoder_args(hardware_amd: bool, hardware_nvidea: bool,encode_av1: bool,
     } else if encode_h264 {
         "h264"
     } else {
-        "h264"
+        "none"
     };
     match (hardware, encoder) {
         ("amd", "av1") => { ["-c:v", "av1_amf", "-rc", "cqp", "-qp_i", "34", "-qp_p", "34", ].as_slice() }
@@ -115,8 +159,8 @@ fn set_encoder_args(hardware_amd: bool, hardware_nvidea: bool,encode_av1: bool,
         ("none", "av1") => { ["-c:v", "libaom-av1"].as_slice() }
         ("none", "h265") => { ["-c:v", "libx265", "-speed", "slow", "-crf", "19"].as_slice() }
         ("none", "h264") => { ["-c:v", "libx264", "-speed", "slow", "-crf", "19"].as_slice() }
-        _ => { panic!("shouldn't be here") }
-    }
+        _ => { panic!("entered encoders did not work") }
+    }.iter().map(|f|f.to_string()).collect()
 }
 
 fn request_input(message: &str) -> String {
@@ -145,7 +189,7 @@ fn get_folders_multi(shape: FrameShape) -> Vec<PathBuf> {
     items
 }
 
-fn run_from_cli(args: Cli) -> (VideoGroup, bool, &'static[&'static str] ) {
+fn run_from_cli(args: Cli) -> (VideoGroup, bool, Vec<String>) {
     let split_format = match args.split_format
         .unwrap_or_else(|| {
             request_input("Split Format 'Double' / 'Triple' / 'Quad' (see README.md for more options): ")

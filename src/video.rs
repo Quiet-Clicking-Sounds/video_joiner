@@ -688,7 +688,7 @@ impl VideoGroup {
         }
     }
 
-    pub fn main_loop(&mut self, drop_audio: bool, encoder_args: &[&str]) {
+    pub fn main_loop(&mut self, drop_audio: bool, encoder_args: Vec<String>) {
         let temp_folder = std::env::current_dir().unwrap().join("TempFolder");
 
         println!("TempFolder: {:?}", temp_folder);
@@ -697,8 +697,9 @@ impl VideoGroup {
             std::fs::create_dir_all(temp_folder.clone()).unwrap();
         }
 
+        let encoder_args: Vec<&str> = encoder_args.iter().map(|s|s.as_str()).collect();
         // Main loop **Video**
-        let temp_file = self.main_loop_video(encoder_args);
+        let temp_file = self.main_loop_video(encoder_args.as_slice());
 
         if drop_audio {
             for _ in 0..3 {
@@ -839,7 +840,8 @@ impl VideoGroup {
                         line!(),
                     );
                     eprintln!("main_loop: frames_joined_failure {:?}", x);
-                    eprintln!("ErrorKind = {:?}", x.kind());
+                    println!("ErrorKind = {:?}", x.kind());
+                    println!("HELP: \n\tThis is usually because of an incorrectly configured video encoder. (see settings.ini)");
                     panic!("Un recoverable error in ffmpeg pipe")
                 }
             }
