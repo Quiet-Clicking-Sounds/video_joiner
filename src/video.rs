@@ -334,6 +334,10 @@ impl Video {
         #[cfg(feature = "hyperDebug")]
         helper_functions::parse_debug(" setup_video ", file!(), line!());
 
+        #[cfg(feature = "hyperDebug")]
+        helper_functions::parse_debug(format!("crop=w={:?}:h={:?} fps={}", self.width_height.0, 
+                                              self.width_height.1, self.fps).as_str(), 
+                                      file!(), line!());
         let filtergraph = {
             let scaler = format!("scale={:?}:{:?}:force_original_aspect_ratio=increase",
                                  self.width_height.0, self.width_height.1);
@@ -362,8 +366,6 @@ impl Video {
     }
 
     pub fn next_frame(&mut self) -> Option<OutputVideoFrame> {
-        #[cfg(feature = "hyperDebug")]
-        helper_functions::parse_debug(" next_frame ", file!(), line!());
         for _ in 0..100 {
             // frames aren't always a frame, only return a Frame or None
             // setup if no video currently setup
@@ -496,8 +498,6 @@ impl VideoList {
 
     /// returns frames until the end of all loaded videos, then returns None
     fn next_frame(&mut self, fc: &u64) -> Option<OutputVideoFrame> {
-        #[cfg(feature = "hyperDebug")]
-        helper_functions::parse_debug("next_frame", file!(), line!());
 
         match self.videos.front_mut() {
             None => {
@@ -515,8 +515,6 @@ impl VideoList {
                 }
                 Some(f) => f.next_frame(),
             };
-            #[cfg(feature = "hyperDebug")]
-            helper_functions::parse_debug("frame not found, finding next", file!(), line!());
             match frame {
                 // if frame is non the current video has ended, pop it then move onto the next one
                 None => {
@@ -645,7 +643,7 @@ impl VideoGroup {
                     shape_style: screens,
                 };
             }
-            (FrameShape::CentreEmphVert, 3)|(FrameShape::CentreEmphVert2, 3) => {
+            (FrameShape::CentreEmphVert, 3) | (FrameShape::CentreEmphVert2, 3) => {
                 // top horizontal group
                 let videos1 = VideoList::from_videos(helper_functions::scan_dir_for_videos(srcs[0].clone()), 0, sorter.clone());
                 // vertical group
@@ -690,7 +688,7 @@ impl VideoGroup {
         }
     }
 
-    pub fn main_loop(&mut self, drop_audio: bool,encoder_args:&[&str]) {
+    pub fn main_loop(&mut self, drop_audio: bool, encoder_args: &[&str]) {
         let temp_folder = std::env::current_dir().unwrap().join("TempFolder");
 
         println!("TempFolder: {:?}", temp_folder);
@@ -726,7 +724,7 @@ impl VideoGroup {
     }
 
     //noinspection SpellCheckingInspection
-    fn main_loop_video(&mut self, encoder_args:&[&str]) -> PathBuf {
+    fn main_loop_video(&mut self, encoder_args: &[&str]) -> PathBuf {
         #[cfg(feature = "hyperDebug")]
         helper_functions::parse_debug("main_loop", file!(), line!());
         // frame timer for simple speed testing:
@@ -817,8 +815,6 @@ impl VideoGroup {
             let frame_prep: Vec<OutputVideoFrame> =
                 frame_prep.into_iter().map(|x1| x1.unwrap()).collect();
 
-            #[cfg(feature = "hyperDebug")]
-            helper_functions::parse_debug("main_loop: frame_read", file!(), line!());
 
             let frames = self.shape_style.frame_joiner(frame_prep, &self.video_sizer);
             #[cfg(feature = "hyperDebug")]

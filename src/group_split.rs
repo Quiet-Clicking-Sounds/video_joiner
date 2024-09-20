@@ -5,6 +5,8 @@ use std::cell::RefCell;
 use std::collections::VecDeque;
 use std::fmt::Debug;
 use std::fmt::Formatter;
+#[cfg(feature = "hyperDebug")]
+use crate::helper_functions;
 
 pub enum AutoSwap {
     Continue,
