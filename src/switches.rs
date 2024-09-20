@@ -81,7 +81,9 @@ pub(crate) enum FrameShape {
     /// see [readme_data/frame_shapes_7.svg](../readme_data/frame_shapes_7.svg) for shape ref
     SideVert2,
     /// see [readme_data/frame_shapes_8.svg](../readme_data/frame_shapes_8.svg) for shape ref
-    CentreEmphVert
+    CentreEmphVert,
+    /// see [readme_data/frame_shapes_8v.svg](../readme_data/frame_shapes_8v.svg) for shape ref
+    CentreEmphVert2
 }
 
 impl FrameShape {
@@ -151,7 +153,7 @@ impl FrameShape {
                 [a][b][c]amix=inputs=3[d];[d]loudnorm[d]\
                 ".to_string()
             }
-            FrameShape::CentreEmphVert => {
+            FrameShape::CentreEmphVert|FrameShape::CentreEmphVert2 => {
                 "\
                 [2:a]stereotools=balance_in=-0.4[a];[a]surround=chl_out=stereo:chl_in=stereo:angle=270[a];\
                 [1:a]surround=chl_out=stereo:chl_in=stereo:angle=0[b];\
@@ -169,7 +171,8 @@ impl FrameShape {
             FrameShape::Dual => 2,
             FrameShape::Triple => 3,
             FrameShape::Quad => 4,
-            FrameShape::VertEmph | FrameShape::VertEmph2 | FrameShape::CentreEmphVert => 5,
+            FrameShape::VertEmph | FrameShape::VertEmph2 | 
+            FrameShape::CentreEmphVert| FrameShape::CentreEmphVert2 => 5,
             FrameShape::HorizEmph | FrameShape::HorizEmph2 => 4,
             FrameShape::SideVert | FrameShape::SideVert2 => 3,
         }
@@ -359,6 +362,41 @@ impl Joiner for FrameShape {
                             Some(ch) => out.extend_from_slice(ch),
                         }
                         match chunks[4].next() {
+                            None => break 'outter,
+                            Some(ch) => out.extend_from_slice(ch),
+                        }
+                    }
+                    // this is a full height item, always iter over it
+                    match chunks[2].next() {
+                            None => break 'outter, 
+                            Some(ch) => out.extend_from_slice(ch),
+                    }
+                }
+            }
+            FrameShape::CentreEmphVert2 => {
+                let mut switch: bool = true;
+                'outter: loop {
+                    // this is a full height item, always iter over it
+                    match chunks[1].next() {
+                            None => break 'outter, 
+                            Some(ch) => out.extend_from_slice(ch),
+                    }
+                    // the top part and bottom part are diferent, once the top has been consumed
+                    // we need to use the bottom part
+                    if switch {
+                        match chunks[3].next() {
+                            None => { switch = false }
+                            Some(ch) => out.extend_from_slice(ch),
+                        }
+                        match chunks[4].next() {
+                            None => { switch = false }
+                            Some(ch) => out.extend_from_slice(ch),
+                        }
+                    } 
+                    // Important note: Do not change this to an else statement
+                    // if switch is None !switch must happen
+                    if !switch  { 
+                        match chunks[0].next() {
                             None => break 'outter,
                             Some(ch) => out.extend_from_slice(ch),
                         }
