@@ -92,47 +92,47 @@ fn try_check_local_settings() -> Option<Vec<String>> {
         Ok(e) => { e }
         Err(_) => {
             println!("Local Env Not Found");
-            return None 
+            return None;
         }
     };
     let current_ini = current_env.join("settings.ini");
-    
+
     println!("INI FILE {:?}", current_ini);
-    
+
     let ini_file = Ini::load_from_file(current_ini);
     let ini_file = match ini_file {
-        Ok(e) => {e}
-        Err(_) => {return None}
+        Ok(e) => { e }
+        Err(_) => { return None }
     };
 
     let mut keys = vec![];
-    
+
     for kv in ini_file.section("Encoder".into())?.iter() {
         match kv {
-            ("video_encoder", v) => { 
+            ("video_encoder", v) => {
                 keys.push("-c:v");
                 keys.push(v)
             }
-            (k,v) => {
+            (k, v) => {
                 keys.push(k);
                 keys.push(v);
             }
         }
     }
-    let keys = keys.iter().map(|f|f.to_string()).collect();
+    let keys = keys.iter().map(|f| f.to_string()).collect();
     Some(keys)
 }
 
 
 fn set_encoder_args(hardware_amd: bool, hardware_nvidea: bool, encode_av1: bool,
                     encode_hvec: bool, encode_h264: bool) -> Vec<String> {
-    
-    
-    match try_check_local_settings(){
-        Some(v) => { return v },
-        None =>{}
+    if !(hardware_nvidea | hardware_nvidea | encode_h264 | encode_hvec | encode_av1) {
+        match try_check_local_settings() {
+            Some(v) => { return v }
+            None => {}
+        }
     }
-    
+
     let hardware = if hardware_amd {
         "amd"
     } else if hardware_nvidea {
@@ -160,7 +160,7 @@ fn set_encoder_args(hardware_amd: bool, hardware_nvidea: bool, encode_av1: bool,
         ("none", "h265") => { ["-c:v", "libx265", "-speed", "slow", "-crf", "19"].as_slice() }
         ("none", "h264") => { ["-c:v", "libx264", "-speed", "slow", "-crf", "19"].as_slice() }
         _ => { panic!("entered encoders did not work") }
-    }.iter().map(|f|f.to_string()).collect()
+    }.iter().map(|f| f.to_string()).collect()
 }
 
 fn request_input(message: &str) -> String {
