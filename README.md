@@ -35,17 +35,18 @@ Options:
 ```
 
 ## Not setting the hardware encoder will be slow
+
 - AMD gpu users, or CPU with integrated GPU, use `--encode-amd`
 - Nvidea gpu users, use `--encode-nvidea`
 
 'How slow?' sub 10 fps usually, where a reasonable hvec encode on a 5000 series AMD gpu is around 60-80fps.
-1440p AV1 encoding on a Ryzen 3600x was running at around 1 fps.  
-
+1440p AV1 encoding on a Ryzen 3600x was running at around 1 fps.
 
 ### Setting the codec
+
 The codec will default to h265/hvec, but if you have access to AV1, use that
 
-##           
+##            
 
 Join a folder of videos in the `Double` layout at 1080p 60fps
 
@@ -92,14 +93,14 @@ Implemented for `VertEmph`, `VertEmph1`, `HorizEmph`, and `HorizEmph2`
 #### Special case 2
 
 Implemented for `CentreEmphVert`
- - File #1: large horizontal video list
- - File #2: vertical videos to either side
- - File #3: small horizontal video list
+
+- File #1: large horizontal video list
+- File #2: vertical videos to either side
+- File #3: small horizontal video list
 
 ```shell
 ./video_joiner.exe -f "D:\main_horizontal_videos" -f "D:\vertical_videos"  -f "D:\small_horizontal_videos" -o "D:\joined_video.mp4" --shape "CentreEmphVert"
 ```
-
 
 ## Sorting Options
 
@@ -115,7 +116,6 @@ Implemented for `CentreEmphVert`
     - sorts items with random, then pops the largest video and appends it to the end
 
 <hr> 
-
 
 ## Frame Shapes: names and layout images
 
@@ -145,12 +145,12 @@ Implemented for `CentreEmphVert`
 | Top row `1/3` `2/3`                                   | Top row `2/3` `1/3`                                   |
 | Enlarged side frames to reducing cropping             | Enlarged side frames to reducing cropping             |
 
-| `CentreEmphVert` or `CE` or `11`                      |
-|-------------------------------------------------------|
-| ![frame_shapes_7.svg](readme_data/frame_shapes_7.svg) |
-| Top row -- `1/5` ---- `3/5` ---- `1/5`                |
-| Bottom row ` " ` `1.5/5` `1.5/5` ` " `                |
-| bottom row height: `2/5`                              |
+| `CentreEmphVert` or `CE` or `11`                      | `CentreEmphVert2` or `CE2` or `12`                      |
+|-------------------------------------------------------|---------------------------------------------------------|
+| ![frame_shapes_8.svg](readme_data/frame_shapes_8.svg) | ![frame_shapes_8v.svg](readme_data/frame_shapes_8v.svg) |
+| Top row -- `1/5` ---- `3/5` ---- `1/5`                |                                                         |
+| Bottom row ` " ` `1.5/5` `1.5/5` ` " `                | duplicate of CentreEmphVert vertically mirrored         |
+| bottom row height: `2/5`                              | (large centre frame is on the lower half                |
 
 ## Audio & why exports can be slow
 
@@ -196,7 +196,6 @@ Basic descriptions of how each method works can be found below
 |:-----------------------------|:-----------------------------------------------------------------:|:-------------------:|
 | **Horizontal <br/> Group 1** |         Stereo balance: -0.1  <br/>  Surround angle: -20          | Surround angle: +90 |
 | **Horizontal <br/> Group 2** | Stereo balance: -0.1  <br/>  Surround angle: -20 <br> Volume -5db |        <hr>         |
-
 
 ## To be integrated at some point:
 
