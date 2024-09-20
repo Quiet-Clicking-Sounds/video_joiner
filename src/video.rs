@@ -172,7 +172,7 @@ impl VideoEditData {
                     (ow * 2 + owx, self.output_height - self.output_height / 2),
                 ];
             }
-            FrameShape::CentreEmphVert => {
+            FrameShape::CentreEmphVert | FrameShape::CentreEmphVert2 => {
                 let wmid = self.output_width / 5 * 3;
                 let w_l = (self.output_width - wmid) / 2;
                 let w_r = self.output_width - wmid - w_l;
@@ -645,7 +645,7 @@ impl VideoGroup {
                     shape_style: screens,
                 };
             }
-            (FrameShape::CentreEmphVert, 3) => {
+            (FrameShape::CentreEmphVert, 3)|(FrameShape::CentreEmphVert2, 3) => {
                 // top horizontal group
                 let videos1 = VideoList::from_videos(helper_functions::scan_dir_for_videos(srcs[0].clone()), 0, sorter.clone());
                 // vertical group
