@@ -36,17 +36,23 @@ Options:
 
 ## Not setting the hardware encoder will be slow
 
-- AMD gpu users, or CPU with integrated GPU, use `--encode-amd`
-- Nvidea gpu users, use `--encode-nvidea`
-
 'How slow?' sub 10 fps usually, where a reasonable hvec encode on a 5000 series AMD gpu is around 60-80fps.
 1440p AV1 encoding on a Ryzen 3600x was running at around 1 fps.
 
-### Setting the codec
+### settings through settings.ini
+First copy `settings-default.ini` as `settings.ini`, ensure it is placed in the same folder as the video_joiner.exe executable file. 
 
-The codec will default to h265/hvec, but if you have access to AV1, use that
+Next, add or change the relevant settings for your graphics card, some are listed in the `.ini` file others can be found on the ffmpeg wiki:  https://trac.ffmpeg.org/wiki/HWAccelIntro
 
-##            
+
+### using settings via commanline
+
+Commandline encoder parameters will override but not overwrite settings parameters.
+
+- AMD gpu users, or CPU with integrated GPU, use `--encode-amd`
+- Nvidea gpu users, use `--encode-nvidea`
+
+## Layout Examples
 
 Join a folder of videos in the `Double` layout at 1080p 60fps
 
