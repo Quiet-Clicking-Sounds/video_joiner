@@ -160,6 +160,7 @@ fn run_from_cli(args: Cli) -> (VideoGroup, bool, &'static[&'static str] ) {
         "sidevert" | "vd" | "9" => { FrameShape::SideVert }
         "sidevert2" | "dv" | "10" => { FrameShape::SideVert2 }
         "centreemphvert" | "ce" | "11" => { FrameShape::CentreEmphVert }
+        "centreemphvert2" | "ce2" | "12" => { FrameShape::CentreEmphVert2 }
         x => { panic!("No match found for split format: {}", x) }
     };
 
