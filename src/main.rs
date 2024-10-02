@@ -55,6 +55,7 @@ struct Cli {
     /// Apply sorting method Options include: 
     ///     "1", "Random", "rand" (default)
     ///     "2", "RandomSeeded", "seed"
+    ///     "2r", "RandomSeededR", "seedR"
     ///     "3", "ShortestFirst", "shortest"
     ///     "4", "LongestFirst", "longest"
     ///     "5", "RandomWithLargestLast", "rwll"
@@ -211,6 +212,7 @@ fn run_from_cli(args: Cli) -> (VideoGroup, bool, Vec<String>) {
     let sort_ord = match args.ord.unwrap_or("Random".to_string()).to_lowercase().as_str().trim() {
         "1" | "random" | "rand" => SortOrder::Random,
         "2" | "randomseeded" | "seed" => SortOrder::RandomSeeded(args.ord_opt),
+        "2r" | "randomseededr" | "seedr" => SortOrder::RandomSeededR(args.ord_opt),
         "3" | "shortestfirst" | "shortest" => SortOrder::ShortestFirst,
         "4" | "longestfirst" | "longest" => SortOrder::LongestFirst,
         "5" | "randomwithlargestlast" | "rwll" => SortOrder::RandomWithLargestLast,

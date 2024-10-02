@@ -12,6 +12,7 @@ use rand::SeedableRng;
 pub(crate) enum SortOrder {
     Random,
     RandomSeeded(u64),
+    RandomSeededR(u64),
     ShortestFirst,
     LongestFirst,
     RandomWithLargestLast,
@@ -35,6 +36,12 @@ impl SortOrder {
             SortOrder::RandomSeeded(s) => {
                 let mut rng = <StdRng as SeedableRng>::seed_from_u64(s.clone());
                 videos.shuffle(&mut rng);
+                videos
+            }
+            SortOrder::RandomSeededR(s) => {
+                let mut rng = <StdRng as SeedableRng>::seed_from_u64(s.clone());
+                videos.shuffle(&mut rng);
+                videos.reverse();
                 videos
             }
             SortOrder::ShortestFirst => {

@@ -100,9 +100,13 @@ Implemented for `VertEmph`, `VertEmph1`, `HorizEmph`, and `HorizEmph2`
 
 Implemented for `CentreEmphVert`
 
-- File #1: large horizontal video list
-- File #2: vertical videos to either side
-- File #3: small horizontal video list
+- 3 files
+ - File #1: large horizontal video list
+ - File #2: vertical videos to either side
+ - File #3: small horizontal video list
+- 2 files
+ - File #1: vertical videos to either side
+ - File #2: small horizontal video list
 
 ```shell
 ./video_joiner.exe -f "D:\main_horizontal_videos" -f "D:\vertical_videos"  -f "D:\small_horizontal_videos" -o "D:\joined_video.mp4" --shape "CentreEmphVert"

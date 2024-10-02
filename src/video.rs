@@ -664,6 +664,25 @@ impl VideoGroup {
                     shape_style: screens,
                 };
             }
+            (FrameShape::CentreEmphVert, 2) | (FrameShape::CentreEmphVert2, 2) => {
+                // vertical group
+                let mut videos2 = helper_functions::video_group_swap(srcs[0].clone(), FrameShape::Dual).into_iter();
+                // bottom horizontal group
+                let mut videos3 = helper_functions::video_group_swap(srcs[1].clone(), FrameShape::Triple).into_iter();
+
+                return VideoGroup {
+                    videos: vec![
+                        VideoList::from_videos(videos3.next().unwrap(), 0, sorter.clone()),
+                        VideoList::from_videos(videos2.next().unwrap(), 1, sorter.clone()),
+                        VideoList::from_videos(videos2.next().unwrap(), 2, sorter.clone()),
+                        VideoList::from_videos(videos3.next().unwrap(), 3, sorter.clone()),
+                        VideoList::from_videos(videos3.next().unwrap(), 4, sorter.clone()),
+                    ],
+                    output_target: src_out.into(),
+                    video_sizer: VideoEditData::init(),
+                    shape_style: screens,
+                };
+            }
             (_, _) => {}
         }
 
