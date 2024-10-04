@@ -8,6 +8,7 @@ Options:
   -f, --folder <INPUT_FOLDER>   Target *folder* holding videos to join: if unused a request will be given via text input.
                                 - Example to automatically split items into groups: -f "C:\Users\username\Videos\videos_to_join\"
                                 - Example to use folder as a group: -f "D:\videos\left" -f "D:\videos\mid" -f "D:\videos\right"
+                                - Example to use more than one folder for a single input: -f "D:\videos\left1|D:\videos\left2"
   -o, --output <OUTPUT_FILE>    Target *file* to output joined video (requires extension)
                                 if unused a request will be given via text input;
                                 - Example: C:\Users\username\Videos\example.mp4
@@ -20,6 +21,7 @@ Options:
       --ord <ORD>               Apply sorting method Options include: 
                                     "1", "Random", "rand" (default)
                                     "2", "RandomSeeded", "seed"
+                                    "2r", "RandomSeededR", "seedR"
                                     "3", "ShortestFirst", "shortest"
                                     "4", "LongestFirst", "longest"
                                     "5", "RandomWithLargestLast", "rwll"

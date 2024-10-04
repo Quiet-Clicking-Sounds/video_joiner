@@ -27,6 +27,7 @@ struct Cli {
     /// Target *folder* holding videos to join: if unused a request will be given via text input.
     /// - Example to automatically split items into groups: -f "C:\Users\username\Videos\videos_to_join\"
     /// - Example to use folder as a group: -f "D:\videos\left" -f "D:\videos\mid" -f "D:\videos\right"
+    /// - Example to use more than one folder for a single input: -f "D:\videos\left1|D:\videos\left2"
     #[arg(short = 'f', long = "folder", action=clap::ArgAction::Append, verbatim_doc_comment)]
     input_folder: Vec<MultiPathBuf>,
 
