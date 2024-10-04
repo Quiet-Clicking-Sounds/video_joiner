@@ -15,7 +15,7 @@ use ffprobe;
 
 use crate::audio::join_audio_video_streams;
 use crate::helper_functions;
-use crate::helper_functions::{iter_ffmpeg_events, seconds_to_hhmmss};
+use crate::helper_functions::{iter_ffmpeg_events, seconds_to_hhmmss, MultiPathBuf};
 use crate::switches::{FrameShape, SortOrder};
 
 
@@ -563,7 +563,7 @@ pub struct VideoGroup {
 
 impl VideoGroup {
     pub fn new_from_folder(
-        src: impl Into<PathBuf>,
+        src: impl Into<MultiPathBuf>,
         src_out: impl Into<PathBuf>,
         screens: FrameShape,
         sorter: SortOrder,
@@ -587,7 +587,7 @@ impl VideoGroup {
     }
 
     pub fn new_from_folders(
-        srcs: Vec<PathBuf>,
+        srcs: Vec<MultiPathBuf>,
         src_out: impl Into<PathBuf>,
         screens: FrameShape,
         sorter: SortOrder,

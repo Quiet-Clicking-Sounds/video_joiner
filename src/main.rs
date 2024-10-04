@@ -1,10 +1,12 @@
 use std::path::PathBuf;
-
+use std::str::FromStr;
 use crate::switches::SortOrder;
 use crate::video::{VideoEditData, VideoGroup};
 use clap::{arg, Parser};
 use ini::Ini;
 use switches::FrameShape;
+use crate::helper_functions::MultiPathBuf;
+
 pub(crate) mod group_split;
 pub(crate) mod helper_functions;
 pub(crate) mod video;
@@ -26,7 +28,7 @@ struct Cli {
     /// - Example to automatically split items into groups: -f "C:\Users\username\Videos\videos_to_join\"
     /// - Example to use folder as a group: -f "D:\videos\left" -f "D:\videos\mid" -f "D:\videos\right"
     #[arg(short = 'f', long = "folder", action=clap::ArgAction::Append, verbatim_doc_comment)]
-    input_folder: Vec<PathBuf>,
+    input_folder: Vec<MultiPathBuf>,
 
     /// Target *file* to output joined video (requires extension)
     /// if unused a request will be given via text input;
@@ -172,7 +174,7 @@ fn request_input(message: &str) -> String {
     buffer
 }
 
-fn get_folders_multi(shape: FrameShape) -> Vec<PathBuf> {
+fn get_folders_multi(shape: FrameShape) -> Vec<MultiPathBuf> {
     let switch: bool = match shape {
         FrameShape::Dual | FrameShape::Triple | FrameShape::Quad => {
             let req = request_input(
@@ -184,8 +186,8 @@ fn get_folders_multi(shape: FrameShape) -> Vec<PathBuf> {
     };
     let count = if switch { 1 } else { shape.count() };
 
-    let items: Vec<PathBuf> = (1..=count).into_iter().map(|x| {
-        PathBuf::from(request_input(format!("Input Folder Name #{}: ", x).as_str()).as_str().trim())
+    let items: Vec<MultiPathBuf> = (1..=count).into_iter().map(|x| {
+        MultiPathBuf::from_str(request_input(format!("Input Folder Name #{}: ", x).as_str()).as_str().trim()).unwrap()
     }).collect();
     items
 }
@@ -222,7 +224,7 @@ fn run_from_cli(args: Cli) -> (VideoGroup, bool, Vec<String>) {
 
     let mut folder_target = args.input_folder;
     if folder_target.len() == 0 {
-        folder_target = get_folders_multi(split_format.clone())
+        folder_target = get_folders_multi(split_format.clone());
     }
 
     let output_file = args.output_file.unwrap_or_else(|| {

@@ -6,7 +6,15 @@ use crate::video::Video;
 use ffmpeg_sidecar::child::FfmpegChild;
 use ffmpeg_sidecar::event::{FfmpegEvent, LogLevel};
 use std::path::PathBuf;
+use std::str::FromStr;
 use std::time;
+
+
+#[cfg(target_os = "windows")]
+const PATH_DELIMITER: char = '|';
+
+#[cfg(not(target_os = "windows"))]
+const PATH_DELIMITER: char = '/';
 
 pub fn iter_ffmpeg_events(child: &mut FfmpegChild) {
     for i in child.iter().unwrap() {
@@ -75,6 +83,51 @@ pub fn seconds_to_hhmmss(sec: u64) -> String {
     format!("{:02}-{:02}-{:02}", hour, min, sec)
 }
 
+#[derive(Clone, Debug)]
+pub(crate) struct MultiPathBuf {
+    inner: Vec<PathBuf>,
+}
+
+impl FromStr for MultiPathBuf {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        let data = if s.contains(PATH_DELIMITER) {
+            s.split(PATH_DELIMITER).map(|f| { PathBuf::from(f) }).collect()
+        } else {
+            vec![PathBuf::from(s)]
+        };
+        Ok(
+            MultiPathBuf {
+                inner: data,
+            }
+        )
+    }
+}
+
+impl MultiPathBuf {
+    pub fn read_dir(&self) -> Vec<PathBuf> {
+        let out: Vec<PathBuf> = self.inner.iter()
+            .map(|f| f.read_dir().unwrap()
+                .into_iter().map(|p| p.unwrap().path()))
+            .flatten()
+            .collect();
+        out
+    }
+    fn is_dir(&self) -> bool{
+        self.inner.iter().all(|a|a.is_dir())
+    }
+    
+}
+
+impl Into<MultiPathBuf> for &MultiPathBuf{
+    fn into(self) -> MultiPathBuf {
+        MultiPathBuf{
+            inner:self.inner.clone()
+        }
+    }
+}
+
 
 #[cfg(feature = "hyperDebug")]
 #[inline]
@@ -114,13 +167,13 @@ mod tests {
 #[inline]
 fn parse_debug(text: &str, f: &str, l: u32) {}
 
-fn scan_dir_for_videos_with_len(dir: impl Into<PathBuf>) -> Vec<(i64, Video)> {
+fn scan_dir_for_videos_with_len(dir: impl Into<MultiPathBuf>) -> Vec<(i64, Video)> {
     let mut all_videos = Vec::new();
-    for i in dir.into().read_dir().expect("failed to read directory") {
-        let i = i.unwrap();
-        if i.path().is_file() {
+    for i in dir.into().read_dir() {
+        
+        if i.is_file() {
             // setup vid items
-            let mut vd = Video::from_path(i.path());
+            let mut vd = Video::from_path(i.as_path());
             let le = match vd.get_length() {
                 Ok(le) => le,
                 Err(_) => {
@@ -134,20 +187,20 @@ fn scan_dir_for_videos_with_len(dir: impl Into<PathBuf>) -> Vec<(i64, Video)> {
     all_videos
 }
 
-pub fn scan_dir_for_videos(dir: impl Into<PathBuf>) -> Vec<Video> {
+pub fn scan_dir_for_videos(dir: impl Into<MultiPathBuf>) -> Vec<Video> {
     let mut all_videos = Vec::new();
-    for i in dir.into().read_dir().expect("failed to read directory") {
-        let i = i.unwrap();
-        if i.path().is_file() {
+    for i in dir.into().read_dir() {
+        
+        if i.is_file() {
             // setup vid items
-            let vd = Video::from_path(i.path());
+            let vd = Video::from_path(i.as_path());
             all_videos.push(vd);
         };
     }
     all_videos
 }
 
-pub fn video_group_swap(src: impl Into<PathBuf>, screens: FrameShape) -> Vec<Vec<Video>> {
+pub fn video_group_swap(src: impl Into<MultiPathBuf>, screens: FrameShape) -> Vec<Vec<Video>> {
     let src = src.into();
     assert!(src.is_dir(), "Given Input Directory Does Not Exist"); // not my fault
     let all_videos = scan_dir_for_videos_with_len(src);

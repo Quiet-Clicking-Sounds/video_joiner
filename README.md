@@ -40,9 +40,11 @@ Options:
 1440p AV1 encoding on a Ryzen 3600x was running at around 1 fps.
 
 ### settings through settings.ini
-First copy `settings-default.ini` as `settings.ini`, ensure it is placed in the same folder as the video_joiner.exe executable file. 
+First copy `settings-default.ini` as `settings.ini`, ensure it is placed in the same folder as the video_joiner.exe 
+executable file. 
 
-Next, add or change the relevant settings for your graphics card, some are listed in the `.ini` file others can be found on the ffmpeg wiki:  https://trac.ffmpeg.org/wiki/HWAccelIntro
+Next, add or change the relevant settings for your graphics card, some are listed in the `.ini` 
+file others can be found on the ffmpeg wiki:  https://trac.ffmpeg.org/wiki/HWAccelIntro
 
 
 ### using settings via commanline
@@ -51,6 +53,14 @@ Commandline encoder parameters will override but not overwrite settings paramete
 
 - AMD gpu users, or CPU with integrated GPU, use `--encode-amd`
 - Nvidea gpu users, use `--encode-nvidea`
+
+## Path delimiter used in `-f` file inputs: 
+
+- Windows path delimiter: `|` (pipe character)
+- Linux path delimiter: `/` (forward slash character)
+
+Use the delimiter character to concatenate file inputs, for example: `D:\videos\group1|D:\videos\group2` would treat 
+both `D:\videos\group1` and `D:\videos\group2` as if they were a single folder. 
 
 ## Layout Examples
 
