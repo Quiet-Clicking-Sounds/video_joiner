@@ -861,6 +861,7 @@ impl VideoGroup {
                     eprintln!("main_loop: frames_joined_failure {:?}", x);
                     println!("ErrorKind = {:?}", x.kind());
                     println!("HELP: \n\tThis is usually because of an incorrectly configured video encoder. (see settings.ini)");
+                    println!("\tIt could also be becasue ffmpeg cannot access the output file specified");
                     panic!("Un recoverable error in ffmpeg pipe")
                 }
             }
