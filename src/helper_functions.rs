@@ -107,23 +107,29 @@ impl FromStr for MultiPathBuf {
 
 impl MultiPathBuf {
     pub fn read_dir(&self) -> Vec<PathBuf> {
-        let out: Vec<PathBuf> = self.inner.iter()
-            .map(|f| f.read_dir().unwrap()
-                .into_iter().map(|p| p.unwrap().path()))
-            .flatten()
-            .collect();
+        let mut out = vec![];
+        for f in self.inner.iter(){
+            if f.is_file() {
+                out.push(f.clone());
+                continue
+            }
+            let o1 =  f.read_dir()
+                .unwrap()
+                .into_iter()
+                .map(|p| p.unwrap().path());
+            out.extend(o1)
+        }
         out
     }
-    fn is_dir(&self) -> bool{
-        self.inner.iter().all(|a|a.is_dir())
+    fn is_dir(&self) -> bool {
+        self.inner.iter().all(|a| a.is_dir())
     }
-    
 }
 
-impl Into<MultiPathBuf> for &MultiPathBuf{
+impl Into<MultiPathBuf> for &MultiPathBuf {
     fn into(self) -> MultiPathBuf {
-        MultiPathBuf{
-            inner:self.inner.clone()
+        MultiPathBuf {
+            inner: self.inner.clone()
         }
     }
 }
@@ -170,7 +176,6 @@ fn parse_debug(text: &str, f: &str, l: u32) {}
 fn scan_dir_for_videos_with_len(dir: impl Into<MultiPathBuf>) -> Vec<(i64, Video)> {
     let mut all_videos = Vec::new();
     for i in dir.into().read_dir() {
-        
         if i.is_file() {
             // setup vid items
             let mut vd = Video::from_path(i.as_path());
@@ -190,7 +195,6 @@ fn scan_dir_for_videos_with_len(dir: impl Into<MultiPathBuf>) -> Vec<(i64, Video
 pub fn scan_dir_for_videos(dir: impl Into<MultiPathBuf>) -> Vec<Video> {
     let mut all_videos = Vec::new();
     for i in dir.into().read_dir() {
-        
         if i.is_file() {
             // setup vid items
             let vd = Video::from_path(i.as_path());
