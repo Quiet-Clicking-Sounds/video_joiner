@@ -90,7 +90,11 @@ pub(crate) enum FrameShape {
     /// see [readme_data/frame_shapes_8.svg](../readme_data/frame_shapes_8.svg) for shape ref
     CentreEmphVert,
     /// see [readme_data/frame_shapes_8v.svg](../readme_data/frame_shapes_8v.svg) for shape ref
-    CentreEmphVert2
+    CentreEmphVert2,
+    /// see [readme_data/frame_shapes_9.svg](../readme_data/frame_shapes_8v.svg) for shape ref
+    MoreHoriz,
+    /// see [readme_data/frame_shapes_9v.svg](../readme_data/frame_shapes_8v.svg) for shape ref
+    MoreHoriz2,
 }
 
 impl FrameShape {
@@ -171,6 +175,18 @@ impl FrameShape {
                 [a][b][c][d][e]amix=inputs=5[d];[d]loudnorm[d]\
                 ".to_string()
             }
+            FrameShape::MoreHoriz|FrameShape::MoreHoriz2 => {
+                "\
+                [6:a]stereotools=balance_in=-0.4[x];[x]surround=chl_out=stereo:chl_in=stereo:angle=90[x];[x]volume=-5dB[b];\
+                [2:a]stereotools=balance_in=-0.6[x];[x]surround=chl_out=stereo:chl_in=stereo:angle=90[x];[x]volume=-2dB[c];\
+                [1:a]surround=chl_out=stereo:chl_in=stereo:angle=0[a];\
+                [4:a]stereotools=balance_in=-0.2[x];[x]surround=chl_out=stereo:chl_in=stereo:angle=90[x];[x]volume=-5dB[d];\
+                [5:a]stereotools=balance_in=-0.2[x];[x]surround=chl_out=stereo:chl_in=stereo:angle=270[x];[x]volume=-5dB[e];\
+                [7:a]stereotools=balance_in=-0.4[x];[x]surround=chl_out=stereo:chl_in=stereo:angle=270[x];[x]volume=-5dB[f];\
+                [3:a]stereotools=balance_in=-0.6[x];[x]surround=chl_out=stereo:chl_in=stereo:angle=270[x];[x]volume=-2dB[g];\
+                [a][b][c][d][e][f][g]amix=inputs=7[d];[d]loudnorm[d]\
+                ".to_string()
+            }
         }
     }
     pub(crate) fn count(&self) -> u32 {
@@ -182,6 +198,7 @@ impl FrameShape {
             FrameShape::CentreEmphVert| FrameShape::CentreEmphVert2 => 5,
             FrameShape::HorizEmph | FrameShape::HorizEmph2 => 4,
             FrameShape::SideVert | FrameShape::SideVert2 => 3,
+            FrameShape::MoreHoriz|FrameShape::MoreHoriz2 => 7
         }
     }
 }
@@ -412,6 +429,104 @@ impl Joiner for FrameShape {
                     match chunks[2].next() {
                             None => break 'outter, 
                             Some(ch) => out.extend_from_slice(ch),
+                    }
+                }
+            }
+            FrameShape::MoreHoriz => {
+                let mut switch1: bool = true;
+                let mut switch2: bool = true;
+                let mut switch3: bool = true;
+                loop {
+                    if switch1 {
+                        match chunks[5].next() { 
+                            None => switch1=false,
+                            Some(ch) => out.extend_from_slice(ch)
+                        }
+                    }
+                    if !switch1 {
+                        match chunks[1].next() { 
+                            None => break,
+                            Some(ch) => out.extend_from_slice(ch)
+                        }
+                    }
+                    
+                    if switch2 {
+                        match chunks[0].next() { 
+                            None => switch2=false,
+                            Some(ch) => out.extend_from_slice(ch)
+                        }
+                    }
+                    if !switch2 {
+                        match chunks[3].next() { 
+                            None => break,
+                            Some(ch) => out.extend_from_slice(ch)
+                        }
+                        match chunks[4].next() { 
+                            None => break,
+                            Some(ch) => out.extend_from_slice(ch)
+                        }
+                    }
+                    
+                    if switch3 {
+                        match chunks[6].next() { 
+                            None => switch3=false,
+                            Some(ch) => out.extend_from_slice(ch)
+                        }
+                    }
+                    if !switch3 {
+                        match chunks[2].next() { 
+                            None => break,
+                            Some(ch) => out.extend_from_slice(ch)
+                        }
+                    }
+                }
+            }
+            FrameShape::MoreHoriz2 => {
+                let mut switch1: bool = true;
+                let mut switch2: bool = true;
+                let mut switch3: bool = true;
+                loop {
+                    if switch1 {
+                        match chunks[1].next() { 
+                            None => switch1=false,
+                            Some(ch) => out.extend_from_slice(ch)
+                        }
+                    }
+                    if !switch1 {
+                        match chunks[5].next() { 
+                            None => break,
+                            Some(ch) => out.extend_from_slice(ch)
+                        }
+                    }
+                    
+                    if switch2 {
+                        match chunks[3].next() { 
+                            None => switch2=false,
+                            Some(ch) => out.extend_from_slice(ch)
+                        }
+                        match chunks[4].next() { 
+                            None => switch2=false,
+                            Some(ch) => out.extend_from_slice(ch)
+                        }
+                    }
+                    if !switch2 {
+                        match chunks[0].next() { 
+                            None => break,
+                            Some(ch) => out.extend_from_slice(ch)
+                        }
+                    }
+                    
+                    if switch3 {
+                        match chunks[2].next() { 
+                            None => switch3=false,
+                            Some(ch) => out.extend_from_slice(ch)
+                        }
+                    }
+                    if !switch3 {
+                        match chunks[6].next() { 
+                            None => break,
+                            Some(ch) => out.extend_from_slice(ch)
+                        }
                     }
                 }
             }

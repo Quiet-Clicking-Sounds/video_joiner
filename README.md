@@ -174,6 +174,20 @@ Implemented for `CentreEmphVert`
 | Bottom row ` " ` `1.5/5` `1.5/5` ` " `                | duplicate of CentreEmphVert vertically mirrored         |
 | bottom row height: `2/5`                              | (large centre frame is on the lower half                |
 
+
+| `MoreHoriz` or `MH` or `13`                           | `MoreHoriz` or `MH2` or `14`                            |
+|-------------------------------------------------------|---------------------------------------------------------|
+| ![frame_shapes_9.svg](readme_data/frame_shapes_8.svg) | ![frame_shapes_9v.svg](readme_data/frame_shapes_8v.svg) |
+| Top row -- `1/5` ---- `3/5` ---- `1/5`                |                                                         |
+| Bottom row ` " ` `1.5/5` `1.5/5` ` " `                | duplicate of CentreEmphVert vertically mirrored         |
+| bottom row height: `2/5`                              | (large centre frame is on the lower half                |
+
+
+
+
+
+
+
 ## Audio & why exports can be slow
 
 audio export can be slow as it cannot be started untill the video export is complete, each video group will be
@@ -218,6 +232,11 @@ Basic descriptions of how each method works can be found below
 |:-----------------------------|:-----------------------------------------------------------------:|:-------------------:|
 | **Horizontal <br/> Group 1** |         Stereo balance: -0.1  <br/>  Surround angle: -20          | Surround angle: +90 |
 | **Horizontal <br/> Group 2** | Stereo balance: -0.1  <br/>  Surround angle: -20 <br> Volume -5db |        <hr>         |
+
+| `MoreHoriz`                  |                                                                   |                  |
+|:-----------------------------|:-----------------------------------------------------------------:|:----------------:|
+| **Horizontal <br/> Group 1** |                                                                   |                  |
+| **Horizontal <br/> Group 2** |                                                                   |                  |
 
 ## To be integrated at some point:
 
