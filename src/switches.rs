@@ -95,6 +95,8 @@ pub(crate) enum FrameShape {
     MoreHoriz,
     /// see [readme_data/frame_shapes_9v.svg](../readme_data/frame_shapes_8v.svg) for shape ref
     MoreHoriz2,
+    /// see [readme_data/frame_shapes_9v.svg](../readme_data/frame_shapes_10.svg) for shape ref
+    ExtendedLandscape,
 }
 
 impl FrameShape {
@@ -164,7 +166,7 @@ impl FrameShape {
                 [a][b][c]amix=inputs=3[d];[d]loudnorm[d]\
                 ".to_string()
             }
-            FrameShape::CentreEmphVert|FrameShape::CentreEmphVert2 => {
+            FrameShape::CentreEmphVert | FrameShape::CentreEmphVert2 => {
                 "\
                 [2:a]stereotools=balance_in=-0.4[a];[a]surround=chl_out=stereo:chl_in=stereo:angle=270[a];\
                 [1:a]surround=chl_out=stereo:chl_in=stereo:angle=0[b];\
@@ -175,7 +177,7 @@ impl FrameShape {
                 [a][b][c][d][e]amix=inputs=5[d];[d]loudnorm[d]\
                 ".to_string()
             }
-            FrameShape::MoreHoriz|FrameShape::MoreHoriz2 => {
+            FrameShape::MoreHoriz | FrameShape::MoreHoriz2 => {
                 "\
                 [6:a]stereotools=balance_in=-0.4[x];[x]surround=chl_out=stereo:chl_in=stereo:angle=90[x];[x]volume=-5dB[b];\
                 [2:a]stereotools=balance_in=-0.6[x];[x]surround=chl_out=stereo:chl_in=stereo:angle=90[x];[x]volume=-2dB[c];\
@@ -187,6 +189,20 @@ impl FrameShape {
                 [a][b][c][d][e][f][g]amix=inputs=7[d];[d]loudnorm[d]\
                 ".to_string()
             }
+            FrameShape::ExtendedLandscape =>{
+                "\
+                [1:a]surround=chl_out=stereo:chl_in=stereo:angle=0[a];\
+                [2:a]stereotools=balance_in=-0.2[x];[x]surround=chl_out=stereo:chl_in=stereo:angle=90[x];[x]volume=-3dB[b];\
+                [3:a]stereotools=balance_in=0.2[x];[x]surround=chl_out=stereo:chl_in=stereo:angle=270[x];[x]volume=-3dB[c];\
+                [4:a]stereotools=balance_in=-0.4[x];[x]surround=chl_out=stereo:chl_in=stereo:angle=90[x];[x]volume=-5dB[d];\
+                [5:a]stereotools=balance_in=0.4[x];[x]surround=chl_out=stereo:chl_in=stereo:angle=270[x];[x]volume=-5dB[e];\
+                [6:a]stereotools=balance_in=-0.4[x];[x]surround=chl_out=stereo:chl_in=stereo:angle=90[x];[x]volume=-6dB[f];\
+                [7:a]stereotools=balance_in=0.4[x];[x]surround=chl_out=stereo:chl_in=stereo:angle=270[x];[x]volume=-6dB[g];\
+                [8:a]stereotools=balance_in=-0.4[x];[x]surround=chl_out=stereo:chl_in=stereo:angle=90[x];[x]volume=-7dB[h];\
+                [9:a]stereotools=balance_in=0.4[x];[x]surround=chl_out=stereo:chl_in=stereo:angle=270[x];[x]volume=-7dB[i];\
+                [a][b][c][d][e][f][g][h][i]amix=inputs=9[d];[d]loudnorm[d]\
+                ".to_string()
+            }
         }
     }
     pub(crate) fn count(&self) -> u32 {
@@ -194,28 +210,28 @@ impl FrameShape {
             FrameShape::Dual => 2,
             FrameShape::Triple => 3,
             FrameShape::Quad => 4,
-            FrameShape::VertEmph | FrameShape::VertEmph2 | 
-            FrameShape::CentreEmphVert| FrameShape::CentreEmphVert2 => 5,
+            FrameShape::VertEmph | FrameShape::VertEmph2 |
+            FrameShape::CentreEmphVert | FrameShape::CentreEmphVert2 => 5,
             FrameShape::HorizEmph | FrameShape::HorizEmph2 => 4,
             FrameShape::SideVert | FrameShape::SideVert2 => 3,
-            FrameShape::MoreHoriz|FrameShape::MoreHoriz2 => 7
+            FrameShape::MoreHoriz | FrameShape::MoreHoriz2 => 7,
+            FrameShape::ExtendedLandscape => 9,
         }
     }
 }
 
 impl Joiner for FrameShape {
-    
     /// join methods for a single frame.
-    /// 
+    ///
     /// new frame shapes must be implemented here
-    /// 
+    ///
     /// # Arguments 
-    /// 
+    ///
     /// * `frames`: list of frames from each video input
     /// * `out_sh`: shape data
-    /// 
+    ///
     /// returns: Vec<u8, Global> 
-    /// 
+    ///
     fn frame_joiner(&self, mut frames: Vec<OutputVideoFrame>, out_sh: &VideoEditData) -> Vec<u8> {
         let mut out =
             Vec::with_capacity((&out_sh.output_height * &out_sh.output_width * 3) as usize);
@@ -301,10 +317,10 @@ impl Joiner for FrameShape {
                             None => { switch = false }
                             Some(ch) => out.extend_from_slice(ch),
                         }
-                    } 
+                    }
                     // Important note: Do not change this to an else statement
                     // if switch is None !switch must happen
-                    if !switch  {
+                    if !switch {
                         match chunks[2].next() {
                             None => break 'outter,
                             Some(ch) => out.extend_from_slice(ch),
@@ -328,10 +344,10 @@ impl Joiner for FrameShape {
                             None => { switch = false }
                             Some(ch) => out.extend_from_slice(ch),
                         }
-                    } 
+                    }
                     // Important note: Do not change this to an else statement
                     // if switch is None !switch must happen
-                    if !switch  {
+                    if !switch {
                         match chunks[2].next() {
                             None => break 'outter,
                             Some(ch) => out.extend_from_slice(ch),
@@ -347,7 +363,7 @@ impl Joiner for FrameShape {
                             None => { switch = false }
                             Some(ch) => out.extend_from_slice(ch),
                         }
-                    } 
+                    }
                     // Important note: Do not change this to an else statement
                     // if switch is None !switch must happen
                     if !switch {
@@ -367,8 +383,8 @@ impl Joiner for FrameShape {
                 'outter: loop {
                     // this is a full height item, always iter over it
                     match chunks[1].next() {
-                            None => break 'outter, 
-                            Some(ch) => out.extend_from_slice(ch),
+                        None => break 'outter,
+                        Some(ch) => out.extend_from_slice(ch),
                     }
                     // the top part and bottom part are diferent, once the top has been consumed
                     // we need to use the bottom part
@@ -377,10 +393,10 @@ impl Joiner for FrameShape {
                             None => { switch = false }
                             Some(ch) => out.extend_from_slice(ch),
                         }
-                    } 
+                    }
                     // Important note: Do not change this to an else statement
                     // if switch is None !switch must happen
-                    if !switch  { 
+                    if !switch {
                         match chunks[3].next() {
                             None => break 'outter,
                             Some(ch) => out.extend_from_slice(ch),
@@ -392,8 +408,8 @@ impl Joiner for FrameShape {
                     }
                     // this is a full height item, always iter over it
                     match chunks[2].next() {
-                            None => break 'outter, 
-                            Some(ch) => out.extend_from_slice(ch),
+                        None => break 'outter,
+                        Some(ch) => out.extend_from_slice(ch),
                     }
                 }
             }
@@ -402,8 +418,8 @@ impl Joiner for FrameShape {
                 'outter: loop {
                     // this is a full height item, always iter over it
                     match chunks[1].next() {
-                            None => break 'outter, 
-                            Some(ch) => out.extend_from_slice(ch),
+                        None => break 'outter,
+                        Some(ch) => out.extend_from_slice(ch),
                     }
                     // the top part and bottom part are diferent, once the top has been consumed
                     // we need to use the bottom part
@@ -416,10 +432,10 @@ impl Joiner for FrameShape {
                             None => { switch = false }
                             Some(ch) => out.extend_from_slice(ch),
                         }
-                    } 
+                    }
                     // Important note: Do not change this to an else statement
                     // if switch is None !switch must happen
-                    if !switch  { 
+                    if !switch {
                         match chunks[0].next() {
                             None => break 'outter,
                             Some(ch) => out.extend_from_slice(ch),
@@ -427,8 +443,8 @@ impl Joiner for FrameShape {
                     }
                     // this is a full height item, always iter over it
                     match chunks[2].next() {
-                            None => break 'outter, 
-                            Some(ch) => out.extend_from_slice(ch),
+                        None => break 'outter,
+                        Some(ch) => out.extend_from_slice(ch),
                     }
                 }
             }
@@ -438,43 +454,43 @@ impl Joiner for FrameShape {
                 let mut switch3: bool = true;
                 loop {
                     if switch1 {
-                        match chunks[5].next() { 
-                            None => switch1=false,
+                        match chunks[5].next() {
+                            None => switch1 = false,
                             Some(ch) => out.extend_from_slice(ch)
                         }
                     }
                     if !switch1 {
-                        match chunks[1].next() { 
+                        match chunks[1].next() {
                             None => break,
                             Some(ch) => out.extend_from_slice(ch)
                         }
                     }
-                    
+
                     if switch2 {
-                        match chunks[0].next() { 
-                            None => switch2=false,
+                        match chunks[0].next() {
+                            None => switch2 = false,
                             Some(ch) => out.extend_from_slice(ch)
                         }
                     }
                     if !switch2 {
-                        match chunks[3].next() { 
+                        match chunks[3].next() {
                             None => break,
                             Some(ch) => out.extend_from_slice(ch)
                         }
-                        match chunks[4].next() { 
+                        match chunks[4].next() {
                             None => break,
                             Some(ch) => out.extend_from_slice(ch)
                         }
                     }
-                    
+
                     if switch3 {
-                        match chunks[6].next() { 
-                            None => switch3=false,
+                        match chunks[6].next() {
+                            None => switch3 = false,
                             Some(ch) => out.extend_from_slice(ch)
                         }
                     }
                     if !switch3 {
-                        match chunks[2].next() { 
+                        match chunks[2].next() {
                             None => break,
                             Some(ch) => out.extend_from_slice(ch)
                         }
@@ -487,50 +503,118 @@ impl Joiner for FrameShape {
                 let mut switch3: bool = true;
                 loop {
                     if switch1 {
-                        match chunks[1].next() { 
-                            None => switch1=false,
+                        match chunks[1].next() {
+                            None => switch1 = false,
                             Some(ch) => out.extend_from_slice(ch)
                         }
                     }
                     if !switch1 {
-                        match chunks[5].next() { 
+                        match chunks[5].next() {
                             None => break,
                             Some(ch) => out.extend_from_slice(ch)
                         }
                     }
-                    
+
                     if switch2 {
-                        match chunks[3].next() { 
-                            None => switch2=false,
+                        match chunks[3].next() {
+                            None => switch2 = false,
                             Some(ch) => out.extend_from_slice(ch)
                         }
-                        match chunks[4].next() { 
-                            None => switch2=false,
+                        match chunks[4].next() {
+                            None => switch2 = false,
                             Some(ch) => out.extend_from_slice(ch)
                         }
                     }
                     if !switch2 {
-                        match chunks[0].next() { 
+                        match chunks[0].next() {
                             None => break,
                             Some(ch) => out.extend_from_slice(ch)
                         }
                     }
-                    
+
                     if switch3 {
-                        match chunks[2].next() { 
-                            None => switch3=false,
+                        match chunks[2].next() {
+                            None => switch3 = false,
                             Some(ch) => out.extend_from_slice(ch)
                         }
                     }
                     if !switch3 {
-                        match chunks[6].next() { 
+                        match chunks[6].next() {
                             None => break,
                             Some(ch) => out.extend_from_slice(ch)
                         }
                     }
                 }
             }
+            FrameShape::ExtendedLandscape => {
+                let mut switch1: u8 = 0u8;
+                let mut switch2: bool = true;
+                let mut switch3: u8 = 0u8;
+
+                loop {
+
+                    if switch1 == 0{
+                        match chunks[3].next() {
+                            None => switch1 += 1,
+                            Some(ch) => out.extend_from_slice(ch)
+                        }
+                    }
+                    if switch1 == 1{
+                        match chunks[5].next() {
+                            None => switch1 += 1,
+                            Some(ch) => out.extend_from_slice(ch)
+                        }
+                    }
+                    if switch1 == 2{
+                        match chunks[7].next() {
+                            None => break,
+                            Some(ch) => out.extend_from_slice(ch)
+                        }
+                    }
+
+
+                    if switch2 {
+                        match chunks[0].next() {
+                            None => switch2 = false,
+                            Some(ch) => out.extend_from_slice(ch)
+                        }
+                    }
+                    if !switch2 {
+                        match chunks[1].next() {
+                            None => break,
+                            Some(ch) => out.extend_from_slice(ch)
+                        }
+                        match chunks[2].next() {
+                            None => break,
+                            Some(ch) => out.extend_from_slice(ch)
+                        }
+                    }
+
+                    if switch3 == 0{
+                        match chunks[4].next() {
+                            None => switch3 += 1,
+                            Some(ch) => out.extend_from_slice(ch)
+                        }
+                    }
+                    if switch3 == 1{
+                        match chunks[6].next() {
+                            None => switch3 += 1,
+                            Some(ch) => out.extend_from_slice(ch)
+                        }
+                    }
+                    if switch3 == 2{
+                        match chunks[8].next() {
+                            None => break,
+                            Some(ch) => out.extend_from_slice(ch)
+                        }
+                    }
+
+
+                }
+
+            }
         }
+
 
         out
     }
