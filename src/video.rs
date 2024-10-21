@@ -302,35 +302,6 @@ impl Video {
     }
 
     //noinspection SpellCheckingInspection
-    fn audio_export(&self, out: &PathBuf) -> bool {
-        if self.frame_count < 1 {
-            return false;
-        };
-
-        let tar = self.src.clone();
-        let length = format!("{:.6}s", (self.frame_count.clone() as f32) / &self.fps);
-
-        let mut ffm = FfmpegCommand::new();
-        let ffm = ffm.input(tar.to_str().unwrap()).no_video();
-        let ffm = ffm.filter(format!(
-            "[0:a]apad=whole_dur={:.6}s[a]",
-            length
-        ));
-        let ffm = ffm
-            .args([
-                "-t", &length,
-                "-ar", "44100"
-            ])
-            .arg("-y")
-            .output(out.to_str().unwrap());
-
-        let mut complete = ffm.spawn().unwrap();
-        iter_ffmpeg_events(&mut complete);
-        complete.wait().unwrap();
-        true
-    }
-
-    //noinspection SpellCheckingInspection
     fn audio_export_proc_out(&self, out: &PathBuf) -> (bool, Option<FfmpegChild>) {
         if self.frame_count < 1 {
             return (false, None);
