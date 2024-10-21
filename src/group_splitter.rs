@@ -70,8 +70,10 @@ fn group_diff_avg(lst: &Vec<LenV>, groups: &usize) -> i64 {
 
 fn group_move(mut v_list: Vec<LenV>, groups: usize) -> Vec<LenV> {
     v_list.sort_unstable_by_key(|k| i64::MAX - k.inner);
-    let last_avg: i64 = group_diff_avg(&v_list, &groups);
-    loop {
+    let mut last_avg: i64 = group_diff_avg(&v_list, &groups);
+    println!("Group Move Start Avg: {}", last_avg/1000);
+    for _i in 0..256{
+        println!("group_move #{}",_i );
         let grp_sum = position_sums(&v_list, &groups);
         let (grp_min, grp_max) = position_sums_min_max(&grp_sum);
         let grp_diff = grp_max.1 - grp_min.1;
@@ -79,14 +81,17 @@ fn group_move(mut v_list: Vec<LenV>, groups: usize) -> Vec<LenV> {
             Some(position) => {
                 let pre = v_list[position].group;
                 v_list[position].group = grp_min.0;
+                println!("v_list[{}].group = {:?}, from {}", position, grp_min,pre);
                 if last_avg < group_diff_avg(&v_list, &groups) {
                     v_list[position].group = pre;
                     break;
                 }
+                last_avg = group_diff_avg(&v_list, &groups);
             }
             None => { break }
         }
-    }
+    } 
+    println!("Group Move End Avg: {}", group_diff_avg(&v_list, &groups)/1000);
     v_list
 }
 
@@ -94,13 +99,13 @@ fn group_swap(mut v_list: Vec<LenV>, groups: usize) -> Vec<LenV> {
     v_list.sort_unstable_by_key(|k| i64::MAX - k.inner);
     let last_avg: i64 = position_sums(&v_list, &groups).iter()
         .fold(0i64, |a, b| a + b) / (groups as i64);
-    loop {
+    for _ in 0..256{
         let grp_sum = position_sums(&v_list, &groups);
         let (grp_min, grp_max) = position_sums_min_max(&grp_sum);
 
         let filtermin = v_list.iter().filter(|f| f.group == grp_min.0);
         let filtermax = v_list.iter().filter(|f| f.group == grp_max.0);
-        
+
         let mut current_diff = grp_max.1 - grp_min.1;
         let mut set_action = None;
         for fmin in filtermin {
@@ -115,6 +120,7 @@ fn group_swap(mut v_list: Vec<LenV>, groups: usize) -> Vec<LenV> {
         match set_action {
             None => { break }
             Some((a, v)) => {
+                // something here doesn't work
                 let a_pos = v_list.binary_search(a).unwrap();
                 let v_pos = v_list.binary_search(v).unwrap();
                 (v_list[a_pos].group, v_list[v_pos].group) = (v_list[v_pos].group, v_list[a_pos].group);
@@ -137,6 +143,10 @@ pub fn video_regroup(v_list: Vec<Video>, groups: usize) -> Vec<Vec<Video>> {
     v_list = group_swap(v_list, groups);
 
     let mut out_lists: Vec<Vec<Video>> = (0..groups).map(|_| { Vec::default() }).collect();
-    for v in v_list { out_lists[v.group].push(v.into_video()) }
+    for v in v_list { out_lists[v.group].push(v.into_video()) };
+
+    #[cfg(feature = "hyperDebug")]
+    println!("VLIST: {:?}", out_lists.iter().map(|f|f.len()).collect::<Vec<_>>());
+
     out_lists
 }
