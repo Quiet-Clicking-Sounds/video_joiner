@@ -1,6 +1,6 @@
 use std::fmt::{Debug, Formatter};
 
-use crate::group_split;
+use crate::{group_split, group_splitter};
 use crate::switches::FrameShape;
 use crate::video::Video;
 use ffmpeg_sidecar::child::FfmpegChild;
@@ -211,4 +211,13 @@ pub fn video_group_swap(src: impl Into<MultiPathBuf>, screens: FrameShape) -> Ve
     let list_grp = group_split::ItemList::new_with_data(all_videos, screens.clone());
     list_grp.run_automatic_swaps();
     list_grp.export_to_data_lists()
+}
+pub fn video_group_swap_n(src: impl Into<MultiPathBuf>, groups:usize) -> Vec<Vec<Video>> {
+    let src = src.into();
+    assert!(src.is_dir(), "Given Input Directory Does Not Exist"); // not my fault
+    let all_videos = scan_dir_for_videos_with_len(src);
+    let list_grp = group_splitter::video_regroup(
+        all_videos.into_iter().map(|(_,b)|b).collect(),
+        groups);
+    list_grp
 }
