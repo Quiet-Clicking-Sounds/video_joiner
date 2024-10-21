@@ -182,11 +182,11 @@ Implemented for `CentreEmphVert`
 |                                                       |                                                         |
 
 | `ExtendedLandscape` or `15`                             |
-|--------------------------------------------------------|
-| ![frame_shapes_10.svg](readme_data/frame_shapes_8.svg) |
-|                                                        |
-| TBD                                                    |
-|                                                        |
+|---------------------------------------------------------|
+| ![frame_shapes_10.svg ](readme_data/frame_shapes_8.svg) |
+|                                                         |
+| TBD                                                     |
+|                                                         |
 
 ## Audio & why exports can be slow
 
