@@ -94,7 +94,7 @@ fn group_move(mut v_list: Vec<LenV>, groups: usize) -> Vec<LenV> {
     println!("Group Move End Avg: {}", group_diff_avg(&v_list, &groups)/1000);
     v_list
 }
-
+#[allow(unused)]
 /// BROKEN todo, needs a fix
 fn group_swap(mut v_list: Vec<LenV>, groups: usize) -> Vec<LenV> {
     v_list.sort_unstable_by_key(|k| i64::MAX - k.inner);

@@ -14,20 +14,13 @@ use ffmpeg_sidecar::{command::FfmpegCommand, event::FfmpegEvent};
 use ffprobe;
 
 use crate::audio::join_audio_video_streams;
+use crate::frame_shape::FrameShape;
 use crate::helper_functions;
 use crate::helper_functions::{iter_ffmpeg_events, seconds_to_hhmmss, MultiPathBuf};
-use crate::switches::{FrameShape, SortOrder};
+use crate::switches::SortOrder;
 
 
-fn get_encoder_arg_list() -> &'static [&'static str] {
-    if cfg!(feature = "encoder_d3d11va") {
-        ["-c:v", "hevc_amf", "-rc", "cqp", "-qp_i", "34", "-qp_p", "34", ].as_slice()
-    } else if cfg!(feature = "encoder_nv_av1") {
-        ["-c:v", "av1"].as_slice()
-    } else {
-        ["-c:v", "libx264 ", "-speed", "slow", "-crf", "19"].as_slice()
-    }
-}
+
 
 
 //noinspection SpellCheckingInspection
@@ -301,34 +294,7 @@ impl Video {
         self.fps = fps;
     }
 
-    //noinspection SpellCheckingInspection
-    fn audio_export(&self, out: &PathBuf) -> bool {
-        if self.frame_count < 1 {
-            return false;
-        };
 
-        let tar = self.src.clone();
-        let length = format!("{:.6}s", (self.frame_count.clone() as f32) / &self.fps);
-
-        let mut ffm = FfmpegCommand::new();
-        let ffm = ffm.input(tar.to_str().unwrap()).no_video();
-        let ffm = ffm.filter(format!(
-            "[0:a]apad=whole_dur={:.6}s[a]",
-            length
-        ));
-        let ffm = ffm
-            .args([
-                "-t", &length,
-                "-ar", "44100"
-            ])
-            .arg("-y")
-            .output(out.to_str().unwrap());
-
-        let mut complete = ffm.spawn().unwrap();
-        iter_ffmpeg_events(&mut complete);
-        complete.wait().unwrap();
-        true
-    }
 
     //noinspection SpellCheckingInspection
     fn audio_export_proc_out(&self, out: &PathBuf) -> (bool, Option<FfmpegChild>) {
@@ -514,19 +480,6 @@ impl VideoList {
         for v in self.videos.iter_mut() {
             v.set_video_shape(vid_shape, self.video_sizer.fps)
         }
-    }
-
-    fn cheap_audio_exporter(&mut self, grp: usize, temp_folder: &PathBuf) -> Vec<PathBuf> {
-        let mut outputs = vec![];
-        for (i, vid) in self.complete_videos.iter().enumerate() {
-            println!("Audio Export: {}", vid.src.clone().to_str().unwrap());
-            let out = temp_folder.clone().join(format!("g{}f{}.wav", grp, i));
-
-            if vid.audio_export(&out) {
-                outputs.push(out)
-            }
-        }
-        outputs
     }
 
     fn cheap_audio_exporter_out_proc(&mut self, grp: usize, temp_folder: &PathBuf) -> Vec<PathBuf> {

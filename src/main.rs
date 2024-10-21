@@ -4,7 +4,7 @@ use crate::switches::SortOrder;
 use crate::video::{VideoEditData, VideoGroup};
 use clap::{arg, Parser};
 use ini::Ini;
-use switches::FrameShape;
+use frame_shape::FrameShape;
 use crate::helper_functions::MultiPathBuf;
 
 pub(crate) mod group_split;
@@ -13,6 +13,7 @@ pub(crate) mod video;
 pub(crate) mod audio;
 mod switches;
 mod group_splitter;
+mod frame_shape;
 
 pub fn main() {
     let args = Cli::parse();
