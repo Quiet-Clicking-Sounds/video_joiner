@@ -42,12 +42,12 @@ Options:
 1440p AV1 encoding on a Ryzen 3600x was running at around 1 fps.
 
 ### settings through settings.ini
-First copy `settings-default.ini` as `settings.ini`, ensure it is placed in the same folder as the video_joiner.exe 
-executable file. 
 
-Next, add or change the relevant settings for your graphics card, some are listed in the `.ini` 
+First copy `settings-default.ini` as `settings.ini`, ensure it is placed in the same folder as the video_joiner.exe
+executable file.
+
+Next, add or change the relevant settings for your graphics card, some are listed in the `.ini`
 file others can be found on the ffmpeg wiki:  https://trac.ffmpeg.org/wiki/HWAccelIntro
-
 
 ### using settings via commanline
 
@@ -56,13 +56,13 @@ Commandline encoder parameters will override but not overwrite settings paramete
 - AMD gpu users, or CPU with integrated GPU, use `--encode-amd`
 - Nvidea gpu users, use `--encode-nvidea`
 
-## Path delimiter used in `-f` file inputs: 
+## Path delimiter used in `-f` file inputs:
 
 - Windows path delimiter: `|` (pipe character)
 - Linux path delimiter: `/` (forward slash character)
 
-Use the delimiter character to concatenate file inputs, for example: `D:\videos\group1|D:\videos\group2` would treat 
-both `D:\videos\group1` and `D:\videos\group2` as if they were a single folder. 
+Use the delimiter character to concatenate file inputs, for example: `D:\videos\group1|D:\videos\group2` would treat
+both `D:\videos\group1` and `D:\videos\group2` as if they were a single folder.
 
 ## Layout Examples
 
@@ -113,12 +113,12 @@ Implemented for `VertEmph`, `VertEmph1`, `HorizEmph`, and `HorizEmph2`
 Implemented for `CentreEmphVert`
 
 - 3 files
- - File #1: large horizontal video list
- - File #2: vertical videos to either side
- - File #3: small horizontal video list
+- File #1: large horizontal video list
+- File #2: vertical videos to either side
+- File #3: small horizontal video list
 - 2 files
- - File #1: vertical videos to either side
- - File #2: small horizontal video list
+- File #1: vertical videos to either side
+- File #2: small horizontal video list
 
 ```shell
 ./video_joiner.exe -f "D:\main_horizontal_videos" -f "D:\vertical_videos"  -f "D:\small_horizontal_videos" -o "D:\joined_video.mp4" --shape "CentreEmphVert"
@@ -174,19 +174,19 @@ Implemented for `CentreEmphVert`
 | Bottom row ` " ` `1.5/5` `1.5/5` ` " `                | duplicate of CentreEmphVert vertically mirrored         |
 | bottom row height: `2/5`                              | (large centre frame is on the lower half                |
 
-
 | `MoreHoriz` or `MH` or `13`                           | `MoreHoriz` or `MH2` or `14`                            |
 |-------------------------------------------------------|---------------------------------------------------------|
 | ![frame_shapes_9.svg](readme_data/frame_shapes_8.svg) | ![frame_shapes_9v.svg](readme_data/frame_shapes_8v.svg) |
-| Top row -- `1/5` ---- `3/5` ---- `1/5`                |                                                         |
-| Bottom row ` " ` `1.5/5` `1.5/5` ` " `                | duplicate of CentreEmphVert vertically mirrored         |
-| bottom row height: `2/5`                              | (large centre frame is on the lower half                |
+|                                                       |                                                         |
+| TBD                                                   | TBD                                                     |
+|                                                       |                                                         |
 
-
-
-
-
-
+| `ExtendedLandscape` or `15`                             |
+|--------------------------------------------------------|
+| ![frame_shapes_10.svg](readme_data/frame_shapes_8.svg) |
+|                                                        |
+| TBD                                                    |
+|                                                        |
 
 ## Audio & why exports can be slow
 

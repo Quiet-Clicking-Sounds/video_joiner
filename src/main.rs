@@ -12,6 +12,8 @@ pub(crate) mod helper_functions;
 pub(crate) mod video;
 pub(crate) mod audio;
 mod switches;
+mod group_splitter;
+
 pub fn main() {
     let args = Cli::parse();
 
@@ -211,6 +213,7 @@ fn run_from_cli(args: Cli) -> (VideoGroup, bool, Vec<String>) {
         "centreemphvert2" | "ce2" | "12" => { FrameShape::CentreEmphVert2 }
         "morehoriz" | "mh" | "13" => { FrameShape::MoreHoriz }
         "morehoriz2" | "mh2" | "14" => { FrameShape::MoreHoriz2 }
+        "extendedlandscape" | "15" => {FrameShape::ExtendedLandscape}
         x => { panic!("No match found for split format: {}", x) }
     };
 
