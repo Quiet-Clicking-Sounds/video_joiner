@@ -95,6 +95,7 @@ fn group_move(mut v_list: Vec<LenV>, groups: usize) -> Vec<LenV> {
     v_list
 }
 
+/// BROKEN todo, needs a fix
 fn group_swap(mut v_list: Vec<LenV>, groups: usize) -> Vec<LenV> {
     v_list.sort_unstable_by_key(|k| i64::MAX - k.inner);
     let last_avg: i64 = position_sums(&v_list, &groups).iter()
@@ -140,7 +141,7 @@ pub fn video_regroup(v_list: Vec<Video>, groups: usize) -> Vec<Vec<Video>> {
         v.group = i.rem_euclid(groups)
     }
     v_list = group_move(v_list, groups);
-    v_list = group_swap(v_list, groups);
+    // v_list = group_swap(v_list, groups);
 
     let mut out_lists: Vec<Vec<Video>> = (0..groups).map(|_| { Vec::default() }).collect();
     for v in v_list { out_lists[v.group].push(v.into_video()) };
