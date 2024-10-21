@@ -1,7 +1,7 @@
 use std::fmt::{Debug, Formatter};
 
 use crate::{group_split, group_splitter};
-use crate::switches::FrameShape;
+use crate::frame_shape::FrameShape;
 use crate::video::Video;
 use ffmpeg_sidecar::child::FfmpegChild;
 use ffmpeg_sidecar::event::{FfmpegEvent, LogLevel};

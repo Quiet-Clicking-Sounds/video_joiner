@@ -14,9 +14,10 @@ use ffmpeg_sidecar::{command::FfmpegCommand, event::FfmpegEvent};
 use ffprobe;
 
 use crate::audio::join_audio_video_streams;
+use crate::frame_shape::FrameShape;
 use crate::helper_functions;
 use crate::helper_functions::{iter_ffmpeg_events, seconds_to_hhmmss, MultiPathBuf};
-use crate::switches::{FrameShape, SortOrder};
+use crate::switches::SortOrder;
 
 
 

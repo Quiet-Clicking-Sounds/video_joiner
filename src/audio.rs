@@ -3,7 +3,7 @@ use std::path::PathBuf;
 use crate::helper_functions::iter_ffmpeg_events;
 #[cfg(feature = "hyperDebug")]
 use crate::helper_functions::parse_debug;
-use crate::switches::FrameShape;
+use crate::frame_shape::FrameShape;
 use ffmpeg_sidecar;
 use ffmpeg_sidecar::child::FfmpegChild;
 use ffmpeg_sidecar::command::FfmpegCommand;

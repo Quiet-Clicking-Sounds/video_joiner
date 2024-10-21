@@ -1,6 +1,6 @@
 use crate::group_split::AutoSwap::Continue;
 use crate::helper_functions::seconds_to_hhmmss;
-use crate::switches::FrameShape;
+use crate::frame_shape::FrameShape;
 use std::cell::RefCell;
 use std::collections::VecDeque;
 use std::fmt::Debug;
