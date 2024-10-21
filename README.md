@@ -176,17 +176,17 @@ Implemented for `CentreEmphVert`
 
 | `MoreHoriz` or `MH` or `13`                           | `MoreHoriz` or `MH2` or `14`                            |
 |-------------------------------------------------------|---------------------------------------------------------|
-| ![frame_shapes_9.svg](readme_data/frame_shapes_8.svg) | ![frame_shapes_9v.svg](readme_data/frame_shapes_8v.svg) |
+| ![frame_shapes_9.svg](readme_data/frame_shapes_9.svg) | ![frame_shapes_9v.svg](readme_data/frame_shapes_9v.svg) |
 |                                                       |                                                         |
 | TBD                                                   | TBD                                                     |
 |                                                       |                                                         |
 
-| `ExtendedLandscape` or `15`                             |
-|---------------------------------------------------------|
-| ![frame_shapes_10.svg ](readme_data/frame_shapes_8.svg) |
-|                                                         |
-| TBD                                                     |
-|                                                         |
+| `ExtendedLandscape` or `15`                              |
+|----------------------------------------------------------|
+| ![frame_shapes_10.svg ](readme_data/frame_shapes_10.svg) |
+|                                                          |
+| TBD                                                      |
+|                                                          |
 
 ## Audio & why exports can be slow
 
