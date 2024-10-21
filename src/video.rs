@@ -19,15 +19,7 @@ use crate::helper_functions::{iter_ffmpeg_events, seconds_to_hhmmss, MultiPathBu
 use crate::switches::{FrameShape, SortOrder};
 
 
-fn get_encoder_arg_list() -> &'static [&'static str] {
-    if cfg!(feature = "encoder_d3d11va") {
-        ["-c:v", "hevc_amf", "-rc", "cqp", "-qp_i", "34", "-qp_p", "34", ].as_slice()
-    } else if cfg!(feature = "encoder_nv_av1") {
-        ["-c:v", "av1"].as_slice()
-    } else {
-        ["-c:v", "libx264 ", "-speed", "slow", "-crf", "19"].as_slice()
-    }
-}
+
 
 
 //noinspection SpellCheckingInspection
@@ -301,6 +293,8 @@ impl Video {
         self.fps = fps;
     }
 
+
+
     //noinspection SpellCheckingInspection
     fn audio_export_proc_out(&self, out: &PathBuf) -> (bool, Option<FfmpegChild>) {
         if self.frame_count < 1 {
@@ -485,19 +479,6 @@ impl VideoList {
         for v in self.videos.iter_mut() {
             v.set_video_shape(vid_shape, self.video_sizer.fps)
         }
-    }
-
-    fn cheap_audio_exporter(&mut self, grp: usize, temp_folder: &PathBuf) -> Vec<PathBuf> {
-        let mut outputs = vec![];
-        for (i, vid) in self.complete_videos.iter().enumerate() {
-            println!("Audio Export: {}", vid.src.clone().to_str().unwrap());
-            let out = temp_folder.clone().join(format!("g{}f{}.wav", grp, i));
-
-            if vid.audio_export(&out) {
-                outputs.push(out)
-            }
-        }
-        outputs
     }
 
     fn cheap_audio_exporter_out_proc(&mut self, grp: usize, temp_folder: &PathBuf) -> Vec<PathBuf> {
