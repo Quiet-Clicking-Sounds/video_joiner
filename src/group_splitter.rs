@@ -1,5 +1,11 @@
 use crate::video::Video;
 use std::cmp::Ordering;
+use std::sync::atomic::AtomicUsize;
+
+fn get_id() -> usize {
+    static COUNTER: AtomicUsize = AtomicUsize::new(1);
+    COUNTER.fetch_add(1, core::sync::atomic::Ordering::Relaxed)
+}
 
 impl Video {
     fn into_lenv(mut self) -> LenV {
@@ -7,6 +13,7 @@ impl Video {
             group: 0,
             inner: self.get_length().unwrap(),
             tar: self,
+            _id: get_id(),
         }
     }
 }
@@ -16,6 +23,7 @@ struct LenV {
     group: usize,
     inner: i64,
     tar: Video,
+    _id: usize,
 }
 impl LenV {
     fn into_video(self) -> Video {
