@@ -21,6 +21,9 @@ pub fn main() {
     let (mut vid, audio, encoder_args) = run_from_cli(args);
 
     vid.main_loop(audio, encoder_args);
+    println!("------------------------------------------");
+    println!("--------------Video Complete--------------");
+    println!("------------------------------------------");
 }
 
 #[deny(missing_docs)]

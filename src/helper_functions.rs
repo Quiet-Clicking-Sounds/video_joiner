@@ -216,8 +216,17 @@ pub fn video_group_swap_n(src: impl Into<MultiPathBuf>, groups:usize) -> Vec<Vec
     let src = src.into();
     assert!(src.is_dir(), "Given Input Directory Does Not Exist"); // not my fault
     let all_videos = scan_dir_for_videos_with_len(src);
-    let list_grp = group_splitter::video_regroup(
+    let list_grp = group_splitter::regrouper(
         all_videos.into_iter().map(|(_,b)|b).collect(),
         groups);
+    print!("groups started: ");
+    for  vgroup in list_grp.iter(){
+        let mut grplen = 0;
+        for i in vgroup.iter(){
+            grplen += i.length_millis.unwrap()
+        }
+        print!(" {} |", seconds_to_hhmmss((grplen/1000) as u64));
+    }
+    println!("\n Regrouping Complete");
     list_grp
 }

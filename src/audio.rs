@@ -67,7 +67,8 @@ pub fn join_audio_video_streams(audio_segments: Vec<Vec<PathBuf>>,
     }).collect();
     
     println!("Audio Export finished for all streams, now joining streams to file");
-
+    println!("--- This will be slow ---");
+    
     #[cfg(feature = "hyperDebug")]
     parse_debug("Single A/V Filter Setup", file!(), line!());
 
@@ -87,7 +88,6 @@ pub fn join_audio_video_streams(audio_segments: Vec<Vec<PathBuf>>,
     let mut complete = worker.spawn().unwrap();
     iter_ffmpeg_events(&mut complete);
     complete.wait().unwrap();
-
     #[cfg(feature = "hyperDebug")]
     parse_debug("join_audio_to_video end", file!(), line!());
 
