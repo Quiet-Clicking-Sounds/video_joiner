@@ -578,7 +578,7 @@ impl VideoGroup {
         #[cfg(feature = "hyperDebug")]
         helper_functions::parse_debug("new_from_folder", file!(), line!());
 
-        let videos = helper_functions::video_group_swap(src, screens.clone());
+        let videos = helper_functions::video_group_swap_n(src, screens.clone().count() as usize);
 
         // setup group for exporting
         VideoGroup {
@@ -844,10 +844,11 @@ impl VideoGroup {
         helper_functions::parse_debug("main_loop", file!(), line!());
         // frame timer for simple speed testing:
         
-        assert!(self.videos[0..(self.shape_style.count()as usize)].iter().all(|a|a.videos.len()!=0),
-            "Error some required video parts did not contain videos"
-        );
-
+        if self.videos[0..(self.shape_style.count()as usize)].iter().any(|a|a.videos.len()==0) {
+            println!("Error some required video parts did not contain videos");
+            panic!();
+        }
+        
         let mut ft = helper_functions::FrameTimer::new();
 
         let temp_out_file = self.output_target.clone().with_file_name(format!(
