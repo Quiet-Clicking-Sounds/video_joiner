@@ -734,18 +734,18 @@ impl VideoGroup {
                 };
             }
             (FrameShape::ExtendedLandscape, 3) => {
-                let mut videos1 = helper_functions::video_group_swap(srcs[0].clone(), FrameShape::Triple).into_iter();
-                let mut videos2 = helper_functions::video_group_swap(srcs[1].clone(), FrameShape::Triple).into_iter();
-                let mut videos3 = helper_functions::video_group_swap(srcs[2].clone(), FrameShape::Triple).into_iter();
+                let videos1 = VideoList::from_videos(helper_functions::scan_dir_for_videos(srcs[0].clone()), 0, sorter.clone());
+                let mut videos2 =  helper_functions::video_group_swap_n(srcs[1].clone(), 2).into_iter();
+                let mut videos3 =  helper_functions::video_group_swap_n(srcs[2].clone(), 6).into_iter();
 
                 return VideoGroup {
                     videos: vec![
-                        VideoList::from_videos(videos1.next().unwrap(), 0, sorter.clone()),
-                        VideoList::from_videos(videos1.next().unwrap(), 1, sorter.clone()),
-                        VideoList::from_videos(videos1.next().unwrap(), 2, sorter.clone()),
-                        VideoList::from_videos(videos2.next().unwrap(), 3, sorter.clone()),
-                        VideoList::from_videos(videos2.next().unwrap(), 4, sorter.clone()),
-                        VideoList::from_videos(videos2.next().unwrap(), 5, sorter.clone()),
+                        videos1,
+                        VideoList::from_videos(videos2.next().unwrap(), 1, sorter.clone()),
+                        VideoList::from_videos(videos2.next().unwrap(), 2, sorter.clone()),
+                        VideoList::from_videos(videos3.next().unwrap(), 3, sorter.clone()),
+                        VideoList::from_videos(videos3.next().unwrap(), 4, sorter.clone()),
+                        VideoList::from_videos(videos3.next().unwrap(), 5, sorter.clone()),
                         VideoList::from_videos(videos3.next().unwrap(), 6, sorter.clone()),
                         VideoList::from_videos(videos3.next().unwrap(), 7, sorter.clone()),
                         VideoList::from_videos(videos3.next().unwrap(), 8, sorter.clone()),
@@ -903,6 +903,7 @@ impl VideoGroup {
         let frames_between_update = fps_u64 * 30;
         let f64_frames_between_update = frames_between_update as f64;
         'mainloop: loop {
+            // print data about video export
             frame_counter += 1;
             if frame_counter.rem(frames_between_update) == 0 {
                 (t_last, t_now) = (t_now, Instant::now());
@@ -914,7 +915,7 @@ impl VideoGroup {
                     fps
                 )
             }
-
+            // collect set of frames to process
             #[cfg(feature = "hyperDebug")]
             helper_functions::parse_debug("Frame Prep Started for frame", file!(), line!());
             let frame_prep: Vec<Option<OutputVideoFrame>> = self
@@ -922,28 +923,30 @@ impl VideoGroup {
                 .iter_mut()
                 .map(|x| x.next_frame(&frame_counter))
                 .collect();
-
-            for f in frame_prep.iter() {
-                if f.is_none() {
-                    #[cfg(feature = "hyperDebug")]
-                    helper_functions::parse_debug(
-                        "Frame prep returned a none value, mainloop ended",
-                        file!(), line!());
-                    break 'mainloop;
-                }
+            
+            // if no more frames are available break the loop
+            if frame_prep.iter().any(|f|f.is_none()){
+                #[cfg(feature = "hyperDebug")]
+                helper_functions::parse_debug(
+                    "Frame prep returned a none value, mainloop ended",
+                    file!(), line!());
+                break 'mainloop;
             }
+            
+            // unwrap frames into frame joiner format
             let frame_prep: Vec<OutputVideoFrame> =
                 frame_prep.into_iter().map(|x1| x1.unwrap()).collect();
 
-
+            // join frames from separate items using `FrameShape` 
             let frames = self.shape_style.frame_joiner(frame_prep, &self.video_sizer);
             #[cfg(feature = "hyperDebug")]
             println!("Read: {} bytes", frames.len());
 
             #[cfg(feature = "hyperDebug")]
             helper_functions::parse_debug("main_loop: frame_write", file!(), line!());
+            // write to the buffer
             let written = stdin.write(&frames);
-
+            // check that write worked
             match written {
                 Ok(_c) => {
                     #[cfg(feature = "hyperDebug")]
