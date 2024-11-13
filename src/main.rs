@@ -62,6 +62,7 @@ struct Cli {
     fps: f32,
 
     /// Apply sorting method Options include: 
+    ///     "0", as input
     ///     "1", "Random", "rand" (default)
     ///     "2", "RandomSeeded", "seed"
     ///     "2r", "RandomSeededR", "seedR"
@@ -222,6 +223,7 @@ fn run_from_cli(args: Cli) -> (VideoGroup, bool, Vec<String>) {
     };
 
     let sort_ord = match args.ord.unwrap_or("Random".to_string()).to_lowercase().as_str().trim() {
+        "0" | "as_input" | "none" => SortOrder::Nan,
         "1" | "random" | "rand" => SortOrder::Random,
         "2" | "randomseeded" | "seed" => SortOrder::RandomSeeded(args.ord_opt),
         "2r" | "randomseededr" | "seedr" => SortOrder::RandomSeededR(args.ord_opt),
@@ -260,7 +262,7 @@ fn run_from_cli(args: Cli) -> (VideoGroup, bool, Vec<String>) {
                 sort_ord,
             )
         }
-        2..=5 => {
+        2..=15 => {
             VideoGroup::new_from_folders(
                 folder_target,
                 output_file,
