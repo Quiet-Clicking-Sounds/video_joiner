@@ -122,7 +122,7 @@ impl MultiPathBuf {
         out
     }
     fn is_dir(&self) -> bool {
-        self.inner.iter().all(|a| a.is_dir())
+        self.inner.iter().all(|a| a.is_dir() | a.is_file())
     }
 }
 

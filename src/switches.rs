@@ -12,6 +12,7 @@ pub(crate) enum SortOrder {
     ShortestFirst,
     LongestFirst,
     RandomWithLargestLast,
+    Nan,
 }
 impl SortOrder {
     pub(crate) fn apply_sort(&self, mut videos: Vec<Video>) -> Vec<Video> {
@@ -24,6 +25,9 @@ impl SortOrder {
             _ => {}
         }
         match self {
+            SortOrder::Nan => {
+                videos
+            }
             SortOrder::Random => {
                 let mut rng = thread_rng();
                 videos.shuffle(&mut rng);
