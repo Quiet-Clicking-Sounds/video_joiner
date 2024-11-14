@@ -20,9 +20,6 @@ use crate::helper_functions::{iter_ffmpeg_events, seconds_to_hhmmss, MultiPathBu
 use crate::switches::SortOrder;
 
 
-
-
-
 //noinspection SpellCheckingInspection
 const DECODER: [&str; 2] = ["-hwaccel", "auto"];
 // None     77, 85, 75, 80
@@ -45,7 +42,7 @@ pub(crate) struct VideoEditData {
 
 impl VideoEditData {
     pub fn init() -> VideoEditData {
-        let shapes = vec![(5, 5);25];
+        let shapes = vec![(5, 5); 25];
         VideoEditData {
             output_height: 1440,
             output_width: 850 * 3,
@@ -315,7 +312,6 @@ impl Video {
         self.width_height = wxh;
         self.fps = fps;
     }
-
 
 
     //noinspection SpellCheckingInspection
@@ -622,55 +618,40 @@ impl VideoGroup {
         sorter: SortOrder,
     ) -> VideoGroup {
         // Special cases for vertical and horuizontal input groups
-        match (screens.clone(), srcs.len()) {
+        let vid_lists: Vec<VideoList> = match (screens.clone(), srcs.len()) {
             (FrameShape::VertEmph, 2) | (FrameShape::VertEmph2, 2) => {
                 // vertical parts
                 let videos1 = VideoList::from_videos(helper_functions::scan_dir_for_videos(srcs[0].clone()), 0, sorter.clone());
                 // horizontal parts
                 let mut videos2 = helper_functions::video_group_swap(srcs[1].clone(), FrameShape::Quad).into_iter();
-                return VideoGroup {
-                    videos: vec![
-                        videos1,
-                        VideoList::from_videos(videos2.next().unwrap(), 1, sorter.clone()),
-                        VideoList::from_videos(videos2.next().unwrap(), 2, sorter.clone()),
-                        VideoList::from_videos(videos2.next().unwrap(), 3, sorter.clone()),
-                        VideoList::from_videos(videos2.next().unwrap(), 4, sorter.clone()),
-                    ],
-                    output_target: src_out.into(),
-                    video_sizer: VideoEditData::init(),
-                    shape_style: screens,
-                };
+                vec![
+                    videos1,
+                    VideoList::from_videos(videos2.next().unwrap(), 1, sorter.clone()),
+                    VideoList::from_videos(videos2.next().unwrap(), 2, sorter.clone()),
+                    VideoList::from_videos(videos2.next().unwrap(), 3, sorter.clone()),
+                    VideoList::from_videos(videos2.next().unwrap(), 4, sorter.clone()),
+                ]
             }
             (FrameShape::HorizEmph, 2) | (FrameShape::HorizEmph2, 2) => {
                 let mut videos1 = helper_functions::video_group_swap(srcs[0].clone(), FrameShape::Dual).into_iter();
                 let mut videos2 = helper_functions::video_group_swap(srcs[1].clone(), FrameShape::Dual).into_iter();
-                return VideoGroup {
-                    videos: vec![
-                        VideoList::from_videos(videos1.next().unwrap(), 0, sorter.clone()),
-                        VideoList::from_videos(videos2.next().unwrap(), 1, sorter.clone()),
-                        VideoList::from_videos(videos2.next().unwrap(), 2, sorter.clone()),
-                        VideoList::from_videos(videos1.next().unwrap(), 3, sorter.clone()),
-                    ],
-                    output_target: src_out.into(),
-                    video_sizer: VideoEditData::init(),
-                    shape_style: screens,
-                };
+                vec![
+                    VideoList::from_videos(videos1.next().unwrap(), 0, sorter.clone()),
+                    VideoList::from_videos(videos2.next().unwrap(), 1, sorter.clone()),
+                    VideoList::from_videos(videos2.next().unwrap(), 2, sorter.clone()),
+                    VideoList::from_videos(videos1.next().unwrap(), 3, sorter.clone()),
+                ]
             }
             (FrameShape::SideVert, 2) | (FrameShape::SideVert2, 2) => {
                 // vertical parts
                 let videos1 = VideoList::from_videos(helper_functions::scan_dir_for_videos(srcs[0].clone()), 0, sorter.clone());
                 // horizontal parts
                 let mut videos2 = helper_functions::video_group_swap(srcs[1].clone(), FrameShape::Dual).into_iter();
-                return VideoGroup {
-                    videos: vec![
-                        videos1,
-                        VideoList::from_videos(videos2.next().unwrap(), 1, sorter.clone()),
-                        VideoList::from_videos(videos2.next().unwrap(), 2, sorter.clone()),
-                    ],
-                    output_target: src_out.into(),
-                    video_sizer: VideoEditData::init(),
-                    shape_style: screens,
-                };
+                vec![
+                    videos1,
+                    VideoList::from_videos(videos2.next().unwrap(), 1, sorter.clone()),
+                    VideoList::from_videos(videos2.next().unwrap(), 2, sorter.clone()),
+                ]
             }
             (FrameShape::CentreEmphVert, 3) | (FrameShape::CentreEmphVert2, 3) => {
                 // top horizontal group
@@ -680,18 +661,13 @@ impl VideoGroup {
                 // bottom horizontal group
                 let mut videos3 = helper_functions::video_group_swap(srcs[2].clone(), FrameShape::Dual).into_iter();
 
-                return VideoGroup {
-                    videos: vec![
-                        videos1,
-                        VideoList::from_videos(videos2.next().unwrap(), 1, sorter.clone()),
-                        VideoList::from_videos(videos2.next().unwrap(), 2, sorter.clone()),
-                        VideoList::from_videos(videos3.next().unwrap(), 3, sorter.clone()),
-                        VideoList::from_videos(videos3.next().unwrap(), 4, sorter.clone()),
-                    ],
-                    output_target: src_out.into(),
-                    video_sizer: VideoEditData::init(),
-                    shape_style: screens,
-                };
+                vec![
+                    videos1,
+                    VideoList::from_videos(videos2.next().unwrap(), 1, sorter.clone()),
+                    VideoList::from_videos(videos2.next().unwrap(), 2, sorter.clone()),
+                    VideoList::from_videos(videos3.next().unwrap(), 3, sorter.clone()),
+                    VideoList::from_videos(videos3.next().unwrap(), 4, sorter.clone()),
+                ]
             }
             (FrameShape::CentreEmphVert, 2) | (FrameShape::CentreEmphVert2, 2) => {
                 // vertical group
@@ -699,18 +675,13 @@ impl VideoGroup {
                 // bottom horizontal group
                 let mut videos3 = helper_functions::video_group_swap(srcs[1].clone(), FrameShape::Triple).into_iter();
 
-                return VideoGroup {
-                    videos: vec![
-                        VideoList::from_videos(videos3.next().unwrap(), 0, sorter.clone()),
-                        VideoList::from_videos(videos2.next().unwrap(), 1, sorter.clone()),
-                        VideoList::from_videos(videos2.next().unwrap(), 2, sorter.clone()),
-                        VideoList::from_videos(videos3.next().unwrap(), 3, sorter.clone()),
-                        VideoList::from_videos(videos3.next().unwrap(), 4, sorter.clone()),
-                    ],
-                    output_target: src_out.into(),
-                    video_sizer: VideoEditData::init(),
-                    shape_style: screens,
-                };
+                vec![
+                    VideoList::from_videos(videos3.next().unwrap(), 0, sorter.clone()),
+                    VideoList::from_videos(videos2.next().unwrap(), 1, sorter.clone()),
+                    VideoList::from_videos(videos2.next().unwrap(), 2, sorter.clone()),
+                    VideoList::from_videos(videos3.next().unwrap(), 3, sorter.clone()),
+                    VideoList::from_videos(videos3.next().unwrap(), 4, sorter.clone()),
+                ]
             }
             (FrameShape::MoreHoriz, 3) | (FrameShape::MoreHoriz2, 3) => {
                 // top horizontal group
@@ -719,63 +690,48 @@ impl VideoGroup {
                 let mut videos2 = helper_functions::video_group_swap(srcs[1].clone(), FrameShape::Dual).into_iter();
                 // bottom horizontal group
                 let mut videos3 = helper_functions::video_group_swap(srcs[2].clone(), FrameShape::Quad).into_iter();
-                return VideoGroup {
-                    videos: vec![
-                        videos1,
-                        VideoList::from_videos(videos2.next().unwrap(), 1, sorter.clone()),
-                        VideoList::from_videos(videos2.next().unwrap(), 2, sorter.clone()),
-                        VideoList::from_videos(videos3.next().unwrap(), 3, sorter.clone()),
-                        VideoList::from_videos(videos3.next().unwrap(), 4, sorter.clone()),
-                        VideoList::from_videos(videos3.next().unwrap(), 5, sorter.clone()),
-                        VideoList::from_videos(videos3.next().unwrap(), 6, sorter.clone()),
-                    ],
-                    output_target: src_out.into(),
-                    video_sizer: VideoEditData::init(),
-                    shape_style: screens,
-                };
+                vec![
+                    videos1,
+                    VideoList::from_videos(videos2.next().unwrap(), 1, sorter.clone()),
+                    VideoList::from_videos(videos2.next().unwrap(), 2, sorter.clone()),
+                    VideoList::from_videos(videos3.next().unwrap(), 3, sorter.clone()),
+                    VideoList::from_videos(videos3.next().unwrap(), 4, sorter.clone()),
+                    VideoList::from_videos(videos3.next().unwrap(), 5, sorter.clone()),
+                    VideoList::from_videos(videos3.next().unwrap(), 6, sorter.clone()),
+                ]
             }
             (FrameShape::ExtendedLandscape, 2) => {
                 let videos0 = VideoList::from_videos(helper_functions::scan_dir_for_videos(srcs[0].clone()), 0, sorter.clone());
                 let mut videos1 = helper_functions::video_group_swap_n(srcs[1].clone(), 8).into_iter();
 
-                return VideoGroup {
-                    videos: vec![
-                        videos0,
-                        VideoList::from_videos(videos1.next().unwrap(), 1, sorter.clone()),
-                        VideoList::from_videos(videos1.next().unwrap(), 2, sorter.clone()),
-                        VideoList::from_videos(videos1.next().unwrap(), 3, sorter.clone()),
-                        VideoList::from_videos(videos1.next().unwrap(), 4, sorter.clone()),
-                        VideoList::from_videos(videos1.next().unwrap(), 5, sorter.clone()),
-                        VideoList::from_videos(videos1.next().unwrap(), 6, sorter.clone()),
-                        VideoList::from_videos(videos1.next().unwrap(), 7, sorter.clone()),
-                        VideoList::from_videos(videos1.next().unwrap(), 8, sorter.clone()),
-                    ],
-                    output_target: src_out.into(),
-                    video_sizer: VideoEditData::init(),
-                    shape_style: screens,
-                };
+                vec![
+                    videos0,
+                    VideoList::from_videos(videos1.next().unwrap(), 1, sorter.clone()),
+                    VideoList::from_videos(videos1.next().unwrap(), 2, sorter.clone()),
+                    VideoList::from_videos(videos1.next().unwrap(), 3, sorter.clone()),
+                    VideoList::from_videos(videos1.next().unwrap(), 4, sorter.clone()),
+                    VideoList::from_videos(videos1.next().unwrap(), 5, sorter.clone()),
+                    VideoList::from_videos(videos1.next().unwrap(), 6, sorter.clone()),
+                    VideoList::from_videos(videos1.next().unwrap(), 7, sorter.clone()),
+                    VideoList::from_videos(videos1.next().unwrap(), 8, sorter.clone()),
+                ]
             }
             (FrameShape::ExtendedLandscape, 3) => {
                 let videos1 = VideoList::from_videos(helper_functions::scan_dir_for_videos(srcs[0].clone()), 0, sorter.clone());
-                let mut videos2 =  helper_functions::video_group_swap_n(srcs[1].clone(), 2).into_iter();
-                let mut videos3 =  helper_functions::video_group_swap_n(srcs[2].clone(), 6).into_iter();
+                let mut videos2 = helper_functions::video_group_swap_n(srcs[1].clone(), 2).into_iter();
+                let mut videos3 = helper_functions::video_group_swap_n(srcs[2].clone(), 6).into_iter();
 
-                return VideoGroup {
-                    videos: vec![
-                        videos1,
-                        VideoList::from_videos(videos2.next().unwrap(), 1, sorter.clone()),
-                        VideoList::from_videos(videos2.next().unwrap(), 2, sorter.clone()),
-                        VideoList::from_videos(videos3.next().unwrap(), 3, sorter.clone()),
-                        VideoList::from_videos(videos3.next().unwrap(), 4, sorter.clone()),
-                        VideoList::from_videos(videos3.next().unwrap(), 5, sorter.clone()),
-                        VideoList::from_videos(videos3.next().unwrap(), 6, sorter.clone()),
-                        VideoList::from_videos(videos3.next().unwrap(), 7, sorter.clone()),
-                        VideoList::from_videos(videos3.next().unwrap(), 8, sorter.clone()),
-                    ],
-                    output_target: src_out.into(),
-                    video_sizer: VideoEditData::init(),
-                    shape_style: screens,
-                };
+                vec![
+                    videos1,
+                    VideoList::from_videos(videos2.next().unwrap(), 1, sorter.clone()),
+                    VideoList::from_videos(videos2.next().unwrap(), 2, sorter.clone()),
+                    VideoList::from_videos(videos3.next().unwrap(), 3, sorter.clone()),
+                    VideoList::from_videos(videos3.next().unwrap(), 4, sorter.clone()),
+                    VideoList::from_videos(videos3.next().unwrap(), 5, sorter.clone()),
+                    VideoList::from_videos(videos3.next().unwrap(), 6, sorter.clone()),
+                    VideoList::from_videos(videos3.next().unwrap(), 7, sorter.clone()),
+                    VideoList::from_videos(videos3.next().unwrap(), 8, sorter.clone()),
+                ]
             }
             (FrameShape::ExtendedLandscape, 4) => {
                 let videos0 = VideoList::from_videos(helper_functions::scan_dir_for_videos(srcs[0].clone()), 0, sorter.clone());
@@ -783,25 +739,21 @@ impl VideoGroup {
                 let mut videos2 = helper_functions::video_group_swap(srcs[2].clone(), FrameShape::Triple).into_iter();
                 let mut videos3 = helper_functions::video_group_swap(srcs[3].clone(), FrameShape::Triple).into_iter();
 
-                return VideoGroup {
-                    videos: vec![
-                        videos0,
-                        VideoList::from_videos(videos1.next().unwrap(), 1, sorter.clone()),
-                        VideoList::from_videos(videos1.next().unwrap(), 2, sorter.clone()),
-                        VideoList::from_videos(videos2.next().unwrap(), 3, sorter.clone()),
-                        VideoList::from_videos(videos2.next().unwrap(), 4, sorter.clone()),
-                        VideoList::from_videos(videos2.next().unwrap(), 5, sorter.clone()),
-                        VideoList::from_videos(videos3.next().unwrap(), 6, sorter.clone()),
-                        VideoList::from_videos(videos3.next().unwrap(), 7, sorter.clone()),
-                        VideoList::from_videos(videos3.next().unwrap(), 8, sorter.clone()),
-                    ],
-                    output_target: src_out.into(),
-                    video_sizer: VideoEditData::init(),
-                    shape_style: screens,
-                };
+                vec![
+                    videos0,
+                    VideoList::from_videos(videos1.next().unwrap(), 1, sorter.clone()),
+                    VideoList::from_videos(videos1.next().unwrap(), 2, sorter.clone()),
+                    VideoList::from_videos(videos2.next().unwrap(), 3, sorter.clone()),
+                    VideoList::from_videos(videos2.next().unwrap(), 4, sorter.clone()),
+                    VideoList::from_videos(videos2.next().unwrap(), 5, sorter.clone()),
+                    VideoList::from_videos(videos3.next().unwrap(), 6, sorter.clone()),
+                    VideoList::from_videos(videos3.next().unwrap(), 7, sorter.clone()),
+                    VideoList::from_videos(videos3.next().unwrap(), 8, sorter.clone()),
+                ]
             }
-            (_, _) => {}
-        }
+            (FrameShape::ExtendedLandscape2, 2) => {
+                let videos1 = VideoList::from_videos(helper_functions::scan_dir_for_videos(srcs[0].clone()), 0, sorter.clone());
+                let mut videos2 = helper_functions::video_group_swap_n(srcs[1].clone(), 7).into_iter();
 
                 vec![
                     videos1,
@@ -839,11 +791,7 @@ impl VideoGroup {
             }
         };
         VideoGroup {
-            videos: srcs
-                .into_iter()
-                .enumerate()
-                .map(|(i, x)| VideoList::from_videos(helper_functions::scan_dir_for_videos(x), i as u32, sorter.clone()))
-                .collect(),
+            videos: vid_lists,
             output_target: src_out.into(),
             video_sizer: VideoEditData::init(),
             shape_style: screens,
@@ -899,12 +847,12 @@ impl VideoGroup {
         #[cfg(feature = "hyperDebug")]
         helper_functions::parse_debug("main_loop", file!(), line!());
         // frame timer for simple speed testing:
-        
-        if self.videos[0..(self.shape_style.count()as usize)].iter().any(|a|a.videos.len()==0) {
+
+        if self.videos[0..(self.shape_style.count() as usize)].iter().any(|a| a.videos.len() == 0) {
             println!("Error some required video parts did not contain videos");
             panic!();
         }
-        
+
         let mut ft = helper_functions::FrameTimer::new();
 
         let temp_out_file = self.output_target.clone().with_file_name(format!(
@@ -979,16 +927,16 @@ impl VideoGroup {
                 .iter_mut()
                 .map(|x| x.next_frame(&frame_counter))
                 .collect();
-            
+
             // if no more frames are available break the loop
-            if frame_prep.iter().any(|f|f.is_none()){
+            if frame_prep.iter().any(|f| f.is_none()) {
                 #[cfg(feature = "hyperDebug")]
                 helper_functions::parse_debug(
                     "Frame prep returned a none value, mainloop ended",
                     file!(), line!());
                 break 'mainloop;
             }
-            
+
             // unwrap frames into frame joiner format
             let frame_prep: Vec<OutputVideoFrame> =
                 frame_prep.into_iter().map(|x1| x1.unwrap()).collect();
