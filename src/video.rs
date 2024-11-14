@@ -243,6 +243,28 @@ impl VideoEditData {
                     (w_r, v_1_3_c),
                 ]
             }
+            FrameShape::ExtendedLandscape2 => {
+                let horizontal_thirds = self.output_width / 3;
+                let horizontal_thirds_mid = self.output_width - horizontal_thirds - horizontal_thirds;
+
+                let vertical_top_thirds = self.output_height / 3;
+                let vertical_thirds = self.output_height - vertical_top_thirds - vertical_top_thirds;
+
+                let wmid = self.output_width / 5 * 3;
+                let w_l = (self.output_width - wmid) / 2;
+                let w_r = self.output_width - wmid - w_l;
+
+                self.shapes = vec![
+                    (wmid, vertical_top_thirds + vertical_top_thirds),
+                    (horizontal_thirds, vertical_thirds),
+                    (horizontal_thirds_mid, vertical_thirds),
+                    (horizontal_thirds, vertical_thirds),
+                    (w_l, vertical_top_thirds),
+                    (w_r, vertical_top_thirds),
+                    (w_l, vertical_top_thirds),
+                    (w_r, vertical_top_thirds),
+                ]
+            }
         }
     }
 }
