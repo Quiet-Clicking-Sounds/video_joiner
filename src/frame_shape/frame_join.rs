@@ -1,8 +1,8 @@
-use ffmpeg_sidecar::event::OutputVideoFrame;
-use std::slice::ChunksExact;
-use std::ops::Rem;
 use crate::frame_shape::FrameShape;
 use crate::video::{Joiner, VideoEditData};
+use ffmpeg_sidecar::event::OutputVideoFrame;
+use std::ops::Rem;
+use std::slice::ChunksExact;
 
 impl Joiner for FrameShape {
     /// join methods for a single frame.
@@ -336,20 +336,19 @@ impl Joiner for FrameShape {
                 let mut switch3: u8 = 0u8;
 
                 loop {
-
-                    if switch1 == 0{
+                    if switch1 == 0 {
                         match chunks[3].next() {
                             None => switch1 += 1,
                             Some(ch) => out.extend_from_slice(ch)
                         }
                     }
-                    if switch1 == 1{
+                    if switch1 == 1 {
                         match chunks[5].next() {
                             None => switch1 += 1,
                             Some(ch) => out.extend_from_slice(ch)
                         }
                     }
-                    if switch1 == 2{
+                    if switch1 == 2 {
                         match chunks[7].next() {
                             None => break,
                             Some(ch) => out.extend_from_slice(ch)
@@ -374,28 +373,79 @@ impl Joiner for FrameShape {
                         }
                     }
 
-                    if switch3 == 0{
+                    if switch3 == 0 {
                         match chunks[4].next() {
                             None => switch3 += 1,
                             Some(ch) => out.extend_from_slice(ch)
                         }
                     }
-                    if switch3 == 1{
+                    if switch3 == 1 {
                         match chunks[6].next() {
                             None => switch3 += 1,
                             Some(ch) => out.extend_from_slice(ch)
                         }
                     }
-                    if switch3 == 2{
+                    if switch3 == 2 {
                         match chunks[8].next() {
                             None => break,
                             Some(ch) => out.extend_from_slice(ch)
                         }
                     }
-
-
                 }
+            }
+            FrameShape::ExtendedLandscape2 => {
+                let mut switch_vert_top1: bool = true;
+                let mut switch_vert_top2: bool = true;
+                let mut switch_vert_base: bool = true;
 
+                loop {
+                    if switch_vert_top1 && switch_vert_base {
+                        match chunks[4].next() {
+                            None => switch_vert_top1 = false,
+                            Some(ch) => out.extend_from_slice(ch)
+                        }
+                    }
+                    if !switch_vert_top1 && switch_vert_base {
+                        match chunks[6].next() {
+                            None => switch_vert_base = false,
+                            Some(ch) => out.extend_from_slice(ch)
+                        }
+                    }
+
+                    if switch_vert_base {
+                        match chunks[0].next() {
+                            None => switch_vert_base = false,
+                            Some(ch) => out.extend_from_slice(ch)
+                        }
+                    }
+                    if switch_vert_top2 && switch_vert_base {
+                        match chunks[5].next() {
+                            None => switch_vert_top2 = false,
+                            Some(ch) => out.extend_from_slice(ch)
+                        }
+                    }
+                    if !switch_vert_top2 && switch_vert_base {
+                        match chunks[7].next() {
+                            None => switch_vert_base = false,
+                            Some(ch) => out.extend_from_slice(ch)
+                        }
+                    }
+
+                    if !switch_vert_base {
+                        match chunks[1].next() {
+                            None => break,
+                            Some(ch) => out.extend_from_slice(ch)
+                        }
+                        match chunks[2].next() {
+                            None => break,
+                            Some(ch) => out.extend_from_slice(ch)
+                        }
+                        match chunks[3].next() {
+                            None => break,
+                            Some(ch) => out.extend_from_slice(ch)
+                        }
+                    }
+                }
             }
         }
 
