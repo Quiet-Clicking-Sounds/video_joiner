@@ -782,7 +782,7 @@ impl VideoGroup {
                     VideoList::from_videos(videos3.next().unwrap(), 7, sorter.clone()),
                 ]
             }
-            
+
             (_, _) => {
                 srcs.into_iter()
                     .enumerate()

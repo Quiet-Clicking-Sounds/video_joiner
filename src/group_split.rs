@@ -1,12 +1,12 @@
-use crate::group_split::AutoSwap::Continue;
-use crate::helper_functions::seconds_to_hhmmss;
 use crate::frame_shape::FrameShape;
+use crate::group_split::AutoSwap::Continue;
+#[cfg(feature = "hyperDebug")]
+use crate::helper_functions;
+use crate::helper_functions::seconds_to_hhmmss;
 use std::cell::RefCell;
 use std::collections::VecDeque;
 use std::fmt::Debug;
 use std::fmt::Formatter;
-#[cfg(feature = "hyperDebug")]
-use crate::helper_functions;
 
 pub enum AutoSwap {
     Continue,
@@ -127,22 +127,22 @@ impl<D> ItemList<D> {
         }
     }
 
-    fn print_group_len(&self){
+    fn print_group_len(&self) {
         let minlen = match (&self.screens, self.sum_each()) {
-            (FrameShape::Dual, (a,b, ..)) => {
+            (FrameShape::Dual, (a, b, ..)) => {
                 a.min(b)
             }
-            (FrameShape::Triple, (a,b,c, ..)) => {
+            (FrameShape::Triple, (a, b, c, ..)) => {
                 a.min(b).min(c)
             }
-            (FrameShape::Quad, (a,b,c,d)) => {
+            (FrameShape::Quad, (a, b, c, d)) => {
                 a.min(b).min(c).min(d)
             }
-            _=>{0}
+            _ => { 0 }
         };
-        println!("True length of ouput video: {:?}",seconds_to_hhmmss(minlen as u64 / 1000));
+        println!("True length of ouput video: {:?}", seconds_to_hhmmss(minlen as u64 / 1000));
     }
-    
+
     /// Lifetime Ends - return groups
     pub fn export_to_data_lists(self) -> Vec<Vec<D>> {
         let mut out = vec![vec![], vec![], vec![], vec![]];
@@ -159,13 +159,12 @@ impl<D> ItemList<D> {
                 ItemGroup::D => out[3].push(i._external_data_),
             }
         }
-        
+
         #[cfg(feature = "hyperDebug")]
         println!("Group sizes: {}, {}, {}, {}",
                  out[0].len(), out[1].len(), out[2].len(), out[3].len());
-        
-        
-        
+
+
         match self.screens {
             FrameShape::Dual => {
                 out.remove(3);

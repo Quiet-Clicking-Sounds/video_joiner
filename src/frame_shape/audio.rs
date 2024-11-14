@@ -104,6 +104,19 @@ impl FrameShape {
                 [a][b][c][d][e][f][g][h][i]amix=inputs=9[d];[d]loudnorm[d]\
                 ".to_string()
             }
+            FrameShape::ExtendedLandscape2 => {
+                "\
+                [1:a]surround=chl_out=stereo:chl_in=stereo:angle=0[a];\
+                [2:a]stereotools=balance_in=-0.4[x];[x]surround=chl_out=stereo:chl_in=stereo:angle=270[x];[x]volume=-3dB[b];\
+                [3:a]surround=chl_out=stereo:chl_in=stereo:angle=0[x];[x]volume=-3dB[c];\
+                [4:a]stereotools=balance_in=0.4[x];[x]surround=chl_out=stereo:chl_in=stereo:angle=90[x];[x]volume=-3dB[d];\
+                [5:a]stereotools=balance_in=0.4[x];[x]surround=chl_out=stereo:chl_in=stereo:angle=270[x];[x]volume=-5dB[e];\
+                [6:a]stereotools=balance_in=0.4[x];[x]surround=chl_out=stereo:chl_in=stereo:angle=90[x];[x]volume=-6dB[f];\
+                [7:a]stereotools=balance_in=-0.4[x];[x]surround=chl_out=stereo:chl_in=stereo:angle=270[x];[x]volume=-5dB[g];\
+                [8:a]stereotools=balance_in=-0.4[x];[x]surround=chl_out=stereo:chl_in=stereo:angle=90[x];[x]volume=-6dB[h];\
+                [a][b][c][d][e][f][g][h]amix=inputs=8[d];[d]loudnorm[d]\
+                ".to_string()
+            }
         }
     }
 }

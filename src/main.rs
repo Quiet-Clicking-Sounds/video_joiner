@@ -1,11 +1,11 @@
-use std::path::PathBuf;
-use std::str::FromStr;
+use crate::helper_functions::MultiPathBuf;
 use crate::switches::SortOrder;
 use crate::video::{VideoEditData, VideoGroup};
 use clap::{arg, Parser};
-use ini::Ini;
 use frame_shape::FrameShape;
-use crate::helper_functions::MultiPathBuf;
+use ini::Ini;
+use std::path::PathBuf;
+use std::str::FromStr;
 
 pub(crate) mod group_split;
 pub(crate) mod helper_functions;
@@ -218,7 +218,8 @@ fn run_from_cli(args: Cli) -> (VideoGroup, bool, Vec<String>) {
         "centreemphvert2" | "ce2" | "12" => { FrameShape::CentreEmphVert2 }
         "morehoriz" | "mh" | "13" => { FrameShape::MoreHoriz }
         "morehoriz2" | "mh2" | "14" => { FrameShape::MoreHoriz2 }
-        "extendedlandscape" | "15" => {FrameShape::ExtendedLandscape}
+        "extendedlandscape" | "15" => { FrameShape::ExtendedLandscape }
+        "extendedlandscape2" | "16" => { FrameShape::ExtendedLandscape2 }
         x => { panic!("No match found for split format: {}", x) }
     };
 

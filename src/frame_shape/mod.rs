@@ -1,4 +1,3 @@
-
 mod audio;
 mod frame_join;
 
@@ -32,6 +31,8 @@ pub(crate) enum FrameShape {
     MoreHoriz2,
     /// see [readme_data/frame_shapes_9v.svg](../readme_data/frame_shapes_10.svg) for shape ref
     ExtendedLandscape,
+    /// see [readme_data/frame_shapes_9v.svg](../readme_data/frame_shapes_11.svg) for shape ref
+    ExtendedLandscape2,
 }
 
 impl FrameShape {
@@ -45,6 +46,7 @@ impl FrameShape {
             FrameShape::HorizEmph | FrameShape::HorizEmph2 => 4,
             FrameShape::SideVert | FrameShape::SideVert2 => 3,
             FrameShape::MoreHoriz | FrameShape::MoreHoriz2 => 7,
+            FrameShape::ExtendedLandscape2 => 8,
             FrameShape::ExtendedLandscape => 9,
         }
     }
