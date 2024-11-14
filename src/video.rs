@@ -803,7 +803,41 @@ impl VideoGroup {
             (_, _) => {}
         }
 
+                vec![
+                    videos1,
+                    VideoList::from_videos(videos2.next().unwrap(), 1, sorter.clone()),
+                    VideoList::from_videos(videos2.next().unwrap(), 2, sorter.clone()),
+                    VideoList::from_videos(videos2.next().unwrap(), 3, sorter.clone()),
+                    VideoList::from_videos(videos2.next().unwrap(), 4, sorter.clone()),
+                    VideoList::from_videos(videos2.next().unwrap(), 5, sorter.clone()),
+                    VideoList::from_videos(videos2.next().unwrap(), 6, sorter.clone()),
+                    VideoList::from_videos(videos2.next().unwrap(), 7, sorter.clone()),
+                ]
+            }
+            (FrameShape::ExtendedLandscape2, 3) => {
+                let videos1 = VideoList::from_videos(helper_functions::scan_dir_for_videos(srcs[0].clone()), 0, sorter.clone());
+                let mut videos2 = helper_functions::video_group_swap_n(srcs[1].clone(), 3).into_iter();
+                let mut videos3 = helper_functions::video_group_swap_n(srcs[2].clone(), 4).into_iter();
 
+                vec![
+                    videos1,
+                    VideoList::from_videos(videos2.next().unwrap(), 1, sorter.clone()),
+                    VideoList::from_videos(videos2.next().unwrap(), 2, sorter.clone()),
+                    VideoList::from_videos(videos2.next().unwrap(), 3, sorter.clone()),
+                    VideoList::from_videos(videos3.next().unwrap(), 4, sorter.clone()),
+                    VideoList::from_videos(videos3.next().unwrap(), 5, sorter.clone()),
+                    VideoList::from_videos(videos3.next().unwrap(), 6, sorter.clone()),
+                    VideoList::from_videos(videos3.next().unwrap(), 7, sorter.clone()),
+                ]
+            }
+            
+            (_, _) => {
+                srcs.into_iter()
+                    .enumerate()
+                    .map(|(i, x)| VideoList::from_videos(helper_functions::scan_dir_for_videos(x), i as u32, sorter.clone()))
+                    .collect()
+            }
+        };
         VideoGroup {
             videos: srcs
                 .into_iter()
