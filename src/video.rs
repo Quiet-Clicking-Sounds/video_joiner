@@ -587,6 +587,20 @@ pub struct VideoGroup {
 }
 
 impl VideoGroup {
+    pub(crate) fn print_time(&mut self) {
+        let mut min_len = i64::MAX;
+        for (x, vid) in self.videos.iter_mut().enumerate(){
+            let len = vid.videos.iter_mut().fold(0,|a,f| { 
+                a + f.get_length().unwrap_or(0) 
+            }) / 1000;
+            if len < min_len {min_len = len}
+            println!("Video: {} length: {}", x, seconds_to_hhmmss(len as u64));
+        }
+        println!("end video length: {}", seconds_to_hhmmss(min_len as u64));
+    }
+}
+
+impl VideoGroup {
     pub fn new_from_folder(
         src: impl Into<MultiPathBuf>,
         src_out: impl Into<PathBuf>,
