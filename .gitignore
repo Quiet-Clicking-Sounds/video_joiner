@@ -8,5 +8,4 @@
 /SOFA/*.sofa
 /readme_data/frame_shapes.odg
 settings.ini
-run_config.sh
 run_config.*
