@@ -5,6 +5,7 @@ use clap::{arg, Parser};
 use frame_shape::FrameShape;
 use ini::Ini;
 use std::path::PathBuf;
+use std::process::exit;
 use std::str::FromStr;
 
 pub(crate) mod group_split;
@@ -18,8 +19,13 @@ mod frame_shape;
 pub fn main() {
     let args = Cli::parse();
 
-    let (mut vid, audio, encoder_args) = run_from_cli(args);
-
+    let (mut vid, audio, encoder_args,print_time_only) = run_from_cli(args);
+    
+    if print_time_only{
+        vid.print_time();
+        exit(0)
+    }
+    
     vid.main_loop(audio, encoder_args);
     println!("------------------------------------------");
     println!("--------------Video Complete--------------");
@@ -95,6 +101,11 @@ struct Cli {
     /// set output file encoding to  AV1
     #[arg(long = "av1", action)]
     encode_av1: bool,
+    
+    /// print length of resulting video then exit
+    #[arg(short='l', long = "length", action)]
+    print_length: bool,
+    
 
 }
 
@@ -200,7 +211,7 @@ fn get_folders_multi(shape: FrameShape) -> Vec<MultiPathBuf> {
     items
 }
 
-fn run_from_cli(args: Cli) -> (VideoGroup, bool, Vec<String>) {
+fn run_from_cli(args: Cli) -> (VideoGroup, bool, Vec<String>, bool) {
     let split_format = match args.split_format
         .unwrap_or_else(|| {
             request_input("Split Format 'Double' / 'Triple' / 'Quad' (see README.md for more options): ")
@@ -250,6 +261,8 @@ fn run_from_cli(args: Cli) -> (VideoGroup, bool, Vec<String>) {
         (_, _, sf) => { VideoEditData::init_wxh(2560, 1440, sf.count()) }
     };
 
+    let print_time_only = args.print_length; 
+    
     vid_edit_data.set_fps(args.fps);
 
 
@@ -282,6 +295,6 @@ fn run_from_cli(args: Cli) -> (VideoGroup, bool, Vec<String>) {
     );
     vid_edit_data.set_shape(split_format.clone());
     vid.set_video_sizer(vid_edit_data);
-
-    (vid, args.audio, encoder_args)
+    
+    (vid, args.audio, encoder_args,print_time_only)
 }
