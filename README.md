@@ -1,5 +1,7 @@
 ## Commandline utility to join 2-5 groups of videos into a single video:
 
+For a list of available video output shapes see [readme_data/frames.md](readme_data/Fframes.md)
+
 ```
 ./video_joiner.exe -h 
 Usage: video_joiner.exe [OPTIONS]
@@ -19,6 +21,7 @@ Options:
   -x, --width <OUTPUT_WIDTH>    Output width in pixels [default:2560]
   -r, --fps <FPS>               Frame Per Second [default: 30]
       --ord <ORD>               Apply sorting method Options include: 
+                                    "0", as input
                                     "1", "Random", "rand" (default)
                                     "2", "RandomSeeded", "seed"
                                     "2r", "RandomSeededR", "seedR"
@@ -32,6 +35,7 @@ Options:
       --h264                    set output file encoding to  H264
       --hvec                    set output file encoding to  H265 [aliases: h265]
       --av1                     set output file encoding to  AV1
+  -l, --length                  print length of resulting video then exit
   -h, --help                    Print help
   -V, --version                 Print version
 ```
