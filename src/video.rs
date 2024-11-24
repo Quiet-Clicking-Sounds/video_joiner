@@ -397,15 +397,30 @@ impl Video {
         let ffm = ffm.input(self.src.to_str().unwrap());
         let ffm = ffm.filter(filtergraph);
         let ffm = ffm.rawvideo();
+        #[cfg(feature = "hyperDebug")]
+        let ffm = ffm.print_command();
+        // for debugging ffmpeg bits, this will push the report per file into the /ffreport/ folder
+        
+        #[cfg(feature = "ffmpegReport")]
+        println!("IF IT ERRORS OUT YOU WILL NEED TO MAKE THE /ffreport/ FOLDER");
+        #[cfg(feature = "ffmpegReport")]
+        ffm.as_inner_mut().env(
+            "FFREPORT",
+            format!(
+                "file=ffreport/v_{}.log:level=48",
+                self.src.file_name().unwrap().to_str().unwrap()
+            ).as_str(),
+        );
 
-        // eprintln!("ARGS: {:?}", &ffm.get_args());
         self.frame_iterable = Some(ffm.spawn().unwrap().iter().unwrap());
 
         eprintln!("Begin Frames: {:?}", self.src)
     }
 
     pub fn next_frame(&mut self) -> Option<OutputVideoFrame> {
-        for _ in 0..100 {
+        #[cfg(feature = "hyperDebug")]
+        helper_functions::parse_debug(" Video::next_frame() ", file!(), line!());
+        for _ in 0..1000 {
             // frames aren't always a frame, only return a Frame or None
             // setup if no video currently setup
             if self.frame_iterable.is_none() {
@@ -438,7 +453,10 @@ impl Video {
                 FfmpegEvent::Log(level, data) => {
                     match level {
                         LogLevel::Info => {
-                            //eprintln!("LOG {:?} : {}", level, data)
+                            #[cfg(feature = "hyperDebug")]
+                            helper_functions::parse_debug("LogLevel::Info", file!(), line!());
+                            #[cfg(feature = "hyperDebug")]
+                            eprintln!("LOG {:?} : {}", level, data);
                         }
                         LogLevel::Warning | LogLevel::Error | LogLevel::Fatal => {
                             eprintln!("LOG {:?} : {}  --  {:?}", level, data, self.src);
@@ -452,9 +470,18 @@ impl Video {
                     }
                 }
                 // Ignored events
-                FfmpegEvent::ParsedConfiguration(_)
-                | FfmpegEvent::ParsedVersion(_)
-                | FfmpegEvent::Progress(_) => {}
+                #[cfg(feature = "hyperDebug")]
+                FfmpegEvent::ParsedConfiguration(f) => {
+                    eprintln!("LOG {:?} ", f);
+                }
+                #[cfg(feature = "hyperDebug")]
+                FfmpegEvent::ParsedVersion(f) => {
+                    eprintln!("LOG {:?} ", f);
+                }
+                #[cfg(feature = "hyperDebug")]
+                FfmpegEvent::Progress(f) => {
+                    eprintln!("LOG {:?} ", f);
+                }
 
                 _ => {
                     //eprintln!("___ {:?}", frame)
@@ -563,6 +590,7 @@ impl VideoList {
                 }
             }
         }
+        println!("WARNING got to 10 calls without a frame in {}", self.videos.front()?.src.to_str()?);
         #[cfg(feature = "hyperDebug")]
         helper_functions::parse_debug("frame not found, next video failed to load", file!(), line!());
 
@@ -589,14 +617,22 @@ pub struct VideoGroup {
 impl VideoGroup {
     pub(crate) fn print_time(&mut self) {
         let mut min_len = i64::MAX;
-        for (x, vid) in self.videos.iter_mut().enumerate(){
-            let len = vid.videos.iter_mut().fold(0,|a,f| { 
-                a + f.get_length().unwrap_or(0) 
+        for (x, vid) in self.videos.iter_mut().enumerate() {
+            let len = vid.videos.iter_mut().fold(0, |a, f| {
+                a + f.get_length().unwrap_or(0)
             }) / 1000;
-            if len < min_len {min_len = len}
+            if len < min_len { min_len = len }
             println!("Video: {} length: {}", x, seconds_to_hhmmss(len as u64));
         }
         println!("end video length: {}", seconds_to_hhmmss(min_len as u64));
+
+
+        for (x, vid) in self.videos.iter_mut().enumerate() {
+            println!("Video Group: {}", x);
+            for v in vid.videos.iter() {
+                println!("\t{}", v.src.to_str().unwrap());
+            }
+        }
     }
 }
 
@@ -944,6 +980,14 @@ impl VideoGroup {
 
             // if no more frames are available break the loop
             if frame_prep.iter().any(|f| f.is_none()) {
+                for (fp, vl) in frame_prep.iter().zip(self.videos.iter()) {
+                    match fp {
+                        None => {
+                            println!("video: {}", vl.complete_videos.iter().last().unwrap().src.to_str().unwrap());
+                        }
+                        Some(_) => {}
+                    }
+                }
                 #[cfg(feature = "hyperDebug")]
                 helper_functions::parse_debug(
                     "Frame prep returned a none value, mainloop ended",
