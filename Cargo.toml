@@ -30,7 +30,6 @@ opt-level = 3
 hyperDebug = []
 # extra debugging for temp files.
 keepTempFiles = []
-
-encoder_d3d11va = []
-encoder_nv_av1 = []
+# outputs low level debug info from ffmpeg into /ffreport/ folder
+# (this folder needs to be created before running the program)
 ffmpegReport =[]
