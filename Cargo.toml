@@ -1,13 +1,13 @@
 [package]
 name = "video_joiner"
-version = "0.2.6"
+version = "0.2.7"
 edition = "2021"
 authors = ["Quiet-Clicking-Sounds <55921097+Quiet-Clicking-Sounds@users.noreply.github.com>"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-ffmpeg-sidecar = "1.1.0"
+ffmpeg-sidecar = "2.0.2"
 ffprobe = "0.4.0"
 clap = {version = "4.5.0", features=["derive"]}
 os_pipe = "1.2.0"
@@ -30,7 +30,6 @@ opt-level = 3
 hyperDebug = []
 # extra debugging for temp files.
 keepTempFiles = []
-
-encoder_d3d11va = []
-encoder_nv_av1 = []
+# outputs low level debug info from ffmpeg into /ffreport/ folder
+# (this folder needs to be created before running the program)
 ffmpegReport =[]
