@@ -6,7 +6,7 @@
 /.git
 /.idea
 /SOFA/*.sofa
-/readme_data/frame_shapes.odg
+/readme_data/frame_shapes.*
 settings.ini
 run_config_*.bat
 /ffreport/
