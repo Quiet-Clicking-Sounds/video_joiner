@@ -17,10 +17,9 @@ jobs:
       - uses: actions/checkout@master
       - name: Compile and release
         uses: rust-build/rust-build.action@v1.4.5
-          with:
-            TOOLCHAIN_VERSION: stable
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
+          TOOLCHAIN_VERSION: stable
           RUSTTARGET: ${{ matrix.target }}
-          EXTRA_FILES: "README.md LICENSE_MIT settings-default.ini"
+          EXTRA_FILES: "README.md LICENSE_MIT settings-default.ini readme_data" 
