@@ -20,6 +20,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          TOOLCHAIN_VERSION: stable-1.76
+          TOOLCHAIN_VERSION: stable-1.81
           RUSTTARGET: ${{ matrix.target }}
           EXTRA_FILES: "README.md LICENSE_MIT settings-default.ini readme_data" 
