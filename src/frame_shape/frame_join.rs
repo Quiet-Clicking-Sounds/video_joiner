@@ -30,6 +30,16 @@ impl Joiner for FrameShape {
             )
             .collect();
         match self {
+            FrameShape::Mono => {
+                'outter: loop {
+                    for chunk in chunks.iter_mut() {
+                        match chunk.next() {
+                            None => break 'outter,
+                            Some(ch) => out.extend_from_slice(ch),
+                        }
+                    }
+                }
+            }
             FrameShape::Dual | FrameShape::Triple => {
                 'outter: loop {
                     for chunk in chunks.iter_mut() {

@@ -216,6 +216,7 @@ fn run_from_cli(args: Cli) -> (VideoGroup, bool, Vec<String>, bool) {
         .unwrap_or_else(|| {
             request_input("Split Format 'Double' / 'Triple' / 'Quad' (see README.md for more options): ")
         }).to_lowercase().as_str().trim() {
+        "1" => { FrameShape::Mono }
         "double" | "d" | "2" => { FrameShape::Dual }
         "triple" | "t" | "3" => { FrameShape::Triple }
         "quad" | "q" | "4" => { FrameShape::Quad }

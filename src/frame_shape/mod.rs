@@ -3,6 +3,7 @@ mod frame_join;
 
 #[derive(Clone, Debug)]
 pub(crate) enum FrameShape {
+    Mono,    
     /// see [readme_data/frame_shapes_1.svg](../readme_data/frame_shapes_1.svg) for shape ref
     Dual,
     /// see [readme_data/frame_shapes_2.svg](../readme_data/frame_shapes_2.svg) for shape ref
@@ -38,6 +39,7 @@ pub(crate) enum FrameShape {
 impl FrameShape {
     pub(crate) fn count(&self) -> u32 {
         match self {
+            FrameShape::Mono => 1,
             FrameShape::Dual => 2,
             FrameShape::Triple => 3,
             FrameShape::Quad => 4,

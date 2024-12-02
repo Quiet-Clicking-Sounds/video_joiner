@@ -87,6 +87,12 @@ impl FrameShape {
     //noinspection SpellCheckingInspection
     pub(crate) fn audio_args_with_vid(&self) -> String {
         match self {
+            FrameShape::Mono  => {
+                let out = FfmAudioText::new()
+                    .add_input()
+                    .mix_out();
+                out
+            }
             FrameShape::Dual => {
                 let out = FfmAudioText::new()
                     .add_input().stereo_lc(-0)

@@ -84,6 +84,11 @@ impl VideoEditData {
 
     pub(crate) fn set_shape(&mut self, shaper: FrameShape) {
         match shaper {
+            FrameShape::Mono => {
+                self.shapes = vec![
+                    (self.output_width, self.output_height),
+                ]
+            }
             FrameShape::Dual => {
                 self.shapes = vec![
                     (self.output_width / 2, self.output_height),
@@ -326,7 +331,7 @@ impl Video {
         let mut ffm = FfmpegCommand::new();
         let ffm = ffm.input(tar.to_str().unwrap()).no_video();
         let ffm = ffm.filter(format!(
-            "[0:a]apad=whole_dur={:.6}s[a]",
+            "[0:a]apad=whole_dur={}[a]",
             length
         ));
         let ffm = ffm
