@@ -79,7 +79,7 @@ pub fn join_audio_video_streams(audio_segments: Vec<Vec<PathBuf>>,
         worker.input(inp.to_str().unwrap());
     }
     worker.args(["-filter_complex", &*frame_shape.audio_args_with_vid()]);
-    worker.args(["-c:v", "copy", ]).arg("-y");
+    worker.args(["-c:v", "copy", ]).arg("-y").arg("-shortest");
     worker.map("0:v:0").map("[d]");
     worker.output(&video_out.to_str().unwrap());
 
