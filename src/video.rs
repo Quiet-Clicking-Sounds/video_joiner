@@ -620,7 +620,7 @@ pub struct VideoGroup {
 }
 
 impl VideoGroup {
-    pub(crate) fn print_time(&mut self) {
+    pub(crate) fn print_time(&mut self, extra_info:bool) {
         let mut min_len = i64::MAX;
         for (x, vid) in self.videos.iter_mut().enumerate() {
             let len = vid.videos.iter_mut().fold(0, |a, f| {
@@ -631,7 +631,7 @@ impl VideoGroup {
         }
         println!("end video length: {}", seconds_to_hhmmss(min_len as u64));
 
-
+        if !extra_info{return}
         for (x, vid) in self.videos.iter_mut().enumerate() {
             println!("Video Group: {}", x);
             for v in vid.videos.iter() {
