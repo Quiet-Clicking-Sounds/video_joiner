@@ -421,7 +421,7 @@ impl Video {
         #[cfg(feature = "hyperDebug")]
         let ffm = ffm.print_command();
         // for debugging ffmpeg bits, this will push the report per file into the /ffreport/ folder
-        
+
         #[cfg(feature = "ffmpegReport")]
         println!("IF IT ERRORS OUT YOU WILL NEED TO MAKE THE /ffreport/ FOLDER");
         #[cfg(feature = "ffmpegReport")]
@@ -636,7 +636,7 @@ pub struct VideoGroup {
 }
 
 impl VideoGroup {
-    pub(crate) fn print_time(&mut self, extra_info:bool) {
+    pub(crate) fn print_time(&mut self, extra_info: bool) {
         let mut min_len = i64::MAX;
         for (x, vid) in self.videos.iter_mut().enumerate() {
             let len = vid.videos.iter_mut().fold(0, |a, f| {
@@ -647,7 +647,7 @@ impl VideoGroup {
         }
         println!("end video length: {}", seconds_to_hhmmss(min_len as u64));
 
-        if !extra_info{return}
+        if !extra_info { return; }
         for (x, vid) in self.videos.iter_mut().enumerate() {
             println!("Video Group: {}", x);
             for v in vid.videos.iter() {
@@ -682,6 +682,7 @@ impl VideoGroup {
         }
     }
 
+    //noinspection DuplicatedCode
     pub fn new_from_folders(
         srcs: Vec<MultiPathBuf>,
         src_out: impl Into<PathBuf>,
@@ -841,7 +842,6 @@ impl VideoGroup {
                 let videos1 = VideoList::from_videos(helper_functions::scan_dir_for_videos(srcs[0].clone()), 0, sorter.clone());
                 let mut videos2 = helper_functions::video_group_swap_n(srcs[1].clone(), 3).into_iter();
                 let mut videos3 = helper_functions::video_group_swap_n(srcs[2].clone(), 4).into_iter();
-
                 vec![
                     videos1,
                     VideoList::from_videos(videos2.next().unwrap(), 1, sorter.clone()),
