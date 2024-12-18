@@ -200,6 +200,19 @@ impl FrameShape {
                     .mix_out();
                 out
             }
+            FrameShape::OffsetVH4x4 => {
+                let out = FfmAudioText::new()
+                    .add_input().stereo_lc(0)
+                    .add_input().stereo_rc(0)
+                    .add_input().stereo_l(-2-3)
+                    .add_input().stereo_r(-2-3)
+                    .add_input().stereo_l(-2)
+                    .add_input().stereo_r(-2)
+                    .add_input().stereo_lc(-3)
+                    .add_input().stereo_rc(-3)
+                    .mix_out();
+                out
+            }
         }
     }
 }
