@@ -218,32 +218,7 @@ fn get_folders_multi(shape: FrameShape) -> Vec<MultiPathBuf> {
 }
 
 fn run_from_cli(args: Cli) -> (VideoGroup, bool, Vec<String>, (bool, bool)) {
-    let split_format = match args.split_format
-        .unwrap_or_else(|| {
-            request_input("Split Format 'Double' / 'Triple' / 'Quad' (see README.md for more options): ")
-        }).to_lowercase().as_str().trim() {
-        "1" => { FrameShape::Mono }
-        "double" | "d" | "2" => { FrameShape::Dual }
-        "triple" | "t" | "3" => { FrameShape::Triple }
-        "quad" | "q" | "4" => { FrameShape::Quad }
-        "vertemph" | "vert" | "v" | "5" => { FrameShape::VertEmph }
-        "horizemph" | "horiz" | "h" | "6" => { FrameShape::HorizEmph }
-        "vertemph2" | "vert2" | "v2" | "7" => { FrameShape::VertEmph2 }
-        "horizemph2" | "horiz2" | "h2" | "8" => { FrameShape::HorizEmph2 }
-        "sidevert" | "vd" | "9" => { FrameShape::SideVert }
-        "sidevert2" | "dv" | "10" => { FrameShape::SideVert2 }
-        "centreemphvert" | "ce" | "11" => { FrameShape::CentreEmphVert }
-        "centreemphvert2" | "ce2" | "12" => { FrameShape::CentreEmphVert2 }
-        "morehoriz" | "mh" | "13" => { FrameShape::MoreHoriz }
-        "morehoriz2" | "mh2" | "14" => { FrameShape::MoreHoriz2 }
-        "extendedlandscape" | "15" => { FrameShape::ExtendedLandscape }
-        "extendedlandscape2" | "16" => { FrameShape::ExtendedLandscape2 }
-        "offsetvh" | "17" => {FrameShape::OffsetVH4x4}
-        x => {
-            panic!("No match found for split format: {}", x)
-        }
-    };
-
+    let split_format = FrameShape::from_str_opt(args.split_format);
     let sort_ord = match args.ord.unwrap_or("Random".to_string()).to_lowercase().as_str().trim() {
         "0" | "as_input" | "none" => SortOrder::Nan,
         "1" | "random" | "rand" => SortOrder::Random,
