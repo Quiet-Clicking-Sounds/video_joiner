@@ -457,6 +457,63 @@ impl Joiner for FrameShape {
                     }
                 }
             }
+            FrameShape::OffsetVH4x4 => {
+                let mut switch_1: bool = true;
+                let mut switch_2: bool = true;
+                let mut switch_3: bool = true;
+                let mut switch_4: bool = true;
+
+                loop {
+                    if switch_1{
+                        match chunks[4].next() {
+                            None => switch_1 = false,
+                            Some(ch) => out.extend_from_slice(ch)
+                        }
+                    }
+                    if !switch_1{
+                        match chunks[2].next() {
+                            None => break,
+                            Some(ch) => out.extend_from_slice(ch)
+                        }
+                    }
+                    if switch_2{
+                        match chunks[0].next() {
+                            None => switch_2 = false,
+                            Some(ch) => out.extend_from_slice(ch)
+                        }
+                    }
+                    if !switch_2{
+                        match chunks[6].next() {
+                            None => break,
+                            Some(ch) => out.extend_from_slice(ch)
+                        }
+                    }
+                    if switch_3{
+                        match chunks[1].next() {
+                            None => switch_3 = false,
+                            Some(ch) => out.extend_from_slice(ch)
+                        }
+                    }
+                    if !switch_3{
+                        match chunks[7].next() {
+                            None => break,
+                            Some(ch) => out.extend_from_slice(ch)
+                        }
+                    }
+                    if switch_4{
+                        match chunks[5].next() {
+                            None => switch_4 = false,
+                            Some(ch) => out.extend_from_slice(ch)
+                        }
+                    }
+                    if !switch_4{
+                        match chunks[3].next() {
+                            None => break,
+                            Some(ch) => out.extend_from_slice(ch)
+                        }
+                    }
+                }
+            }
         }
 
 

@@ -267,6 +267,22 @@ impl VideoEditData {
                     (w_r, vertical_top_thirds),
                 ]
             }
+            FrameShape::OffsetVH4x4 => {
+                let horizontal_023 = self.output_width / 4;
+                let horizontal_1 = self.output_width - horizontal_023 * 3;
+                let height_min = self.output_height / 4;
+                let height_max = self.output_height - height_min;
+                self.shapes = vec![
+                    (horizontal_1, height_min),
+                    (horizontal_023, height_min),
+                    (horizontal_023, height_min),
+                    (horizontal_023, height_min),
+                    (horizontal_023, height_max),
+                    (horizontal_023, height_max),
+                    (horizontal_1, height_max),
+                    (horizontal_023, height_max),
+                ]
+            }
         }
     }
 }
@@ -838,6 +854,19 @@ impl VideoGroup {
                 ]
             }
 
+            (FrameShape::OffsetVH4x4, 2) => {
+                let mut videos2 = helper_functions::video_group_swap_n(srcs[0].clone(), 4).into_iter();
+                let mut videos3 = helper_functions::video_group_swap_n(srcs[1].clone(), 4).into_iter();
+                vec![
+                    VideoList::from_videos(videos2.next().unwrap(), 0, sorter.clone()),
+                    VideoList::from_videos(videos2.next().unwrap(), 1, sorter.clone()),
+                    VideoList::from_videos(videos2.next().unwrap(), 2, sorter.clone()),
+                    VideoList::from_videos(videos2.next().unwrap(), 3, sorter.clone()),
+                    VideoList::from_videos(videos3.next().unwrap(), 4, sorter.clone()),
+                    VideoList::from_videos(videos3.next().unwrap(), 5, sorter.clone()),
+                    VideoList::from_videos(videos3.next().unwrap(), 6, sorter.clone()),
+                    VideoList::from_videos(videos3.next().unwrap(), 7, sorter.clone()), ]
+            }
             (_, _) => {
                 srcs.into_iter()
                     .enumerate()
