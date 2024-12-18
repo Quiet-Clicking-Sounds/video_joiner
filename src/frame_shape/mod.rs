@@ -34,6 +34,8 @@ pub(crate) enum FrameShape {
     ExtendedLandscape,
     /// see [readme_data/frame_shapes_9v.svg](../readme_data/frame_shapes_11.svg) for shape ref
     ExtendedLandscape2,
+    /// see [readme_data/frame_shapes_12.svg](../readme_data/frame_shapes_12.svg) for shape ref
+    OffsetVH4x4,
 }
 
 impl FrameShape {

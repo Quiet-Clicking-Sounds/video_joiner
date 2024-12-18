@@ -238,6 +238,7 @@ fn run_from_cli(args: Cli) -> (VideoGroup, bool, Vec<String>, (bool, bool)) {
         "morehoriz2" | "mh2" | "14" => { FrameShape::MoreHoriz2 }
         "extendedlandscape" | "15" => { FrameShape::ExtendedLandscape }
         "extendedlandscape2" | "16" => { FrameShape::ExtendedLandscape2 }
+        "offsetvh" | "17" => {FrameShape::OffsetVH4x4}
         x => {
             panic!("No match found for split format: {}", x)
         }
