@@ -20,7 +20,7 @@ Options:
   -y, --height <OUTPUT_HEIGHT>  Output height in pixels [default:1440]
   -x, --width <OUTPUT_WIDTH>    Output width in pixels [default:2560]
   -r, --fps <FPS>               Frame Per Second [default: 30]
-      --ord <ORD>               Apply sorting method Options include: 
+      --ord <ORD>               Apply sorting method Options include:
                                     "0", as input
                                     "1", "Random", "rand" (default)
                                     "2", "RandomSeeded", "seed"
@@ -36,6 +36,7 @@ Options:
       --hvec                    set output file encoding to  H265 [aliases: h265]
       --av1                     set output file encoding to  AV1
   -l, --length                  print length of resulting video then exit
+  -L, --LENGTH                  print length of resulting video with additional outputs
   -h, --help                    Print help
   -V, --version                 Print version
 ```
@@ -88,12 +89,12 @@ The order if `-f` inputs is important, see standard layouts for the order in whi
 
 ```shell
 ./video_joiner.exe 
-    -f "D:\video_grp_1" 
-    -f "D:\video_grp_3" 
-    -f "D:\video_grp_4" 
-    -f "D:\video_grp_2" 
-    -o "D:\joined_video.mp4" 
-    --shape "HorizEmph"
+  -f "D:\video_grp_1" 
+  -f "D:\video_grp_3" 
+  -f "D:\video_grp_4" 
+  -f "D:\video_grp_2" 
+  -o "D:\joined_video.mp4"  
+  --shape "HorizEmph"
 ```
 
 #### Special case
@@ -145,52 +146,33 @@ Implemented for `CentreEmphVert`
 
 ## Frame Shapes: names and layout images
 
-### Standard layouts:
 
-| `Double` or `D` or `2`                                | `Triple` or `T` or `3`                                | `Quad` or `Q` or `4`                                  |
-|-------------------------------------------------------|-------------------------------------------------------|-------------------------------------------------------|
-| ![frame_shapes_1.svg](readme_data/frame_shapes_1.svg) | ![frame_shapes_1.svg](readme_data/frame_shapes_2.svg) | ![frame_shapes_1.svg](readme_data/frame_shapes_3.svg) |
 
-### Non-Standard layouts:
+| `-s <item>` == `--shape <item>`                    | Diagram                                                 | groupings                                               |                            |
+|----------------------------------------------------|---------------------------------------------------------|---------------------------------------------------------|----------------------------|
+| `-s 1`  <br> `-s Mono`               <br> `-s M`   | no joins                                                | N/A                                                     |                            |
+| `-s 2`  <br> `-s Double`             <br> `-s D`   | ![frame_shapes_1.svg](readme_data/frame_shapes_1.svg)   | N/A                                                     |                            |
+| `-s 3`  <br> `-s Triple`             <br> `-s T`   | ![frame_shapes_2.svg](readme_data/frame_shapes_2.svg)   | N/A                                                     |                            |
+| `-s 4`  <br> `-s Quad`               <br> `-s Q`   | ![frame_shapes_3.svg](readme_data/frame_shapes_3.svg)   | N/A                                                     |                            |
+| `-s 5`  <br> `-s VertEmph`           <br> `-s V`   | ![frame_shapes_4.svg](readme_data/frame_shapes_4.svg)   | `[1],[2-5]`                                             | Widths: <br> 1/3, 1/3, 1/3 |
+| `-s 7`  <br> `-s VertEmph2`          <br> `-s V2`  | ![frame_shapes_4.svg](readme_data/frame_shapes_4.svg)   | `[1],[2-5]`                                             | Widths: <br> 3/8, 2/8, 3/8 |
+| `-s 6`  <br> `-s HorizEmph`          <br> `-s H`   | ![frame_shapes_5.svg](readme_data/frame_shapes_5.svg)   | `[1,4],[2,3]`                                           | Widths: <br> 1/3, 1/3, 1/3 |
+| `-s 8`  <br> `-s HorizEmph2`         <br> `-s H2`  | ![frame_shapes_5.svg](readme_data/frame_shapes_5.svg)   | `[1,4],[2,3]`                                           | Widths: <br> 1/4, 1/2, 1/4 |
+| `-s 9`  <br> `-s SideVert`           <br> `-s S`   | ![frame_shapes_6.svg](readme_data/frame_shapes_6.svg)   | `[1],[2,3]`                                             |                            |
+| `-s 10` <br> `-s SideVert2`          <br> `-s S2`  | ![frame_shapes_7.svg](readme_data/frame_shapes_7.svg)   | `[1],[2,3]`                                             |                            |
+| `-s 11` <br> `-s CentreEmphVert`     <br> `-s CE`  | ![frame_shapes_8.svg](readme_data/frame_shapes_8.svg)   | `[1],[2,3],[4,5]` <hr> `[1,4,5],[2,3]`                  |                            |
+| `-s 12` <br> `-s CentreEmphVert2`    <br> `-s CE2` | ![frame_shapes_8v.svg](readme_data/frame_shapes_8v.svg) | `[1],[2,3],[4,5]` <hr> `[1,4,5],[2,3]`                  |                            |
+| `-s 13` <br> `-s MoreHoriz`          <br> `-s MH`  | ![frame_shapes_9.svg](readme_data/frame_shapes_9.svg)   | `[1],[2,3],[4,5,6,7]`  <hr>  `[1,4,5,6,7],[2,3]`        |                            |
+| `-s 14` <br> `-s MoreHoriz2`         <br> `-s MH2` | ![frame_shapes_9v.svg](readme_data/frame_shapes_9v.svg) | `[1],[2,3],[4,5,6,7]`  <hr>  `[1,4,5,6,7],[2,3]`        |                            |
+| `-s 15` <br> `-s ExtendedLandscape`  <br> `-s EL`  | ![frame_shapes_10.svg](readme_data/frame_shapes_10.svg) | `[1],[2,3],[4,5,6,7,8,9]` <hr>  `[1,2,3],[4,5,6,7,8,9]` |                            |
+| `-s 16` <br> `-s ExtendedLandscape2` <br> `-s EL2` | ![frame_shapes_11.svg](readme_data/frame_shapes_11.svg) | `[1,2,3,4],[5,6,7,8]` <hr> `[1],[2,3,4],[5,6,7,8]`      |                            |
+| `-s 17` <br> `-s OffsetVH`           <br> `-s 4x4` | ![frame_shapes_12.svg](readme_data/frame_shapes_12.svg) | `[1,2,3,4],[5,6,7,8]`                                   |                            |
 
-| `VertEmph` or `V` or `5`                                  | `HorizEmph` or `H` or `6`                                 |
-|-----------------------------------------------------------|-----------------------------------------------------------|
-| ![frame_shapes_4.svg](readme_data/frame_shapes_4.svg)     | ![frame_shapes_5.svg](readme_data/frame_shapes_5.svg)     |
-| Frame 1: `5.33/9` when exporting at `16/9`                | Frame 1/4: `5.33/9` when exporting at `16/9`              |
-| Equal frame widths means excessive cropping of 16/9 video | Equal frame widths means excessive cropping of 16/9 video | 
 
-| `VertEmph2` or `V2` or `7`                            | `HorizEmph2` or `H2` or `8`                           |
-|-------------------------------------------------------|-------------------------------------------------------|
-| ![frame_shapes_4.svg](readme_data/frame_shapes_4.svg) | ![frame_shapes_5.svg](readme_data/frame_shapes_5.svg) |
-| Top row `3/8` `2/8` `3/8`                             | Top row: `1/4` `2/4` `1/4`                            | 
-| Enlarged side frames to reducing cropping             | Enlarged centre frame to reduce cropping              | 
 
-| `SideVert` or `VD` or `9`                             | `SideVert2` or `DV` or `10`                           |
-|-------------------------------------------------------|-------------------------------------------------------|
-| ![frame_shapes_6.svg](readme_data/frame_shapes_6.svg) | ![frame_shapes_7.svg](readme_data/frame_shapes_7.svg) |
-| Top row `1/3` `2/3`                                   | Top row `2/3` `1/3`                                   |
-| Enlarged side frames to reducing cropping             | Enlarged side frames to reducing cropping             |
 
-| `CentreEmphVert` or `CE` or `11`                      | `CentreEmphVert2` or `CE2` or `12`                      |
-|-------------------------------------------------------|---------------------------------------------------------|
-| ![frame_shapes_8.svg](readme_data/frame_shapes_8.svg) | ![frame_shapes_8v.svg](readme_data/frame_shapes_8v.svg) |
-| Top row -- `1/5` ---- `3/5` ---- `1/5`                |                                                         |
-| Bottom row ` " ` `1.5/5` `1.5/5` ` " `                | duplicate of CentreEmphVert vertically mirrored         |
-| bottom row height: `2/5`                              | (large centre frame is on the lower half                |
 
-| `MoreHoriz` or `MH` or `13`                           | `MoreHoriz` or `MH2` or `14`                            |
-|-------------------------------------------------------|---------------------------------------------------------|
-| ![frame_shapes_9.svg](readme_data/frame_shapes_9.svg) | ![frame_shapes_9v.svg](readme_data/frame_shapes_9v.svg) |
-|                                                       |                                                         |
-| TBD                                                   | TBD                                                     |
-|                                                       |                                                         |
 
-| `ExtendedLandscape` or `15`                              |
-|----------------------------------------------------------|
-| ![frame_shapes_10.svg ](readme_data/frame_shapes_10.svg) |
-|                                                          |
-| TBD                                                      |
-|                                                          |
 
 ## Audio & why exports can be slow
 
