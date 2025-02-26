@@ -16,4 +16,4 @@
 | `-s 14` <br> `-s MoreHoriz2`         <br> `-s MH2` | ![frame_shapes_9v.svg](frame_shapes_9v.svg) | `[1],[2,3],[4,5,6,7]`  <hr>  `[1,4,5,6,7],[2,3]`        |                            |
 | `-s 15` <br> `-s ExtendedLandscape`  <br> `-s EL`  | ![frame_shapes_10.svg](frame_shapes_10.svg) | `[1],[2,3],[4,5,6,7,8,9]` <hr>  `[1,2,3],[4,5,6,7,8,9]` |                            |
 | `-s 16` <br> `-s ExtendedLandscape2` <br> `-s EL2` | ![frame_shapes_11.svg](frame_shapes_11.svg) | `[1,2,3,4],[5,6,7,8]` <hr> `[1],[2,3,4],[5,6,7,8]`      |                            |
-| `-s 17` <br> `-s OffsetVH`           <br> `-s 4x4` | ![frame_shapes_12.svg](frame_shapes_12.svg) | `[1,2,3,4],[5,6,7,8]`                                   |                            |
+| `-s 17` <br> `-s OffsetVH`           <br> `-s 4x4` | ![frame_shapes_12.svg](frame_shapes_12.svg) | `[1,2,3,4],[5,6,7,8]` <hr>  `[1,2],[3,4],[5,6],[7,8]`   |                            |
