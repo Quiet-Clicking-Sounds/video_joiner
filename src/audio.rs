@@ -3,7 +3,6 @@ use std::path::PathBuf;
 use crate::helper_functions::iter_ffmpeg_events;
 #[cfg(feature = "hyperDebug")]
 use crate::helper_functions::parse_debug;
-use crate::frame_shape::FrameShape;
 use ffmpeg_sidecar;
 use ffmpeg_sidecar::child::FfmpegChild;
 use ffmpeg_sidecar::command::FfmpegCommand;
@@ -50,7 +49,7 @@ fn concat_audio_streams(p_list: Vec<PathBuf>, temp: &PathBuf, stream_id: usize) 
 }
 pub fn join_audio_video_streams(audio_segments: Vec<Vec<PathBuf>>,
                                 temp: &PathBuf, video_temp: &PathBuf, video_out: PathBuf,
-                                frame_shape: &FrameShape) -> PathBuf {
+                                audio_filter:String) -> PathBuf {
     println!("Audio/Video joiner Started, this can be slow");
 
     #[cfg(feature = "hyperDebug")]
@@ -78,7 +77,7 @@ pub fn join_audio_video_streams(audio_segments: Vec<Vec<PathBuf>>,
     for inp in audio_items {
         worker.input(inp.to_str().unwrap());
     }
-    worker.args(["-filter_complex", &*frame_shape.audio_args_with_vid()]);
+    worker.args(["-filter_complex", &*audio_filter]);
     worker.args(["-c:v", "copy", ]).arg("-y").arg("-shortest");
     worker.map("0:v:0").map("[d]");
     worker.output(&video_out.to_str().unwrap());
