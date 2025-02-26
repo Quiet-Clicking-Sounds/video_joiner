@@ -513,7 +513,37 @@ impl Joiner for FrameShape {
                         }
                     }
                 }
+            },
+            
+            FrameShape::TripleMirroredSides  => {
+                
+                loop {
+                    let opp_side = match chunks[0].next() {
+                        None => break,
+                        Some(ch) => {
+                            let opp_side = ch.clone().to_vec();
+                            out.extend_from_slice(ch);
+                            opp_side
+                        }
+                    };
+                    match chunks[1].next(){
+                        None => break,
+                        Some(ch) => out.extend_from_slice(ch)
+                    }
+                    
+                    let opp_side_rev = Vec::from_iter(
+                        opp_side
+                            .rchunks(3).flatten().map(|&x1| {x1})
+                    );
+                    
+                    out.extend_from_slice(opp_side_rev.as_slice())
+                    
+                }
+                
+                
             }
+            
+            // do nothing here 
         }
 
 
