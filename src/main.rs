@@ -19,16 +19,23 @@ mod frame_shape;
 pub fn main() {
     let args = Cli::parse();
 
-    let (mut vid, audio, encoder_args, print_time_only) = run_from_cli(args);
-    match print_time_only {
+    let (mut vid, prep) = run_from_cli(args);
+    match prep.print_time_only {
         (_, true) => {
-        vid.print_time(true);
-        exit(0)}
+            vid.print_time(true);
+            exit(0)
+        }
         (true, false) => {
-        vid.print_time(false);
-        exit(0)}
+            vid.print_time(false);
+            exit(0)
+        }
         _ => {
-            vid.main_loop(audio, encoder_args);
+            vid.main_loop(
+                prep.audio_bool,
+                prep.encoder_args,
+                prep.audio_filters,
+                prep.audio_overlay_db,
+            );
             println!("------------------------------------------");
             println!("--------------Video Complete--------------");
             println!("------------------------------------------");
@@ -71,6 +78,11 @@ struct Cli {
     #[arg(short = 'r', long = "fps", default_value_t = 30.0)]
     fps: f32,
 
+    /// Speed Modifier, 0.5 half speed, 2.0 double speed
+    ///
+    #[arg(long = "speed")]
+    speed_modifier: Option<f32>,
+
     /// Apply sorting method Options include: 
     ///     "0", as input
     ///     "1", "Random", "rand" (default)
@@ -112,6 +124,23 @@ struct Cli {
     /// print length of resulting video with additional outputs
     #[arg(short = 'L', long = "LENGTH", action)]
     print_length2: bool,
+
+    /// Audio filter override, formatted as '<l/lc/c/rc/r>.<i32>' separated with spaces 
+    /// 3 chanel example "l.-1 c.3 r.-1" would output as: 
+    ///     stereo left -1db, stereo centre +3db, stereo right -1db
+    /// will error if number of channels != number of video inputs. extra tokens will cause errors.
+    #[arg(long = "audio_filter", visible_alias = "af")]
+    audio_filter: Option<String>,
+
+    /// add an audio source over the other sources, (does not interact with audio-filter)
+    /// audio will have +3db from source by default, can be modified with --audio_overlay_db
+    #[arg(long = "audio_overlay")]
+    audio_overlay: Option<MultiPathBuf>,
+
+    /// audio overlay value loudness
+    /// NOTE: Reduces all audio by the given value rather than increasing overlay volume
+    #[arg(long = "audio_overlay_db")]
+    audio_overlay_db: Option<i32>,
 
 }
 
@@ -217,7 +246,7 @@ fn get_folders_multi(shape: FrameShape) -> Vec<MultiPathBuf> {
     items
 }
 
-fn run_from_cli(args: Cli) -> (VideoGroup, bool, Vec<String>, (bool, bool)) {
+fn run_from_cli(args: Cli) -> (VideoGroup, Prep) {
     let split_format = FrameShape::from_str_opt(args.split_format);
     let sort_ord = match args.ord.unwrap_or("Random".to_string()).to_lowercase().as_str().trim() {
         "0" | "as_input" | "none" => SortOrder::Nan,
@@ -259,6 +288,8 @@ fn run_from_cli(args: Cli) -> (VideoGroup, bool, Vec<String>, (bool, bool)) {
                 output_file,
                 split_format.clone(),
                 sort_ord,
+                args.speed_modifier,
+                args.audio_overlay,
             )
         }
         2..=15 => {
@@ -266,7 +297,9 @@ fn run_from_cli(args: Cli) -> (VideoGroup, bool, Vec<String>, (bool, bool)) {
                 folder_target,
                 output_file,
                 split_format.clone(),
-                sort_ord,
+                sort_ord, 
+                args.speed_modifier,
+                args.audio_overlay,
             )
         }
         _ => { panic!("More than 5 folders is currently unsupported") }
@@ -281,5 +314,18 @@ fn run_from_cli(args: Cli) -> (VideoGroup, bool, Vec<String>, (bool, bool)) {
     vid_edit_data.set_shape(split_format.clone());
     vid.set_video_sizer(vid_edit_data);
 
-    (vid, args.audio, encoder_args, print_time_only)
+    (vid, Prep {
+        audio_bool: args.audio,
+        encoder_args,
+        print_time_only,
+        audio_filters: args.audio_filter,
+        audio_overlay_db: args.audio_overlay_db,
+    })
+}
+struct Prep {
+    audio_bool: bool,
+    encoder_args: Vec<String>,
+    print_time_only: (bool, bool),
+    audio_filters: Option<String>,
+    audio_overlay_db: Option<i32>,
 }
