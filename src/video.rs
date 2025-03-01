@@ -587,7 +587,7 @@ impl VideoList {
             
             
             match vid.get_length() {
-                Err(e) => {panic!("Not able to guess frames on audio only part: {e}")}
+                Err(e) => {panic!("Not able to guess frames on audio only part: {}",e)}
                 Ok(ms) => {
                     vid.frame_count = ((ms as f64) / 1000.0 * (self.video_sizer.fps as f64)) as u64
                 }
