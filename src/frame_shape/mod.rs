@@ -5,6 +5,7 @@ mod frame_join;
 
 #[derive(Clone, Debug)]
 pub(crate) enum FrameShape {
+    /// Testing only
     Mono,
     /// see [readme_data/frame_shapes_1.svg](../readme_data/frame_shapes_1.svg) for shape ref
     Dual,
@@ -38,9 +39,11 @@ pub(crate) enum FrameShape {
     ExtendedLandscape2,
     /// see [readme_data/frame_shapes_12.svg](../readme_data/frame_shapes_12.svg) for shape ref
     OffsetVH4x4,
+    /// see [readme_data/frame_shapes_2.svg](../readme_data/frame_shapes_2.svg) for shape ref
+    TripleMirroredSides,
 }
 
-static FRAME_SHAPE_MAPPING: [(FrameShape, [&str; 3], &str); 17] = [
+static FRAME_SHAPE_MAPPING: [(FrameShape, [&str; 3], &str); 18] = [
     (FrameShape::Mono, ["1", "Mono", "M"], ""),
     (FrameShape::Dual, ["2", "Double", "D"], "../readme_data/frame_shapes_1.svg"),
     (FrameShape::Triple, ["3", "Triple", "T"], "../readme_data/frame_shapes_2.svg"),
@@ -58,6 +61,7 @@ static FRAME_SHAPE_MAPPING: [(FrameShape, [&str; 3], &str); 17] = [
     (FrameShape::ExtendedLandscape, ["15", "ExtendedLandscape", "EL"], "../readme_data/frame_shapes_10.svg"),
     (FrameShape::ExtendedLandscape2, ["16", "ExtendedLandscape2", "EL2"], "../readme_data/frame_shapes_11.svg"),
     (FrameShape::OffsetVH4x4, ["17", "OffsetVH", "4x4"], "../readme_data/frame_shapes_12.svg"),
+    (FrameShape::TripleMirroredSides, ["103", "TripleMirrored","TM"], "../readme_data/frame_shapes_2.svg"),
 ];
 
 impl FrameShape {
@@ -74,6 +78,7 @@ impl FrameShape {
             FrameShape::MoreHoriz | FrameShape::MoreHoriz2 => 7,
             FrameShape::ExtendedLandscape2 | FrameShape::OffsetVH4x4 => 8,
             FrameShape::ExtendedLandscape => 9,
+            FrameShape::TripleMirroredSides => 2,
         }
     }
     pub(crate) fn from_str_opt(data: Option<String>) -> Self {

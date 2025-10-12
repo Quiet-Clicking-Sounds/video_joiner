@@ -173,12 +173,12 @@ mod tests {
 #[inline]
 fn parse_debug(text: &str, f: &str, l: u32) {}
 
-fn scan_dir_for_videos_with_len(dir: impl Into<MultiPathBuf>) -> Vec<(i64, Video)> {
+fn scan_dir_for_videos_with_len(dir: impl Into<MultiPathBuf>,speed_modifier:Option<f32>) -> Vec<(i64, Video)> {
     let mut all_videos = Vec::new();
     for i in dir.into().read_dir() {
         if i.is_file() {
             // setup vid items
-            let mut vd = Video::from_path(i.as_path());
+            let mut vd = Video::from_path(i.as_path(), speed_modifier);
             let le = match vd.get_length() {
                 Ok(le) => le,
                 Err(_) => {
@@ -192,30 +192,30 @@ fn scan_dir_for_videos_with_len(dir: impl Into<MultiPathBuf>) -> Vec<(i64, Video
     all_videos
 }
 
-pub fn scan_dir_for_videos(dir: impl Into<MultiPathBuf>) -> Vec<Video> {
+pub fn scan_dir_for_videos(dir: impl Into<MultiPathBuf>,speed_modifier:Option<f32>) -> Vec<Video> {
     let mut all_videos = Vec::new();
     for i in dir.into().read_dir() {
         if i.is_file() {
             // setup vid items
-            let vd = Video::from_path(i.as_path());
+            let vd = Video::from_path(i.as_path(), speed_modifier);
             all_videos.push(vd);
         };
     }
     all_videos
 }
 
-pub fn video_group_swap(src: impl Into<MultiPathBuf>, screens: FrameShape) -> Vec<Vec<Video>> {
+pub fn video_group_swap(src: impl Into<MultiPathBuf>, screens: FrameShape,speed_modifier:Option<f32>) -> Vec<Vec<Video>> {
     let src = src.into();
     assert!(src.is_dir(), "Given Input Directory Does Not Exist"); // not my fault
-    let all_videos = scan_dir_for_videos_with_len(src);
+    let all_videos = scan_dir_for_videos_with_len(src, speed_modifier);
     let list_grp = group_split::ItemList::new_with_data(all_videos, screens.clone());
     list_grp.run_automatic_swaps();
     list_grp.export_to_data_lists()
 }
-pub fn video_group_swap_n(src: impl Into<MultiPathBuf>, groups:usize) -> Vec<Vec<Video>> {
+pub fn video_group_swap_n(src: impl Into<MultiPathBuf>, groups:usize,speed_modifier:Option<f32>) -> Vec<Vec<Video>> {
     let src = src.into();
     assert!(src.is_dir(), "Given Input Directory Does Not Exist"); // not my fault
-    let all_videos = scan_dir_for_videos_with_len(src);
+    let all_videos = scan_dir_for_videos_with_len(src, speed_modifier);
     let list_grp = group_splitter::regrouper(
         all_videos.into_iter().map(|(_,b)|b).collect(),
         groups);
