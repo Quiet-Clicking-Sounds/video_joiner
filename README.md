@@ -1,4 +1,4 @@
-## Commandline utility to join 2-5 groups of videos into a single video:
+## Commandline utility to tile 2-5 groups of videos into a single video:
 
 For a list of available video output shapes see [readme_data/frames.md](readme_data/Fframes.md)
 
